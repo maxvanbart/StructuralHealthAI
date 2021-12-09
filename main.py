@@ -1,8 +1,7 @@
-print('Well hello there')
+import numpy as np
+import pandas as pd
 
-print('General Kenobi')
+from AE.main_AE import main
 
-print('test')
-
-print('Hello world!')
-print('test')
+if __name__ == "__main__":
+    main.main()
