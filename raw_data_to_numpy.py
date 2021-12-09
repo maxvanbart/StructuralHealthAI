@@ -41,16 +41,5 @@ def raw_to_numpy(folder_path, file_path):
         complete_array = np.hstack((features_strain, feature_time))
         complete_dataframe = pd.DataFrame(complete_array, columns=feature_labels)
 
-        print(complete_dataframe.shape)
-
-#
-#
-# import datetime
-#
-# x = datetime.datetime(2020, 5, 17)
-# y = datetime.datetime.timestamp(x)
-#
-# print(x)
-# print(y)
 
 raw_to_numpy(folder, file)
