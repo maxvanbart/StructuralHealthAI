@@ -60,6 +60,12 @@ def demo():
 
     array, dataframe = raw_to_python(folder, file)
 
+    new_frame = dataframe.dropna()
+
+    print(dataframe.shape)
+    print(new_frame.shape)
+    print()
+
     print(dataframe.head(10))
     print()
     print(array[:10])
