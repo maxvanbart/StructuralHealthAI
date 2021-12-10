@@ -34,7 +34,7 @@ class Panel:
 
     def analyse_ae(self):
         """Function to analyse the AE data in the folder"""
-        # init_clustering(self.ae_database)
+        init_clustering(self.ae_database)
         # self.ae_database.corr_matrix()
         print(f"Succesfully analysed AE data for {self.name}.")
 
