@@ -17,6 +17,7 @@ if __name__ == "__main__":
     for panel in panels:
         print('\n'+str(panel))
         panel.load_ae()
+        panel.analyse_ae()
 
     # end time, it also prints the elapsed time
     t1 = time.time()

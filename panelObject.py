@@ -34,7 +34,7 @@ class Panel:
     def analyse_ae(self):
         """Function to analyse the AE data in the folder"""
         pass
-        # print(f"Succesfully analysed AE data for {self.name}.")
+        print(f"Succesfully analysed AE data for {self.name}.")
 
     # All the LUNA related code for the object
     def load_luna(self):
