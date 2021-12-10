@@ -29,3 +29,4 @@ class Pridb:
         self.colnames = pridb.columns()
         hits = pridb.read_hits()
         self.hits = hits
+#comment
