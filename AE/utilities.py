@@ -32,7 +32,15 @@ class Pridb:
 
     def corr_matrix(self):
         """Creation of correlation matrix for a panel using CSV file"""
-        data_array = pd.read_csv('Files/' + self.filename + "/AE/" + self.filename + ".csv",
+        # uncomment for scatter correlation matrix (scatter + histogram)
+        '''cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time','counts']
+        df = pd.read_csv('Files/' + self.filename + "/AE/" + self.filename + ".csv", usecols=cols,
+                                 delimiter=',')
+        grr = pd.plotting.scatter_matrix(df,figsize=(15,15), marker='o', s=60, alpha=.8)
+        plt.show()'''
+
+        # uncomment for correlation matrix (color coded)
+        '''data_array = pd.read_csv('Files/' + self.filename + "/AE/" + self.filename + ".csv",
                                  delimiter=',').values
         sns.set_theme(style="white")
         df = pd.DataFrame(data=data_array, columns=self.hits.columns)
@@ -41,7 +49,8 @@ class Pridb:
         f, ax = plt.subplots(figsize=(11, 9))
         cmap = sns.diverging_palette(230, 20, as_cmap=True)
         sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, square=True, linewidths=.5, cbar_kws={"shrink": .5})
-        plt.show()
+        plt.show()'''
+        pass
 
     def __str__(self):
         return f"Pridb object for {self.filename}"
