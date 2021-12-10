@@ -8,6 +8,7 @@ files_folder = "Files"
 
 
 class Panel:
+    """An object which represents a panel"""
     def __init__(self, name):
         self.name = name
         self.ae_database = None
@@ -22,11 +23,12 @@ class Panel:
 
         return lst
 
+    # All the AE related code for the object
     def load_ae(self):
         """Function to load the AE data in the folder"""
         self.ae_database = Pridb(self.name)
         self.ae_database.load_csv()
-        print(self.ae_database.hits)
+        # print(self.ae_database.hits)
         print(f"Succesfully loaded AE data for {self.name}.")
 
     def analyse_ae(self):
@@ -34,6 +36,7 @@ class Panel:
         pass
         # print(f"Succesfully analysed AE data for {self.name}.")
 
+    # All the LUNA related code for the object
     def load_luna(self):
         """A function to load the LUNA data"""
         pass
