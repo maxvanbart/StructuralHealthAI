@@ -7,7 +7,6 @@ class Pridb:
     """A class for everything related to pridb/csv files"""
     def __init__(self, file_name):
         self.filename = file_name
-        self.colnames = None
         self.hits = None
 
     def save_csv(self):
@@ -26,7 +25,6 @@ class Pridb:
     def pridb_read_hits(self):
         """Function to retrieve the hits from the pridb file"""
         pridb = vae.io.PriDatabase("Files/"+self.filename+"/AE/"+self.filename+".pridb")
-        self.colnames = pridb.columns()
         hits = pridb.read_hits()
         self.hits = hits
 
