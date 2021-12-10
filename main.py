@@ -1,5 +1,5 @@
 import time
-
+import tqdm
 
 from panelObject import Panel
 
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     panels = panels[:1]
 
     # for every panel we perform the following actions
-    for panel in panels:
+    for panel in tqdm.tqdm(panels):
         print('\n'+str(panel))
         panel.load_ae()
         panel.analyse_ae()
