@@ -40,7 +40,7 @@ class Pridb:
         plt.show()'''
 
         # uncomment for correlation matrix (color coded)
-        cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts']
+        '''cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts']
         data_array = pd.read_csv('Files/' + self.filename + "/AE/" + self.filename + ".csv", usecols=cols,
                                  delimiter=',')
         sns.set_theme(style="white")
@@ -50,7 +50,7 @@ class Pridb:
         f, ax = plt.subplots(figsize=(11, 9))
         cmap = sns.diverging_palette(230, 20, as_cmap=True)
         sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, square=True, linewidths=.5, cbar_kws={"shrink": .5})
-        plt.show()
+        plt.show()'''
         pass
 
     def __str__(self):
