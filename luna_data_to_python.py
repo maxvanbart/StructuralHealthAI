@@ -71,11 +71,5 @@ def demo():
     print(array[:10])
 
 
-# demo()
-
-def get_array_and_df(folder, file):
-    array, dataframe = raw_to_python(folder, file)
-    return array, dataframe
-
-array, df = get_array_and_df('data_LUNA/', 'L1-03.txt')
-
+if __name__ == 'main':
+    demo()
