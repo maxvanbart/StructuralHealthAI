@@ -2,7 +2,7 @@ import os
 
 
 from AE.utilities import Pridb
-
+from AE.clustering import init_clustering
 
 files_folder = "Files"
 
@@ -34,6 +34,7 @@ class Panel:
 
     def analyse_ae(self):
         """Function to analyse the AE data in the folder"""
+        # init_clustering(self.ae_database)
         # self.ae_database.corr_matrix()
         print(f"Succesfully analysed AE data for {self.name}.")
 
