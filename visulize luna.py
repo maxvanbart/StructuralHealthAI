@@ -2,7 +2,7 @@ import luna_data_to_python
 import numpy as np
 import matplotlib.pyplot as plt
 
-array, df = luna_data_to_python.raw_to_python("Files/L1-03/LUNA/", 'L1-03.txt')
+array, df = luna_data_to_python.raw_to_array("Files/L1-03/LUNA/", 'L1-03.txt')
 print(df.head(1))
 row2 = array[1:4, 1:30]
 print(row2)

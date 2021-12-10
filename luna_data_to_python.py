@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 import datetime
 
@@ -8,7 +9,7 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
 
 
-def raw_to_python(folder_path, file_name):
+def raw_to_array(folder_path, file_name):
     """
     Opens file in default LUNA data format and converts this into a numpy array and pandas dataframe.
     """
@@ -54,21 +55,50 @@ def raw_to_python(folder_path, file_name):
     return data_np, data_pd, labels
 
 
+def array_to_image(array):
+    def convert_array():
+        min_value, max_value = np.nanmin(array), np.nanmax(array)
+
+        print(min_value, max_value)
+
+        image = []
+
+        for i in range(len(array)):
+            image_row = []
+
+            for j in range(len(array[i])):
+
+                if array[i, j] <= 0:
+                    image_column = [1 - (array[i, j] / min_value), 1, 1]
+                elif array[i, j] > 0:
+                    image_column = [1, 1 - (array[i, j] / max_value), 1]
+                else:
+                    image_column = [0, 0, 0]
+
+                image_row.append(image_column)
+
+            image.append(image_row)
+
+        return image
+
+    def plot_image(image):
+        plt.imshow(image)
+        plt.xlabel('L [mm]')
+        plt.ylabel('t [s]')
+        plt.show()
+
+    image = convert_array()
+    plot_image(image)
+
+    return image
+
+
 def demo():
     folder = 'Files/L1-03/LUNA/'
     file = 'L1-03.txt'
 
-    array, dataframe, labels = raw_to_python(folder, file)
-
-    new_frame = dataframe.dropna()
-
-    print(dataframe.shape)
-    print(new_frame.shape)
-    print()
-
-    print(dataframe.head(10))
-    print()
-    print(array[:10])
+    array, dataframe, labels = raw_to_array(folder, file)
+    image = array_to_image(array[:, 1:])
 
 
 if __name__ == '__main__':
