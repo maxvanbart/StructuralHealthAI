@@ -8,3 +8,4 @@ def init_clustering(database):
     plt.xlabel("Time")
     plt.ylabel("RMS voltage")
     plt.show()
+    # hi
