@@ -16,11 +16,12 @@ class Panel:
     @staticmethod
     def initialize_all():
         """A static method which checks the folders present and generates a Panel object for every folder"""
-        panels = os.listdir(files_folder)
+        entries = os.scandir(files_folder)
         lst = []
-        for panel in panels:
-            lst.append(Panel(panel))
 
+        for entry in entries:
+            if entry.is_dir():
+                lst.append(Panel(entry.name))
         return lst
 
     # All the AE related code for the object
