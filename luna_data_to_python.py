@@ -51,14 +51,14 @@ def raw_to_python(folder_path, file_name):
     convert_array(data_np)
     data_pd = pd.DataFrame(data_np, columns=labels)
 
-    return data_np, data_pd
+    return data_np, data_pd, labels
 
 
 def demo():
-    folder = 'data_LUNA/'
+    folder = 'Files/L1-03/LUNA/'
     file = 'L1-03.txt'
 
-    array, dataframe = raw_to_python(folder, file)
+    array, dataframe, labels = raw_to_python(folder, file)
 
     new_frame = dataframe.dropna()
 
@@ -71,5 +71,5 @@ def demo():
     print(array[:10])
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
     demo()
