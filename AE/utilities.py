@@ -12,7 +12,7 @@ class Pridb:
 
     def save_csv(self):
         """A function to save the hits from the pridb to a csv file"""
-        pd.DataFrame(self.hits, columns=self.colnames).to_csv('Files/'+self.filename+"/AE/"+self.filename+".csv", index=False, header=False)
+        pd.DataFrame(self.hits).to_csv('Files/'+self.filename+"/AE/"+self.filename+".csv", index=False)
 
     def load_csv(self):
         """A function which tries to load the data from a csv file, otherwise it will generate it from the pridb file"""
