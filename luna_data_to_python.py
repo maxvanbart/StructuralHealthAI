@@ -70,5 +70,7 @@ def demo():
     print()
     print(array[:10])
 
+    print('test123')
+
 
 demo()
