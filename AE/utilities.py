@@ -29,4 +29,9 @@ class Pridb:
         self.colnames = pridb.columns()
         hits = pridb.read_hits()
         self.hits = hits
-#comment
+
+    def __str__(self):
+        return f"Pridb object for {self.filename}"
+
+    def __repr__(self):
+        return f"Pridb({self.filename})"
