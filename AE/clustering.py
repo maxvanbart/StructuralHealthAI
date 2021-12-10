@@ -5,10 +5,9 @@ import time
 
 
 def init_clustering(database):
-
     features = database.hits
     features = database.hits[database.hits["channel"] == 1]
-    features = features[:10000]
+    features = features[:1000]
     time, rms = features[["time"]], features["rms"]
     # plt.scatter(time, rms, s=4, c=features["channel"])
     # plt.xlabel("Time")
@@ -26,7 +25,7 @@ def agglomerative(X, time_lst, rms, features):
     print(f"Time elapsed while clustering: {round(t1 - t0, 3)} seconds")
 
     labels = clustering.labels_
-    print(labels)
+    # print(labels)
     clusterdict = {}
     for n in labels:
         if n in clusterdict:
@@ -39,6 +38,6 @@ def agglomerative(X, time_lst, rms, features):
     plt.xlabel("Time")
     plt.ylabel("RMS voltage")
     for i, label in enumerate(labels):
-        plt.annotate(label, (np.array(features["time"])[i], np.array(features["rms"])[i]))
+        plt.annotate(f"{label}", (np.array(features["time"])[i], np.array(features["rms"])[i]))
 
     plt.show()
