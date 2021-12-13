@@ -13,9 +13,8 @@ def raw_to_array(folder_path, file_name, panel):
     """
     Opens file in default LUNA data format and converts this into two numpy arrays and two pandas dataframes.
     """
-    sensor_file = 'LUNA_sensor.txt'
-
     def read_sensor_file():
+        sensor_file = 'LUNA_sensor.txt'
         sensor_data = {}
 
         with open(sensor_file) as file:
