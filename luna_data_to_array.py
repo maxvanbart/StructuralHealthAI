@@ -116,7 +116,7 @@ def array_to_image(array):
 
 def gradient_arrays(array):
     """
-    First return is the time derivative array, second return is the length derivative array
+    Returns tuple, first entry time derivative array, second entry the length derivative array.
     """
     return np.gradient(array)
 
