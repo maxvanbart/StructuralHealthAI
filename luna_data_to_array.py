@@ -90,7 +90,7 @@ def raw_to_array(folder_path, file_name, panel):
 
 
 def array_to_image(array):
-    min_value, max_value = np.nanmin(array) / 32, np.nanmax(array) / 32
+    min_value, max_value = np.nanmin(array) / 4, np.nanmax(array) / 4
 
     image = []
 
@@ -100,9 +100,9 @@ def array_to_image(array):
         for j in range(len(array[i])):
 
             if array[i, j] <= 0:
-                image_column = [1 - (array[i, j] / min_value), 1, 1]
+                image_column = [max(1 - (array[i, j] / min_value), 0), max(1 - (array[i, j] / min_value), 0), 1]
             elif array[i, j] > 0:
-                image_column = [1, 1 - (array[i, j] / max_value), 1]
+                image_column = [1, max(1 - (array[i, j] / max_value), 0), max(1 - (array[i, j] / max_value), 0)]
             else:
                 image_column = [0, 0, 0]
 
