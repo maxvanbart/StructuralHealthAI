@@ -82,6 +82,20 @@ def raw_to_array(folder_path, file_name, panel):
     return data_np_left, data_np_right, labels_left, labels_right
 
 
+def normalize_array(array):
+    initial_conditions = array[0]
+    min_value, max_value = - np.nanmin(array), np.nanmax(array)
+
+    for i in range(len(array)):
+        for j in range(len(array[i])):
+            array[i, j] = array[i, j] - initial_conditions[j]
+
+            if array[i, j] <= 0:
+                array[i, j] = array[i, j] / min_value
+            elif array[i, j] > 0:
+                array[i, j] = array[i, j] / max_value
+
+
 def array_to_image(array):
     """
     Generates a new array with each value in the original array converted to an RGB color.
