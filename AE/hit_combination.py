@@ -9,7 +9,8 @@ import pandas as pd
 def init_clustering(database, delta=100, debug=False, debug_graph=False):
     # select the features for the clustering
     features = database.hits[database.hits["channel"] == 1]
-    features = features[:50000]
+    features = features[-500000:]
+    debug_graph = True
 
     # ['time', 'channel', 'param_id', 'amplitude', 'duration', 'energy', 'rms', 'threshold', 'rise_time', 'counts',
     # 'cascade_hits']
@@ -23,22 +24,7 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
         for batch in batches:
             print(batch.shape)
 
-    # plot all datapoints which were selected in the features variable
-    time, rms = features[["time"]], features["rms"]
-    # plt.scatter(time, rms, s=4, c=features["channel"])
-
-    # cluster all the batches found by the batch splitter
-    combined_batches = []
-    for batch in tqdm(batches):
-        if batch.shape[0] > 1:
-            clustered_batch = batch_cluster(batch, debug=debug)
-            combined_batches.append(batch_combine_points(clustered_batch, debug=debug))
-        else:
-            combined_batches.append(batch)
-            print('Batch contains a single object, skipping clustering...')
-
-    combined_database = pd.DataFrame(np.vstack(combined_batches), columns=header)
-
+    # Enabeling this debug graph will show the batch division of the selected datapoints
     if debug_graph:
         n = 0
         for batch in batches:
@@ -48,6 +34,17 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
         plt.xlabel("Time")
         plt.ylabel("RMS voltage")
         plt.show()
+
+    # cluster all the batches found by the batch splitter
+    combined_batches = []
+    for batch in tqdm(batches):
+        if batch.shape[0] > 1:
+            clustered_batch = batch_cluster(batch, debug=debug)
+            combined_batches.append(batch_combine_points(clustered_batch, debug=debug))
+        else:
+            combined_batches.append(batch)
+
+    combined_database = pd.DataFrame(np.vstack(combined_batches), columns=header)
 
     return combined_database
 
@@ -82,7 +79,7 @@ def batch_split(df, delta, dynamic_splitting=True, debug=False):
         for batch in batches:
             # if we find a large batch we will recursively decrease the delta until we find a batch size which works
             # the cutoff for dynamic splitting should still be tweaked as 30000 might not be optimal
-            if len(batch) > 30000 and delta > 10:
+            if len(batch) > 25000 and delta > 10:
                 if debug:
                     print(f"Found batch of size {len(batch)}, splitting...")
                 final_batches += batch_split(batch, delta-10)
@@ -113,11 +110,14 @@ def batch_cluster(batch, debug=False, debug_graph=False):
         batch[i] = list(batch[i])
         batch[i].append(labels[i])
     batch = np.array(batch)
+
+    # General debug information
     if debug:
         print(f"Amount of datapoints: {n_points}")
         print(f"Amount of clusters: {max(labels)}")
         print(f"That is {100*round((n_points-len(clusterdict))/n_points,3)}% less datapoints...")
 
+    # Plot a graph which shows the datapoints with labels
     if debug_graph:
         plt.scatter(batch[:, 0], batch[:, 6], s=4, c=clustering.labels_)
         plt.xlabel("Time")

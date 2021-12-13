@@ -5,6 +5,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 
+
 class Pridb:
     """A class for everything related to pridb/csv files"""
     def __init__(self, file_name):
