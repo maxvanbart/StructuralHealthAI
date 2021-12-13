@@ -146,10 +146,11 @@ def array_to_image(array):
     return image
 
 
-def gradient_array(array):
-    deriv_t, deriv_x = np.gradient(array)
-
-    return deriv_t, deriv_x
+def gradient_arrays(array):
+    """
+    First return is the time derivative array, second return is the length derivative array
+    """
+    return np.gradient(array)
 
 
 def plot_image_complete(image):
@@ -159,40 +160,36 @@ def plot_image_complete(image):
     plt.show()
 
 
-def plot_images(image_left, image_right, length_left, length_right, time):
-    plt.subplot(1, 2, 1)
-    plt.imshow(image_left, extent=[0, length_left, time, 0])
+def plot_images(image, image_time, image_length, length, time, left=True):
+    plt.subplot(1, 3, 1)
+    plt.imshow(image, extent=[0, length, time, 0])
     plt.xlabel('L [mm]')
     plt.ylabel('timestamp [-]')
-    plt.title('Left foot')
+    plt.title('Original')
 
-    plt.subplot(1, 2, 2)
-    plt.imshow(image_right, extent=[0, length_right, time, 0])
+    plt.subplot(1, 3, 2)
+    plt.imshow(image_time, extent=[0, length, time, 0])
     plt.xlabel('L [mm]')
     plt.ylabel('timestamp [-]')
-    plt.title('Right foot')
+    plt.title('Time derivative')
+
+    plt.subplot(1, 3, 3)
+    plt.imshow(image_length, extent=[0, length, time, 0])
+    plt.xlabel('L [mm]')
+    plt.ylabel('timestamp [-]')
+    plt.title('Length derivative')
+
+    if left:
+        plt.suptitle('Left foot')
+    else:
+        plt.suptitle('Right foot')
 
     plt.show()
 
 
-def demo_complete():
-    # folder = 'Files/L1-03/LUNA/'
-    # file = 'L1-03.txt'
-
-    folder = 'Files/L1-04/LUNA/'
-    file = 'L1-04-2.txt'
-
-    array, dataframe, labels = raw_to_array_complete(folder, file)
-    image = array_to_image(array)
-    plot_image_complete(image)
-
-
 def demo_left_right():
-    # folder = 'Files/L1-03/LUNA/'
-    # file = 'L1-03.txt'
-
-    folder = 'Files/L1-23/'
-    file = 'L1-23-3.txt'
+    folder = 'Files/L1-09/LUNA/'
+    file = 'L1-09.txt'
 
     left_start, left_end = 845, 1045
     right_start, right_end = 2770, 2920
@@ -203,17 +200,26 @@ def demo_left_right():
     array_left, array_right, dataframe_left, dataframe_right, labels_left, labels_right = \
         raw_to_array(folder, file, left_start, left_end, right_start, right_end)
 
-    deriv_t, deriv_x = gradient_array(array_right[:, 1:])
+    delta_time_left = len(array_left)
+    delta_time_right = len(array_right)
 
-    deriv_t_image = array_to_image(deriv_t)
-    deriv_x_image = array_to_image(deriv_x)
+    time_derivative_array_left, length_derivative_array_left = gradient_arrays(array_left[:, 1:])
+    time_derivative_array_right, length_derivative_array_right = gradient_arrays(array_right[:, 1:])
 
-    plot_images(deriv_t_image, deriv_x_image, 130, 180, 562)
+    image_left = array_to_image(array_left)
+    image_right = array_to_image(array_right)
 
-    image_left = array_to_image(array_left[:, 1:])
-    image_right = array_to_image(array_right[:, 1:])
+    time_derivative_image_left = array_to_image(time_derivative_array_left)
+    length_derivative_image_left = array_to_image(length_derivative_array_left)
 
-    plot_images(image_left, image_right, delta_length_left, delta_length_right, len(image_left))
+    time_derivative_image_right = array_to_image(time_derivative_array_right)
+    length_derivative_image_right = array_to_image(length_derivative_array_right)
+
+    plot_images(image_left, time_derivative_image_left, length_derivative_image_left,
+                delta_length_left, delta_time_left)
+
+    plot_images(image_right, time_derivative_image_right, length_derivative_image_right,
+                delta_length_right, delta_time_right, left=False)
 
 
 if __name__ == '__main__':
