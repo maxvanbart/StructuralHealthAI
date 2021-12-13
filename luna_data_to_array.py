@@ -149,9 +149,12 @@ def plot_images(image, image_time, image_length, length, time, left=True):
 
 
 def demo():
+
+    # --- USER INPUT ---
     folder = 'Files/L1-05/LUNA/'
     file = 'L1-05-2.txt'
     panel = 'L1-05'
+    # ------------------
 
     array_left, array_right, dataframe_left, dataframe_right, labels_left, labels_right = \
         raw_to_array(folder, file, panel)
