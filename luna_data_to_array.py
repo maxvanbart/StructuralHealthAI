@@ -123,7 +123,7 @@ def raw_to_array(folder_path, file_name, left_start, left_end, right_start, righ
 
 
 def array_to_image(array):
-    min_value, max_value = np.nanmin(array) / 8, np.nanmax(array) / 8
+    min_value, max_value = np.nanmin(array) / 32, np.nanmax(array) / 32
 
     image = []
 
@@ -144,6 +144,12 @@ def array_to_image(array):
         image.append(image_row)
 
     return image
+
+
+def gradient_array(array):
+    deriv_t, deriv_x = np.gradient(array)
+
+    return deriv_t, deriv_x
 
 
 def plot_image_complete(image):
@@ -170,8 +176,11 @@ def plot_images(image_left, image_right, length_left, length_right, time):
 
 
 def demo_complete():
-    folder = 'Files/L1-03/LUNA/'
-    file = 'L1-03.txt'
+    # folder = 'Files/L1-03/LUNA/'
+    # file = 'L1-03.txt'
+
+    folder = 'Files/L1-04/LUNA/'
+    file = 'L1-04-2.txt'
 
     array, dataframe, labels = raw_to_array_complete(folder, file)
     image = array_to_image(array)
@@ -179,17 +188,27 @@ def demo_complete():
 
 
 def demo_left_right():
-    folder = 'Files/L1-03/LUNA/'
-    file = 'L1-03.txt'
+    # folder = 'Files/L1-03/LUNA/'
+    # file = 'L1-03.txt'
 
-    left_start, left_end = 4530, 4660
-    right_start, right_end = 1510, 1690
+    folder = 'Files/L1-23/'
+    file = 'L1-23-3.txt'
+
+    left_start, left_end = 845, 1045
+    right_start, right_end = 2770, 2920
 
     delta_length_left = left_end - left_start
     delta_length_right = right_end - right_start
 
     array_left, array_right, dataframe_left, dataframe_right, labels_left, labels_right = \
         raw_to_array(folder, file, left_start, left_end, right_start, right_end)
+
+    deriv_t, deriv_x = gradient_array(array_right[:, 1:])
+
+    deriv_t_image = array_to_image(deriv_t)
+    deriv_x_image = array_to_image(deriv_x)
+
+    plot_images(deriv_t_image, deriv_x_image, 130, 180, 562)
 
     image_left = array_to_image(array_left[:, 1:])
     image_right = array_to_image(array_right[:, 1:])
@@ -199,49 +218,3 @@ def demo_left_right():
 
 if __name__ == '__main__':
     demo_left_right()
-
-
-
-def print_line_of_array(array, row_numbs, difference=False, color1="g", color2="r"):
-    """
-    array = np.array
-    row_numbs is a list, could be single value list
-    difference is to plot absolute difference between two rows. Only works if row_numbs is 2 value list
-    color1 is color, dafault green
-    color2 is color, default red
-    """
-    if difference is True and len(row_numbs)!= 2:
-        print("Function Error: Change difference to False or use a 2 value list")
-        return
-
-    while difference and len(row_numbs) == 2:
-        diffrow = []
-        row1 = array[row_numbs[0]]
-        row2 = array[row_numbs[1]]
-        for j in range(len(row1)):
-            diffrow.append(abs(row1[j]) - abs(row2[j])) # absolute difference
-        break
-
-    for row_numb in row_numbs:
-        row = array[row_numb]
-        # row is a row from array with length
-        rowlengt = len(row)
-        avg_row_value = np.nansum(row)/rowlengt
-        maxvalue, minvalue = np.nanmax(row), np.nanmin(row)
-        print(avg_row_value, maxvalue, minvalue)
-        if difference is False:
-            plt.plot(row, "o-", label=f"row {row_numb+1}")
-            plt.title("Lengt x Micro strain")
-            plt.xlabel("Length")
-            plt.ylabel("Micro strain")
-            plt.legend()
-
-    if difference is True:
-        fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
-        ax1.plot(row1, f"{color1}o-", label=f"row {row_numb+1}")
-        ax1.set_title(f"array numb {row_numbs[0]}")
-        ax2.plot(row2, f"{color1}o-", label=f"row {row_numb+1}")
-        ax2.set_title(f"array numb {row_numbs[1]}")
-        ax3.plot(diffrow, f'{color2}')
-        ax3.set_title(f"absolute difference")
-    plt.show()
