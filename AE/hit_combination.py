@@ -9,8 +9,11 @@ import pandas as pd
 def init_clustering(database, delta=100, debug=False, debug_graph=False):
     # select the features for the clustering
     features = database.hits[database.hits["channel"] == 1]
-    # features = features[:50000]
-    # print(list(features))
+    features = features[:50000]
+
+    # ['time', 'channel', 'param_id', 'amplitude', 'duration', 'energy', 'rms', 'threshold', 'rise_time', 'counts',
+    # 'cascade_hits']
+    header = list(features)
 
     batches = batch_split(features, delta, debug=debug)
 
@@ -25,24 +28,29 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
     # plt.scatter(time, rms, s=4, c=features["channel"])
 
     # cluster all the batches found by the batch splitter
+    combined_batches = []
     for batch in tqdm(batches):
         if batch.shape[0] > 1:
-            batch_cluster(batch, debug=debug, debug_graph=True)
+            clustered_batch = batch_cluster(batch, debug=debug)
+            combined_batches.append(batch_combine_points(clustered_batch, debug=debug))
         else:
+            combined_batches.append(batch)
             print('Batch contains a single object, skipping clustering...')
 
-    n = 0
+    combined_database = pd.DataFrame(np.vstack(combined_batches), columns=header)
+    # print(combined_database.head())
+
     if debug_graph:
+        n = 0
         for batch in batches:
             n += len(batch)
             plt.scatter(batch[:, 0], batch[:, 6], s=4)
-
         print(n)
         plt.xlabel("Time")
         plt.ylabel("RMS voltage")
         plt.show()
-    X = np.transpose(np.array([features["time"], features["rms"]]))
-    # agglomerative(X, time, rms, features)
+
+    return combined_database
 
 
 def batch_split(df, delta, dynamic_splitting=True, debug=False):
@@ -120,3 +128,41 @@ def batch_cluster(batch, debug=False, debug_graph=False):
             plt.annotate(f"{int(batch[:, 11][i])}", (batch[:, 0][i], batch[:, 6][i]))
         plt.show()
     return batch
+
+
+def batch_combine_points(batch, debug=False):
+    """Function to combine the objects in a cluster to a single object"""
+    batch = list(batch)
+    cluster_dict = {}
+    # First we sort the objects by their cluster number
+    for obj in batch:
+        if int(obj[-1]) in cluster_dict:
+            cluster_dict[int(obj[-1])].append(obj)
+        else:
+            cluster_dict[int(obj[-1])] = [obj]
+
+    # For every cluster in the cluster dictionary we replace it by a single datapoint
+    matrix = []
+    for cluster in cluster_dict:
+        lst = []
+        for obj in cluster_dict[cluster]:
+            lst.append(obj)
+        array = np.array(lst)
+        if array.shape[0] == 1:
+            # This is a 2d matrix so we flatten it
+            matrix.append(array.flatten())
+        # Here we should add the code which is used in order to combine datapoints
+        else:
+            # energy is index 5
+            final_array = np.mean(array, axis=0)
+            if debug:
+                print(f"Mean for cluster {cluster}")
+                print(array.shape)
+                print(array)
+            final_array[5] = np.sum(array[:, 5])
+            matrix.append(final_array)
+
+    # Finally we turn the matrix into a numpy array and delete the cluster index column
+    matrix = np.array(matrix)
+    matrix = np.delete(matrix, 11, 1)
+    return matrix

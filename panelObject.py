@@ -14,6 +14,7 @@ class Panel:
         self.name = name
         self.ae_database = None
         self.debug = debug
+        self.ae_clustered_database = None
 
     @staticmethod
     def initialize_all():
@@ -36,7 +37,7 @@ class Panel:
 
     def analyse_ae(self):
         """Function to analyse the AE data in the folder"""
-        init_clustering(self.ae_database, debug=self.debug)
+        self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
         # self.ae_database.corr_matrix()
         # freq_amp_cluster(self.ae_database)
         print(f"Succesfully analysed AE data for {self.name}.")
