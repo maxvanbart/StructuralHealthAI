@@ -27,7 +27,7 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
     # cluster all the batches found by the batch splitter
     for batch in tqdm(batches):
         if batch.shape[0] > 1:
-            batch_cluster(batch, debug=debug)
+            batch_cluster(batch, debug=debug, debug_graph=True)
         else:
             print('Batch contains a single object, skipping clustering...')
 
@@ -87,6 +87,7 @@ def batch_split(df, delta, dynamic_splitting=True, debug=False):
 
 
 def batch_cluster(batch, debug=False, debug_graph=False):
+    """This function uses the agglomerative clustering algorithm to cluster datapoints within a batch"""
     # time 0, RMS 6
     t0 = time.time()
     model = AgglomerativeClustering(n_clusters=None, distance_threshold=0.01, compute_full_tree=True)
@@ -96,23 +97,19 @@ def batch_cluster(batch, debug=False, debug_graph=False):
     if debug:
         print(f"Time elapsed while clustering: {round(t1 - t0, 3)} seconds")
 
-    # return should go here or something
-
-    # debug code
+    # generate final result
     labels = clustering.labels_
-    # print(labels)
-    clusterdict = {}
-    n_points = 0
-    for n in labels:
-        n_points += 1
-        if n in clusterdict:
-            clusterdict[n] += 1
-        else:
-            clusterdict[n] = 1
+    n_points = len(batch)
 
+    batch = list(batch)
+    for i in range(len(labels)):
+        batch[i] = list(batch[i])
+        batch[i].append(labels[i])
+    # print(batch)
+    batch = np.array(batch)
     if debug:
         print(f"Amount of datapoints: {n_points}")
-        print(f"Amount of clusters: {len(clusterdict)}")
+        print(f"Amount of clusters: {max(labels)}")
         print(f"That is {100*round((n_points-len(clusterdict))/n_points,3)}% less datapoints...")
 
     if debug_graph:
@@ -120,8 +117,9 @@ def batch_cluster(batch, debug=False, debug_graph=False):
         plt.xlabel("Time")
         plt.ylabel("RMS voltage")
         for i, label in enumerate(labels):
-            plt.annotate(f"{label}", (batch[:, 0][i], batch[:, 6][i]))
+            plt.annotate(f"{int(batch[:, 11][i])}", (batch[:, 0][i], batch[:, 6][i]))
         plt.show()
+    return batch
 
 
 def agglomerative(X, time_lst, rms, features):
