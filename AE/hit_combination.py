@@ -38,7 +38,6 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
             print('Batch contains a single object, skipping clustering...')
 
     combined_database = pd.DataFrame(np.vstack(combined_batches), columns=header)
-    # print(combined_database.head())
 
     if debug_graph:
         n = 0
@@ -113,7 +112,6 @@ def batch_cluster(batch, debug=False, debug_graph=False):
     for i in range(len(labels)):
         batch[i] = list(batch[i])
         batch[i].append(labels[i])
-    # print(batch)
     batch = np.array(batch)
     if debug:
         print(f"Amount of datapoints: {n_points}")
