@@ -1,18 +1,13 @@
 import numpy as np
-import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 import datetime
 
-pd.set_option('display.max_rows', None)
-pd.set_option('display.max_columns', None)
-pd.set_option('display.width', None)
-
 
 def raw_to_array(folder_path, file_name, panel):
     """
-    Opens file in default LUNA data format and converts this into two numpy arrays and two pandas dataframes.
+    Opens file in default LUNA data format and converts this into left and right foot numpy arrays.
     """
     def read_sensor_file():
         sensor_file = 'LUNA_sensor.txt'
@@ -28,7 +23,7 @@ def raw_to_array(folder_path, file_name, panel):
 
     def read_data_file():
         """
-        Creates the unconverted array and feature label list to be used later for the dataframe.
+        Creates the unconverted array and feature label list to be used later.
         """
         with open(folder_path + file_name) as file:
             lines = file.readlines()
@@ -57,7 +52,7 @@ def raw_to_array(folder_path, file_name, panel):
             array_left = np.array(data_lists_left, dtype=object)
             array_right = np.array(data_lists_right, dtype=object)
 
-            return array_left, array_right, ['t'] + feature_labels_left, ['t'] + feature_labels_right
+            return array_left, array_right, feature_labels_left, feature_labels_right
 
     def convert_array(array):
         """
@@ -84,13 +79,13 @@ def raw_to_array(folder_path, file_name, panel):
     convert_array(data_np_left)
     convert_array(data_np_right)
 
-    data_pd_left = pd.DataFrame(data_np_left, columns=labels_left)
-    data_pd_right = pd.DataFrame(data_np_right, columns=labels_right)
-
-    return data_np_left, data_np_right, data_pd_left, data_pd_right, labels_left, labels_right
+    return data_np_left, data_np_right, labels_left, labels_right
 
 
 def array_to_image(array):
+    """
+    Generates a new array with each value in the original array converted to a RGB color.
+    """
     min_value, max_value = np.nanmin(array) / 4, np.nanmax(array) / 4
 
     image = []
@@ -122,6 +117,9 @@ def gradient_arrays(array):
 
 
 def plot_images(image, image_time, image_length, length, time, left=True):
+    """
+    Plots the original array, time derivative array and length derivative array including a color bar.
+    """
     plt.subplot(1, 3, 1)
     plt.imshow(image, extent=[0, length, 0, time])
     plt.xlabel('L [mm]')
@@ -158,11 +156,10 @@ def demo():
     panel = 'L1-05'
     # ------------------
 
-    array_left, array_right, dataframe_left, dataframe_right, labels_left, labels_right = \
-        raw_to_array(folder, file, panel)
+    array_left, array_right, labels_left, labels_right = raw_to_array(folder, file, panel)
 
-    delta_length_left = float(labels_left[-1]) - float(labels_left[1])
-    delta_length_right = float(labels_right[-1]) - float(labels_right[1])
+    delta_length_left = float(labels_left[-1]) - float(labels_left[0])
+    delta_length_right = float(labels_right[-1]) - float(labels_right[0])
 
     delta_time_left = len(array_left)
     delta_time_right = len(array_right)
