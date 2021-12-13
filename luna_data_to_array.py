@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 import datetime
@@ -110,7 +111,7 @@ def array_to_image(array):
 
         image.append(image_row)
 
-    return image
+    return np.flip(image, axis=0)
 
 
 def gradient_arrays(array):
@@ -122,28 +123,30 @@ def gradient_arrays(array):
 
 def plot_images(image, image_time, image_length, length, time, left=True):
     plt.subplot(1, 3, 1)
-    plt.imshow(image, extent=[0, length, time, 0])
+    plt.imshow(image, extent=[0, length, 0, time])
     plt.xlabel('L [mm]')
-    plt.ylabel('timestamp [-]')
-    plt.title('Original')
+    plt.ylabel('Timestamp [-]')
+    plt.title('Micro strain')
 
     plt.subplot(1, 3, 2)
-    plt.imshow(image_time, extent=[0, length, time, 0])
+    plt.imshow(image_time, extent=[0, length, 0, time])
     plt.xlabel('L [mm]')
-    plt.ylabel('timestamp [-]')
-    plt.title('Time derivative')
+    plt.ylabel('Timestamp [-]')
+    plt.title('Time (partial) derivative')
 
     plt.subplot(1, 3, 3)
-    plt.imshow(image_length, extent=[0, length, time, 0])
+    plt.imshow(image_length, extent=[0, length, 0, time])
     plt.xlabel('L [mm]')
-    plt.ylabel('timestamp [-]')
-    plt.title('Length derivative')
+    plt.ylabel('Timestamp [-]')
+    plt.title('Length (partial) derivative')
 
     if left:
         plt.suptitle('Left foot')
     else:
         plt.suptitle('Right foot')
 
+    cbr = plt.colorbar(plt.cm.ScalarMappable(cmap='bwr', norm=mpl.colors.Normalize(vmin=-1, vmax=1)))
+    cbr.set_label('Scaled values [-]')
     plt.show()
 
 
