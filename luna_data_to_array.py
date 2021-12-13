@@ -9,58 +9,14 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
 
 
-def raw_to_array_complete(folder_path, file_name):
-    """
-    Opens file in default LUNA data format and converts this into a numpy array and pandas dataframe.
-    """
-    def read_file():
-        """
-        Creates the unconverted array and feature label list to be used later for the dataframe.
-        """
-        with open(folder_path + file_name) as file:
-            lines = file.readlines()
-            feature_labels = lines[0].strip().split('\t')
-            feature_labels.insert(0, 'timestamp')
-            data_lists = []
-
-            for line in lines[1:]:
-                data_lists.append(line.strip().split('\t'))
-
-            return np.array(data_lists, dtype=object), feature_labels
-
-    def convert_array(array):
-        """
-        Changes all dates to timestamps, NaN strings to NaN values and remaining strings to floats.
-        """
-        for i in range(len(array)):
-            for j in range(len(array[i])):
-                if j == 0:
-                    year, month, rest = array[i, j].split('-')
-                    day, rest = rest.split('T')
-                    hour, minute, second = rest.split(':')
-
-                    date = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute),
-                                             int(np.floor(float(second))))
-                    array[i, j] = datetime.datetime.timestamp(date)
-
-                elif array[i, j] == 'NaN':
-                    array[i, j] = np.nan
-                else:
-                    array[i, j] = float(array[i, j])
-
-    data_np, labels = read_file()
-    convert_array(data_np)
-    data_pd = pd.DataFrame(data_np, columns=labels)
-
-    return data_np, data_pd, labels
-
-
 def raw_to_array(folder_path, file_name, left_start, left_end, right_start, right_end):
     """
     Opens file in default LUNA data format and converts this into two numpy arrays and two pandas dataframes.
     """
+    def read_sensor_file():
+        pass
 
-    def read_file():
+    def read_data_file():
         """
         Creates the unconverted array and feature label list to be used later for the dataframe.
         """
@@ -111,7 +67,7 @@ def raw_to_array(folder_path, file_name, left_start, left_end, right_start, righ
                 else:
                     array[i, j] = float(array[i, j])
 
-    data_np_left, data_np_right, labels_left, labels_right = read_file()
+    data_np_left, data_np_right, labels_left, labels_right = read_data_file()
 
     convert_array(data_np_left)
     convert_array(data_np_right)
@@ -153,13 +109,6 @@ def gradient_arrays(array):
     return np.gradient(array)
 
 
-def plot_image_complete(image):
-    plt.imshow(image, extent=[0, 5000, 500, 0])
-    plt.xlabel('L [mm]')
-    plt.ylabel('timestamp [-]')
-    plt.show()
-
-
 def plot_images(image, image_time, image_length, length, time, left=True):
     plt.subplot(1, 3, 1)
     plt.imshow(image, extent=[0, length, time, 0])
@@ -187,7 +136,7 @@ def plot_images(image, image_time, image_length, length, time, left=True):
     plt.show()
 
 
-def demo_left_right():
+def demo():
     folder = 'Files/L1-09/LUNA/'
     file = 'L1-09.txt'
 
@@ -223,4 +172,4 @@ def demo_left_right():
 
 
 if __name__ == '__main__':
-    demo_left_right()
+    demo()
