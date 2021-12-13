@@ -9,12 +9,22 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
 
 
-def raw_to_array(folder_path, file_name, left_start, left_end, right_start, right_end):
+def raw_to_array(folder_path, file_name, panel):
     """
     Opens file in default LUNA data format and converts this into two numpy arrays and two pandas dataframes.
     """
+    sensor_file = 'LUNA_sensor.txt'
+
     def read_sensor_file():
-        pass
+        sensor_data = {}
+
+        with open(sensor_file) as file:
+            data = np.genfromtxt(file, delimiter=',', skip_header=True, dtype=str)
+
+            for line in data:
+                sensor_data[line[0]] = [float(i) for i in line[1:]]
+
+        return sensor_data[panel]
 
     def read_data_file():
         """
@@ -26,6 +36,8 @@ def raw_to_array(folder_path, file_name, left_start, left_end, right_start, righ
 
             data_lists_left = []
             data_lists_right = []
+
+            left_start, left_end, right_start, right_end = read_sensor_file()
 
             feature_labels_left = [i for i in feature_labels_all if left_end >= float(i) >= left_start]
             feature_labels_right = [i for i in feature_labels_all if right_end >= float(i) >= right_start]
@@ -137,17 +149,15 @@ def plot_images(image, image_time, image_length, length, time, left=True):
 
 
 def demo():
-    folder = 'Files/L1-09/LUNA/'
-    file = 'L1-09.txt'
-
-    left_start, left_end = 845, 1045
-    right_start, right_end = 2770, 2920
-
-    delta_length_left = left_end - left_start
-    delta_length_right = right_end - right_start
+    folder = 'Files/L1-05/LUNA/'
+    file = 'L1-05-2.txt'
+    panel = 'L1-05'
 
     array_left, array_right, dataframe_left, dataframe_right, labels_left, labels_right = \
-        raw_to_array(folder, file, left_start, left_end, right_start, right_end)
+        raw_to_array(folder, file, panel)
+
+    delta_length_left = float(labels_left[-1]) - float(labels_left[1])
+    delta_length_right = float(labels_right[-1]) - float(labels_right[1])
 
     delta_time_left = len(array_left)
     delta_time_right = len(array_right)
