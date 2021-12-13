@@ -1,8 +1,10 @@
-import luna_data_to_python
+from luna_data_to_array import raw_to_array
 import numpy as np
 import matplotlib.pyplot as plt
+import sklearn.cluster as cl
 
-array, df = luna_data_to_python.raw_to_python("Files/L1-03/LUNA/", 'L1-03.txt')
+
+array_left, array_right, pd_df_left, pd_df_right, labels_left, labels_right = raw_to_array("Files/L1-03/LUNA/", 'L1-03.txt')
 
 
 
