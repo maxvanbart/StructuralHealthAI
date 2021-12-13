@@ -9,9 +9,10 @@ files_folder = "Files"
 
 class Panel:
     """An object which represents a panel"""
-    def __init__(self, name):
+    def __init__(self, name, debug=False):
         self.name = name
         self.ae_database = None
+        self.debug = debug
 
     @staticmethod
     def initialize_all():
@@ -34,7 +35,7 @@ class Panel:
 
     def analyse_ae(self):
         """Function to analyse the AE data in the folder"""
-        init_clustering(self.ae_database, debug=True)
+        init_clustering(self.ae_database, debug=self.debug)
         # self.ae_database.corr_matrix()
         print(f"Succesfully analysed AE data for {self.name}.")
 
