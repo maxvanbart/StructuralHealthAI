@@ -84,7 +84,7 @@ def raw_to_array(folder_path, file_name, panel):
 
 def array_to_image(array):
     """
-    Generates a new array with each value in the original array converted to a RGB color.
+    Generates a new array with each value in the original array converted to an RGB color.
     """
     min_value, max_value = np.nanmin(array) / 4, np.nanmax(array) / 4
 
