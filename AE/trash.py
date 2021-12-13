@@ -3,6 +3,7 @@ from sklearn.cluster import AgglomerativeClustering
 import time
 
 
+# old agglomerative function which is not needed anymore
 def agglomerative(X, time_lst, rms, features):
     # Time complexity O(n2) and high memory complexity
     model = AgglomerativeClustering(n_clusters=None, distance_threshold=0.01, compute_full_tree=True)
