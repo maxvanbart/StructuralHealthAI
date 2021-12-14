@@ -14,7 +14,7 @@ import sklearn.cluster as cl
 #panel = 'L1-05'
 # ------------------
 
-def test_kmeans(panel):
+def kmeans(panel):
     #get array
     array_left, array_right, labels_left, labels_right = raw_to_array(f"Files/{panel[:5]}/LUNA/", f"{panel}.txt", f"{panel[:5]}")
     array_right_time, array_right_length = gradient_arrays(array_right)
@@ -26,5 +26,18 @@ def test_kmeans(panel):
     #output
     return clusters.reshape(-1,1)
 
+def mean_shift(panel):
+    #get array
+    array_left, array_right, labels_left, labels_right = raw_to_array(f"Files/{panel[:5]}/LUNA/", f"{panel}.txt", f"{panel[:5]}")
+    array_right_time, array_right_length = gradient_arrays(array_right)
 
-print(test_kmeans('L1-05-2'))
+    #clustering
+    mean_shift = cl.MeanShift()
+    clusters = mean_shift.fit_predict(array_right_time)
+
+    #output
+    return clusters.reshape(-1,1)
+
+#testing:
+print(kmeans('L1-05-2'))
+print(mean_shift('L1-05-2'))
