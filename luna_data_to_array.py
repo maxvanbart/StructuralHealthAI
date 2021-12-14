@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib as mpl
+import matplotlib.colors as mpl
 import matplotlib.pyplot as plt
 
 import datetime
@@ -127,7 +127,16 @@ def gradient_arrays(array):
     """
     Returns tuple, first entry time derivative array, second entry the length derivative array.
     """
-    return np.gradient(array)
+    time_derivative_array, length_derivative_array = np.gradient(array)
+
+    for i in range(len(time_derivative_array)):
+        for j in range(len(time_derivative_array[i])):
+            if np.isnan(time_derivative_array[i, j]):
+                time_derivative_array[i, j] = 0
+            if np.isnan(length_derivative_array[i, j]):
+                length_derivative_array[i, j] = 0
+
+    return time_derivative_array, length_derivative_array
 
 
 def plot_images(image, image_time, image_length, length, time, left=True):
@@ -157,7 +166,7 @@ def plot_images(image, image_time, image_length, length, time, left=True):
     else:
         plt.suptitle('Right foot')
 
-    cbr = plt.colorbar(plt.cm.ScalarMappable(cmap='bwr', norm=mpl.colors.Normalize(vmin=-1, vmax=1)))
+    cbr = plt.colorbar(plt.cm.ScalarMappable(cmap='bwr', norm=mpl.Normalize(vmin=-1, vmax=1)))
     cbr.set_label('Scaled values [-]')
     plt.show()
 
@@ -165,9 +174,9 @@ def plot_images(image, image_time, image_length, length, time, left=True):
 def demo():
 
     # --- USER INPUT ---
-    folder = 'Files/L1-05/LUNA/'
-    file = 'L1-05-2.txt'
-    panel = 'L1-05'
+    folder = 'Files/L1-03/LUNA/'
+    file = 'L1-03.txt'
+    panel = 'L1-03'
     # ------------------
 
     array_left, array_right, labels_left, labels_right = raw_to_array(folder, file, panel)
