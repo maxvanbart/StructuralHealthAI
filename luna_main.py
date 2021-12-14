@@ -2,7 +2,7 @@ import matplotlib.colors as mpl
 import matplotlib.pyplot as plt
 
 from luna_data_to_array import raw_to_array, gradient_arrays, array_to_image
-from luna_array_to_cluster import k_means, cluster_to_image
+from luna_array_to_cluster import k_means, mean_shift
 
 
 def plot_arrays(image, image_time, image_length, length, time, left=True):
@@ -37,7 +37,7 @@ def plot_arrays(image, image_time, image_length, length, time, left=True):
     plt.show()
 
 
-def plot_cluster(image_time, image_cluster, length, time):
+def plot_cluster(image_time, cluster_vector, length, time):
     plt.subplot(1, 2, 1)
     plt.imshow(image_time, extent=[0, length, 0, time])
     plt.xlabel('L [mm]')
@@ -45,7 +45,7 @@ def plot_cluster(image_time, image_cluster, length, time):
     plt.title('Reference')
 
     plt.subplot(1, 2, 2)
-    plt.imshow(image_cluster, extent=[0, 100, 0, time])
+    plt.pcolormesh(cluster_vector, cmap='inferno')
     plt.xticks([])
     plt.yticks([])
     plt.title('Cluster labels')
@@ -86,9 +86,12 @@ def demo():
                 delta_length_right, delta_time_right, left=False)
 
     k_means_cluster = k_means(panel)
-    k_means_image = cluster_to_image(k_means_cluster)
 
-    plot_cluster(time_derivative_image_right, k_means_image, delta_length_right, delta_time_right)
+    plot_cluster(time_derivative_image_right, k_means_cluster, delta_length_right, delta_time_right)
+
+    mean_shift_cluster = mean_shift(panel)
+
+    plot_cluster(time_derivative_image_right, mean_shift_cluster, delta_length_right, delta_time_right)
 
 
 demo()

@@ -55,20 +55,3 @@ def agglomerative_clustering(panel):
 
     # output
     return clusters.reshape(-1, 1)
-
-
-def cluster_to_image(vector):
-    image = []
-
-    for i in range(len(vector)):
-
-        if vector[i, 0] == 0:
-            image_row = [[1.0, 1.0, 1.0]]
-        elif vector[i, 0] == 1:
-            image_row = [[1.0, 0.0, 0.0]]
-        else:
-            image_row = [[0.0, 0.0, 1.0]]
-
-        image.append(image_row)
-
-    return np.flip(image, axis=0)

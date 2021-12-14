@@ -119,3 +119,20 @@ def print_line_of_array(array, row_numbs, difference=False, color1="g", color2="
         ax3.plot(diffrow, f'{color2}')
         ax3.set_title(f"absolute difference")
     plt.show()
+
+
+def cluster_to_image(vector):
+    image = []
+
+    for i in range(len(vector)):
+
+        if vector[i, 0] == 0:
+            image_row = [[1.0, 1.0, 1.0]]
+        elif vector[i, 0] == 1:
+            image_row = [[1.0, 0.0, 0.0]]
+        else:
+            image_row = [[0.0, 0.0, 1.0]]
+
+        image.append(image_row)
+
+    return np.flip(image, axis=0)
