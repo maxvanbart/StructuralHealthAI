@@ -96,9 +96,6 @@ def normalize_array(array):
             elif array[i, j] > 0:
                 array[i, j] = array[i, j] / max_value
 
-def get_log_array(array):
-    return np.log(array)
-
 
 def array_to_image(array):
     """
