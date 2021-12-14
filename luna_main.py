@@ -1,4 +1,3 @@
-import numpy as np
 import matplotlib.colors as mpl
 import matplotlib.pyplot as plt
 
