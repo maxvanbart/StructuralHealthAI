@@ -79,16 +79,16 @@ def demo():
     time_derivative_image_right = array_to_image(time_derivative_array_right)
     length_derivative_image_right = array_to_image(length_derivative_array_right)
 
-    k_means_cluster = k_means(panel)
-    k_means_image = cluster_to_image(k_means_cluster)
-
-    plot_cluster(time_derivative_image_right, k_means_image, delta_length_right, delta_time_right)
-
     plot_arrays(image_left, time_derivative_image_left, length_derivative_image_left,
                 delta_length_left, delta_time_left)
 
     plot_arrays(image_right, time_derivative_image_right, length_derivative_image_right,
                 delta_length_right, delta_time_right, left=False)
+
+    k_means_cluster = k_means(panel)
+    k_means_image = cluster_to_image(k_means_cluster)
+
+    plot_cluster(time_derivative_image_right, k_means_image, delta_length_right, delta_time_right)
 
 
 demo()

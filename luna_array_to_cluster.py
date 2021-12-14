@@ -61,18 +61,13 @@ def cluster_to_image(vector):
     image = []
 
     for i in range(len(vector)):
-        image_row = []
 
-        for j in range(100):
-
-            if vector[i, 0] == 0:
-                image_column = [1.0, 1.0, 1.0]
-            elif vector[i, 0] == 1:
-                image_column = [1.0, 0.0, 0.0]
-            else:
-                image_column = [0.0, 0.0, 1.0]
-
-            image_row.append(image_column)
+        if vector[i, 0] == 0:
+            image_row = [[1.0, 1.0, 1.0]]
+        elif vector[i, 0] == 1:
+            image_row = [[1.0, 0.0, 0.0]]
+        else:
+            image_row = [[0.0, 0.0, 1.0]]
 
         image.append(image_row)
 
