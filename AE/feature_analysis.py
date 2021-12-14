@@ -1,10 +1,11 @@
 from matplotlib import pyplot as plt
 from matplotlib import colors
+import numpy as np
 from AE.feature_extraction import frequency_extraction
 
 
 def freq_amp_cluster(database):
-    features = database.hits
+    features = database
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / (10 ** (-5)))
     ndx = np.random.randint(0, len(amp), 100000)
