@@ -39,7 +39,6 @@ def raw_to_array(folder_path, file_name, panel):
 
             left_index_start = feature_labels_all.index(feature_labels_left[0])
             left_index_stop = feature_labels_all.index(feature_labels_left[-1])
-            print(left_index_stop - left_index_start)
 
             right_index_start = feature_labels_all.index(feature_labels_right[0])
             right_index_stop = feature_labels_all.index(feature_labels_right[-1])
