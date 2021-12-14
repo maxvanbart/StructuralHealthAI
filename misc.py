@@ -62,6 +62,20 @@ def plot_image_complete(image):
     plt.show()
 
 
+def normalize_array(array):
+    initial_conditions = array[0]
+    min_value, max_value = - np.nanmin(array), np.nanmax(array)
+
+    for i in range(len(array)):
+        for j in range(len(array[i])):
+            array[i, j] = array[i, j] - initial_conditions[j]
+
+            if array[i, j] <= 0:
+                array[i, j] = array[i, j] / min_value
+            elif array[i, j] > 0:
+                array[i, j] = array[i, j] / max_value
+
+
 def print_line_of_array(array, row_numbs, difference=False, color1="g", color2="r"):
     """
     array = np.array
