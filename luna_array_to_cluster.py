@@ -12,10 +12,11 @@ def k_means(panel):
 
     # clustering
     model = cl.KMeans(n_clusters=3, random_state=0)
-    clusters = model.fit_predict(array_right_time)
+    cluster = model.fit_predict(array_right_time)
+    cluster_values = np.unique(cluster)
 
     # output
-    return clusters.reshape(-1, 1)
+    return cluster.reshape(-1, 1), cluster_values
 
 
 def mean_shift(panel):
@@ -25,10 +26,11 @@ def mean_shift(panel):
 
     # clustering
     model = cl.MeanShift(min_bin_freq=5, cluster_all=True)
-    clusters = model.fit_predict(array_right_time)
+    cluster = model.fit_predict(array_right_time)
+    cluster_values = np.unique(cluster)
 
     # output
-    return clusters.reshape(-1, 1)
+    return cluster.reshape(-1, 1), cluster_values
 
 
 def affinity_propagation(panel):
@@ -38,10 +40,11 @@ def affinity_propagation(panel):
 
     # clustering
     model = cl.AffinityPropagation()
-    clusters = model.fit_predict(array_right_time)
+    cluster = model.fit_predict(array_right_time)
+    cluster_values = np.unique(cluster)
 
     # output
-    return clusters.reshape(-1, 1)
+    return cluster.reshape(-1, 1), cluster_values
 
 
 def agglomerative_clustering(panel):
@@ -51,7 +54,8 @@ def agglomerative_clustering(panel):
 
     # clustering
     model = cl.AgglomerativeClustering(n_clusters=3)
-    clusters = model.fit_predict(array_right_time)
+    cluster = model.fit_predict(array_right_time)
+    cluster_values = np.unique(cluster)
 
     # output
-    return clusters.reshape(-1, 1)
+    return cluster.reshape(-1, 1), cluster_values
