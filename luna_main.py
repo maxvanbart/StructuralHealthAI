@@ -2,6 +2,7 @@ import matplotlib.colors as mpl
 import matplotlib.pyplot as plt
 
 from luna_data_to_array import raw_to_array, gradient_arrays, array_to_image
+from luna_array_to_cluster import k_means
 
 
 def plot_arrays(image, image_time, image_length, length, time, left=True):
@@ -77,6 +78,10 @@ def demo():
 
     time_derivative_image_right = array_to_image(time_derivative_array_right)
     length_derivative_image_right = array_to_image(length_derivative_array_right)
+
+    k_means_cluster = k_means(panel)
+
+    print(k_means_cluster)
 
     plot_cluster(time_derivative_image_right, time_derivative_image_right, delta_length_right, delta_time_right)
 
