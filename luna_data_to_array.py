@@ -39,6 +39,7 @@ def raw_to_array(folder_path, file_name, panel):
 
             left_index_start = feature_labels_all.index(feature_labels_left[0])
             left_index_stop = feature_labels_all.index(feature_labels_left[-1])
+            print(left_index_stop - left_index_start)
 
             right_index_start = feature_labels_all.index(feature_labels_right[0])
             right_index_stop = feature_labels_all.index(feature_labels_right[-1])
@@ -94,6 +95,9 @@ def normalize_array(array):
                 array[i, j] = array[i, j] / min_value
             elif array[i, j] > 0:
                 array[i, j] = array[i, j] / max_value
+
+def get_log_array(array):
+    return np.log(array)
 
 
 def array_to_image(array):
