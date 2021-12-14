@@ -1,6 +1,5 @@
 import matplotlib.colors as mpl
 import matplotlib.pyplot as plt
-import numpy as np
 
 from luna_data_to_array import raw_to_array, gradient_arrays, array_to_image
 from luna_array_to_cluster import k_means, mean_shift
