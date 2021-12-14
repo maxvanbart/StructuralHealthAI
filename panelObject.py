@@ -2,16 +2,18 @@ import os
 
 
 from AE.utilities import Pridb
-from AE.clustering import init_clustering
+from AE.hit_combination import init_clustering
+from AE.feature_analysis import freq_amp_cluster
 
 files_folder = "Files"
 
 
 class Panel:
     """An object which represents a panel"""
-    def __init__(self, name):
+    def __init__(self, name, debug=False):
         self.name = name
         self.ae_database = None
+        self.debug = debug
 
     @staticmethod
     def initialize_all():
@@ -30,24 +32,25 @@ class Panel:
         self.ae_database = Pridb(self.name)
         self.ae_database.load_csv()
         # print(self.ae_database.hits)
-        print(f"Succesfully loaded AE data for {self.name}.")
+        print(f"Successfully loaded AE data for {self.name}.")
 
     def analyse_ae(self):
         """Function to analyse the AE data in the folder"""
-        # init_clustering(self.ae_database)
+        self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
         # self.ae_database.corr_matrix()
-        print(f"Succesfully analysed AE data for {self.name}.")
+        freq_amp_cluster(self.ae_clustered_database)
+        print(f"Successfully analysed AE data for {self.name}.")
 
     # All the LUNA related code for the object
     def load_luna(self):
         """A function to load the LUNA data"""
         pass
-        # print(f"Succesfully loaded LUNA data for {self.name}.")
+        # print(f"Successfully loaded LUNA data for {self.name}.")
 
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
         pass
-        # print(f"Succesfully analysed LUNA data for {self.name}.")
+        # print(f"Successfully analysed LUNA data for {self.name}.")
 
     def __repr__(self):
         return f"PanelObject({self.name})"
