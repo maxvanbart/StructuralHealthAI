@@ -44,11 +44,13 @@ class Panel:
     # All the LUNA related code for the object
     def load_luna(self):
         """A function to load the LUNA data"""
+        # LUNA code related to loading stuff should go here
         pass
         # print(f"Successfully loaded LUNA data for {self.name}.")
 
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
+        # LUNA code relating to analysis should go here
         pass
         # print(f"Successfully analysed LUNA data for {self.name}.")
 
