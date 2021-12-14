@@ -125,7 +125,7 @@ def gradient_arrays(array):
     return time_derivative_array, length_derivative_array
 
 
-def plot_images(image, image_time, image_length, length, time, left=True):
+def plot_arrays(image, image_time, image_length, length, time, left=True):
     """
     Plots the original array, time derivative array and length derivative array including a color bar.
     """
@@ -148,21 +148,37 @@ def plot_images(image, image_time, image_length, length, time, left=True):
     plt.title('Length (partial) derivative')
 
     if left:
-        plt.suptitle('Left foot')
+        plt.suptitle('Left foot panel L1-03')
     else:
-        plt.suptitle('Right foot')
+        plt.suptitle('Right foot panel L1-03')
 
     cbr = plt.colorbar(plt.cm.ScalarMappable(cmap='bwr', norm=mpl.Normalize(vmin=-1, vmax=1)))
     cbr.set_label('Scaled values [-]')
     plt.show()
 
 
+def plot_cluster(image_time, image_cluster, length, time):
+    plt.subplot(1, 2, 1)
+    plt.imshow(image_time, extent=[0, length, 0, time])
+    plt.xlabel('L [mm]')
+    plt.ylabel('Timestamp [-]')
+    plt.title('Reference')
+
+    plt.subplot(1, 2, 2)
+    plt.imshow(image_cluster, extent=[0, length, 0, time])
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('Cluster labels')
+
+    plt.show()
+
+
 def demo():
 
     # --- USER INPUT ---
-    folder = 'Files/L1-03/LUNA/'
-    file = 'L1-03.txt'
-    panel = 'L1-03'
+    folder = 'Files/L1-05/LUNA/'
+    file = 'L1-05-2.txt'
+    panel = 'L1-05'
     # ------------------
 
     array_left, array_right, labels_left, labels_right = raw_to_array(folder, file, panel)
@@ -185,10 +201,12 @@ def demo():
     time_derivative_image_right = array_to_image(time_derivative_array_right)
     length_derivative_image_right = array_to_image(length_derivative_array_right)
 
-    plot_images(image_left, time_derivative_image_left, length_derivative_image_left,
+    plot_cluster(time_derivative_image_right, time_derivative_image_right, delta_length_right, delta_time_right)
+
+    plot_arrays(image_left, time_derivative_image_left, length_derivative_image_left,
                 delta_length_left, delta_time_left)
 
-    plot_images(image_right, time_derivative_image_right, length_derivative_image_right,
+    plot_arrays(image_right, time_derivative_image_right, length_derivative_image_right,
                 delta_length_right, delta_time_right, left=False)
 
 
