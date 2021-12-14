@@ -15,11 +15,16 @@ import sklearn.cluster as cl
 # ------------------
 
 def test_kmeans(panel):
+    #get array
     array_left, array_right, labels_left, labels_right = raw_to_array(f"Files/{panel[:5]}/LUNA/", f"{panel}.txt", f"{panel[:5]}")
     array_right_time, array_right_length = gradient_arrays(array_right)
+
+    #clustering
     kmeans = cl.KMeans(n_clusters=3, random_state=0)
     clusters = kmeans.fit_predict(array_right_time)
-    print(clusters)
-    print(len(clusters))
 
-test_kmeans('L1-05-2')
+    #output
+    return clusters.reshape(-1,1)
+
+
+print(test_kmeans('L1-05-2'))
