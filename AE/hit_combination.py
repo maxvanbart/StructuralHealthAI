@@ -152,8 +152,18 @@ def batch_combine_points(batch, debug=False):
             matrix.append(array.flatten()[:-1])
         # Combination of the clusters into new points
         else:
-            # energy is index 5
-            final_array = np.mean(array, axis=0)
+            # ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time','counts']
+            # [avg, high, add, add, same, from high amp, add]
+            final_array = []
+            final_array.append(sum(array[:, 0]) / len(array[:, 0]))
+            final_array.append(max(array[:,1]))
+            max_amp_index = list(array[:,1]).index(max(array[:,1]))
+            final_array.append(sum(array[:, 2]))
+            final_array.append(sum(array[:, 3]))
+            final_array.append(array[0, 4])
+            final_array.append(array[:, 5][max_amp_index])
+            final_array.append(sum(array[:, 6]))
+            final_array = np.array(final_array)
             if debug:
                 print(f"Mean for cluster {cluster}")
                 print(array.shape)
