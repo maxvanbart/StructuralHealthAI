@@ -115,7 +115,7 @@ def batch_cluster(batch, debug=False, debug_graph=False):
     if debug:
         print(f"Amount of datapoints: {n_points}")
         print(f"Amount of clusters: {max(labels)}")
-        print(f"That is {100*round((n_points-len(clusterdict))/n_points,3)}% less datapoints...")
+        print(f"That is {100*round((n_points-len(labels))/n_points,3)}% less datapoints...")
 
     # Plot a graph which shows the datapoints with labels
     if debug_graph:
