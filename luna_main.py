@@ -1,13 +1,14 @@
+import numpy as np
 import matplotlib.colors as mpl
 import matplotlib.pyplot as plt
 
 from luna_data_to_array import raw_to_array, gradient_arrays, array_to_image
-from luna_array_to_cluster import k_means
+from luna_array_to_cluster import k_means, cluster_to_image
 
 
 def plot_arrays(image, image_time, image_length, length, time, left=True):
     """
-    Plots the original array, time derivative array and length derivative array including a color bar.
+    Plots the original vector, time derivative vector and length derivative vector including a color bar.
     """
     plt.subplot(1, 3, 1)
     plt.imshow(image, extent=[0, length, 0, time])
@@ -45,7 +46,7 @@ def plot_cluster(image_time, image_cluster, length, time):
     plt.title('Reference')
 
     plt.subplot(1, 2, 2)
-    plt.imshow(image_cluster, extent=[0, length, 0, time])
+    plt.imshow(image_cluster, extent=[0, 100, 0, time])
     plt.xticks([])
     plt.yticks([])
     plt.title('Cluster labels')
@@ -80,16 +81,15 @@ def demo():
     length_derivative_image_right = array_to_image(length_derivative_array_right)
 
     k_means_cluster = k_means(panel)
+    k_means_image = cluster_to_image(k_means_cluster)
 
-    print(k_means_cluster)
-
-    plot_cluster(time_derivative_image_right, time_derivative_image_right, delta_length_right, delta_time_right)
-
-    plot_arrays(image_left, time_derivative_image_left, length_derivative_image_left,
-                delta_length_left, delta_time_left)
-
-    plot_arrays(image_right, time_derivative_image_right, length_derivative_image_right,
-                delta_length_right, delta_time_right, left=False)
+    plot_cluster(time_derivative_image_right, k_means_image, delta_length_right, delta_time_right)
+    #
+    # plot_arrays(image_left, time_derivative_image_left, length_derivative_image_left,
+    #             delta_length_left, delta_time_left)
+    #
+    # plot_arrays(image_right, time_derivative_image_right, length_derivative_image_right,
+    #             delta_length_right, delta_time_right, left=False)
 
 
 demo()

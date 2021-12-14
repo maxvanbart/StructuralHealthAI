@@ -21,7 +21,7 @@ def raw_to_array(panel):
 
     def read_data_file():
         """
-        Creates the unconverted array and feature label list to be used later.
+        Creates the unconverted vector and feature label list to be used later.
         """
         path = f'Files/{panel[:5]}/LUNA/{panel}.txt'
 
@@ -84,7 +84,7 @@ def raw_to_array(panel):
 
 def gradient_arrays(array):
     """
-    Returns tuple, first entry time derivative array, second entry the length derivative array.
+    Returns tuple, first entry time derivative vector, second entry the length derivative vector.
     """
     time_derivative_array, length_derivative_array = np.gradient(array)
 
@@ -100,7 +100,7 @@ def gradient_arrays(array):
 
 def array_to_image(array):
     """
-    Generates a new array with each value in the original array converted to an RGB color.
+    Generates a new vector with each value in the original vector converted to an RGB color.
     """
     min_value, max_value = np.nanmin(array) / 4, np.nanmax(array) / 4
 
