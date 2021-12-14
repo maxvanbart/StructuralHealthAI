@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import datetime
 
 
-def raw_to_array(folder_path, file_name, panel):
+def raw_to_array(panel):
     """
     Opens file in default LUNA data format and converts this into left and right foot numpy arrays.
     """
@@ -19,13 +19,15 @@ def raw_to_array(folder_path, file_name, panel):
             for line in data:
                 sensor_data[line[0]] = [float(i) for i in line[1:]]
 
-        return sensor_data[panel]
+        return sensor_data[panel[:5]]
 
     def read_data_file():
         """
         Creates the unconverted array and feature label list to be used later.
         """
-        with open(folder_path + file_name) as file:
+        path = f'Files/{panel[:5]}/LUNA/{panel}.txt'
+
+        with open(path) as file:
             lines = file.readlines()
             feature_labels_all = lines[0].strip().split('\t')
 
@@ -176,12 +178,10 @@ def plot_cluster(image_time, image_cluster, length, time):
 def demo():
 
     # --- USER INPUT ---
-    folder = 'Files/L1-05/LUNA/'
-    file = 'L1-05-2.txt'
-    panel = 'L1-05'
+    panel = 'L1-05-2'
     # ------------------
 
-    array_left, array_right, labels_left, labels_right = raw_to_array(folder, file, panel)
+    array_left, array_right, labels_left, labels_right = raw_to_array(panel)
 
     delta_length_left = float(labels_left[-1]) - float(labels_left[0])
     delta_length_right = float(labels_right[-1]) - float(labels_right[0])
