@@ -8,9 +8,10 @@ import pandas as pd
 
 def init_clustering(database, delta=100, debug=False, debug_graph=False):
     # select the features for the clustering
-    features = database.hits[database.hits["channel"] == 1]
+    cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts']
+    features = database.hits[cols]
     features = features[-500000:]
-    debug_graph = True
+    # debug_graph = True
 
     # ['time', 'channel', 'param_id', 'amplitude', 'duration', 'energy', 'rms', 'threshold', 'rise_time', 'counts',
     # 'cascade_hits']
@@ -29,7 +30,7 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
         n = 0
         for batch in batches:
             n += len(batch)
-            plt.scatter(batch[:, 0], batch[:, 6], s=4)
+            plt.scatter(batch[:, 0], batch[:, 4], s=4)
         print(n)
         plt.xlabel("Time")
         plt.ylabel("RMS voltage")
@@ -95,7 +96,7 @@ def batch_cluster(batch, debug=False, debug_graph=False):
     # time 0, RMS 6
     t0 = time.time()
     model = AgglomerativeClustering(n_clusters=None, distance_threshold=0.01, compute_full_tree=True)
-    clustering = model.fit(batch[:, [0, 6]])
+    clustering = model.fit(batch[:, [0, 4]])
 
     t1 = time.time()
     if debug:
@@ -119,7 +120,7 @@ def batch_cluster(batch, debug=False, debug_graph=False):
 
     # Plot a graph which shows the datapoints with labels
     if debug_graph:
-        plt.scatter(batch[:, 0], batch[:, 6], s=4, c=clustering.labels_)
+        plt.scatter(batch[:, 0], batch[:, 4], s=4, c=clustering.labels_)
         plt.xlabel("Time")
         plt.ylabel("RMS voltage")
         for i, label in enumerate(labels):
@@ -147,9 +148,9 @@ def batch_combine_points(batch, debug=False):
             lst.append(obj)
         array = np.array(lst)
         if array.shape[0] == 1:
-            # This is a 2d matrix so we flatten it
-            matrix.append(array.flatten())
-        # Here we should add the code which is used in order to combine datapoints
+            # This is a 2d matrix so we flatten it (removed cluster index)
+            matrix.append(array.flatten()[:-1])
+        # Combination of the clusters into new points
         else:
             # energy is index 5
             final_array = np.mean(array, axis=0)
@@ -157,10 +158,8 @@ def batch_combine_points(batch, debug=False):
                 print(f"Mean for cluster {cluster}")
                 print(array.shape)
                 print(array)
-            final_array[5] = np.sum(array[:, 5])
             matrix.append(final_array)
 
-    # Finally we turn the matrix into a numpy array and delete the cluster index column
+    # Finally we turn the matrix into a numpy array (index column already removed in the creation of the matrix)
     matrix = np.array(matrix)
-    matrix = np.delete(matrix, 11, 1)
     return matrix
