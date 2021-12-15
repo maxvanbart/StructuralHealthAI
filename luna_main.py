@@ -58,7 +58,7 @@ def plot_cluster(image_time, cluster_vector, cluster_values, cluster_name, lengt
 def demo():
 
     # --- USER INPUT ---
-    panel = 'L1-05-2'
+    panel = 'L1-03'
     # ------------------
 
     array_left, array_right, labels_left, labels_right = raw_to_array(panel)
