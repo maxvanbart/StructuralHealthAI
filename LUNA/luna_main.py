@@ -48,17 +48,11 @@ def plot_cluster(image_time, cluster_vector, cluster_name, cluster_values, lengt
 
     plt.subplot(1, 2, 2)
     plt.imshow(np.flip(cluster_vector, axis=0), extent=[0, length, 0, time], cmap='inferno')
-    plt.xlabel('L [mm]')
+    plt.xlabel(f'Number of clusters: {len(cluster_values)}')
     plt.ylabel('Timestamp [-]')
-    plt.title('Reference')
-    #
-    # plt.subplot(1, 2, 2)
-    # plt.pcolormesh(cluster_vector, cmap='inferno')
-    # plt.xlabel(f'Number of clusters: {len(cluster_values)}')
-    # plt.ylabel('Timestamp [-]')
-    # plt.xticks([])
-    # plt.yticks([])
-    # plt.title(f'{cluster_name} clustering')
+    plt.xticks([])
+    plt.yticks([])
+    plt.title(f'{cluster_name} clustering')
 
     plt.show()
 
