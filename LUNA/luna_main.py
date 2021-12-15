@@ -1,8 +1,8 @@
 import matplotlib.colors as mpl
 import matplotlib.pyplot as plt
 
-from luna_data_to_array import raw_to_array, gradient_arrays, array_to_image
-from luna_array_to_cluster import k_means, mean_shift
+from LUNA.luna_data_to_array import raw_to_array, gradient_arrays, array_to_image
+from LUNA.luna_array_to_cluster import k_means, mean_shift
 
 
 def plot_arrays(image, image_time, image_length, length, time, left=True):
@@ -55,11 +55,11 @@ def plot_cluster(image_time, cluster_vector, cluster_values, cluster_name, lengt
     plt.show()
 
 
-def demo():
+def demo(panel):
 
-    # --- USER INPUT ---
-    panel = 'L1-03'
-    # ------------------
+    # # --- USER INPUT ---
+    # panel = 'L1-03'
+    # # ------------------
 
     array_left, array_right, labels_left, labels_right = raw_to_array(panel)
 
@@ -98,4 +98,3 @@ def demo():
                  delta_length_right, delta_time_right)
 
 
-demo()

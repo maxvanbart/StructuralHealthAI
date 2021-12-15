@@ -1,6 +1,6 @@
 import os
 
-
+from LUNA.luna_main import demo
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
 from AE.feature_analysis import freq_amp_cluster
@@ -51,7 +51,7 @@ class Panel:
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
         # LUNA code relating to analysis should go here
-        pass
+        demo(self.name)
         # print(f"Successfully analysed LUNA data for {self.name}.")
 
     def __repr__(self):

@@ -1,5 +1,5 @@
-from luna_data_to_array import raw_to_array
-from luna_data_to_array import gradient_arrays
+from LUNA.luna_data_to_array import raw_to_array
+from LUNA.luna_data_to_array import gradient_arrays
 import sklearn.cluster as cl
 
 
