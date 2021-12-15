@@ -158,14 +158,22 @@ def batch_combine_points(batch, debug=False):
             # ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time','counts']
             # [avg, high, add, add, same, from high amp, add]
             final_array = []
+            # take the average time
             final_array.append(sum(array[:, 0]) / len(array[:, 0]))
+            # take the maximum amplitude
             final_array.append(max(array[:,1]))
             max_amp_index = list(array[:,1]).index(max(array[:,1]))
+            # take the sum of the duration
             final_array.append(sum(array[:, 2]))
+            # take the sum of the energy
             final_array.append(sum(array[:, 3]))
+            # take the RMS of the first instance
             final_array.append(array[0, 4])
+            # take the rise time of the maximum amplitude index
             final_array.append(array[:, 5][max_amp_index])
+            # take the sum of the counts
             final_array.append(sum(array[:, 6]))
+            # add the cluster number of the first index
             final_array.append(array[:, 7][0])
 
             final_array = np.array(final_array)
