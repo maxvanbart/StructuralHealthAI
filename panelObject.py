@@ -37,9 +37,9 @@ class Panel:
 
     def analyse_ae(self):
         """Function to analyse the AE data in the folder"""
-        # self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
+        self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
         # self.ae_database.corr_matrix()
-        freq_amp_cluster(self.ae_clustered_database)
+        freq_amp_cluster(self.ae_database)
         print(f"Successfully analysed AE data for {self.name}.")
 
     # All the LUNA related code for the object
