@@ -10,7 +10,8 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
     # select the features for the clustering
     cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts']
     features = database.hits[cols]
-    features = features[-500000:]
+
+    # features = features[-500000:]
     # debug_graph = True
 
     # ['time', 'channel', 'param_id', 'amplitude', 'duration', 'energy', 'rms', 'threshold', 'rise_time', 'counts',
@@ -80,7 +81,7 @@ def batch_split(df, delta, dynamic_splitting=True, debug=False):
         for batch in batches:
             # if we find a large batch we will recursively decrease the delta until we find a batch size which works
             # the cutoff for dynamic splitting should still be tweaked as 30000 might not be optimal
-            if len(batch) > 25000 and delta > 10:
+            if len(batch) > 20000 and delta > 10:
                 if debug:
                     print(f"Found batch of size {len(batch)}, splitting...")
                 final_batches += batch_split(batch, delta-10)

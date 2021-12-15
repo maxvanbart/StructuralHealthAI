@@ -5,6 +5,8 @@ from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
 from AE.feature_analysis import freq_amp_energy_cluster, freq_amp_time_cluster
 
+import pandas as pd
+
 files_folder = "Files"
 
 
@@ -37,7 +39,15 @@ class Panel:
 
     def analyse_ae(self):
         """Function to analyse the AE data in the folder"""
-        self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
+        # Try to find a clustered file else cluster the data
+        location = 'Files/' + self.name + "/AE/" + self.name + "-clustered.csv"
+        try:
+            self.ae_clustered_database = pd.read_csv(location)
+        except FileNotFoundError:
+            print('Clustered file not found, clustering data...')
+            self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
+            pd.DataFrame(self.ae_clustered_database).to_csv(location, index=False)
+
         # self.ae_database.corr_matrix()
         # freq_amp_energy_cluster(self.ae_database)
         # freq_amp_time_cluster()
@@ -61,4 +71,3 @@ class Panel:
 
     def __str__(self):
         return f"Panel {self.name}"
-
