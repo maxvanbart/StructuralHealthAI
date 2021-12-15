@@ -16,8 +16,9 @@ if __name__ == "__main__":
     # for every panel we perform the following actions
     for panel in tqdm.tqdm(panels):
         print('\n'+str(panel))
-        panel.load_ae()
-        panel.analyse_ae()
+        # panel.load_ae()
+        # panel.analyse_ae()
+        panel.analyse_luna()
 
     # end time, it also prints the elapsed time
     t1 = time.time()
