@@ -11,15 +11,15 @@ def scaling(array):
     return scaler.fit_transform(array)
 
 
-def k_means(panel, n=3):
+def k_means(panel, n=5):
     # get array
     array_left, array_right, labels_left, labels_right = raw_to_array(panel)
     array_right_time, array_right_length = gradient_arrays(array_right)
     array_right_time_scaled = scaling(array_right_time)
 
     # clustering
-    model = cl.KMeans(n_clusters=n)
-    cluster = model.fit_predict(array_right_time_scaled)
+    model = cl.KMeans(n_clusters=n, random_state=42)
+    cluster = model.fit_predict(array_right_time)
     cluster_values = np.unique(cluster)
 
     # output
@@ -56,14 +56,14 @@ def aff_prop(panel):
     return cluster.reshape(-1, 1), cluster_values
 
 
-def agglo(panel):
+def agglo(panel, n=5):
     # get array
     array_left, array_right, labels_left, labels_right = raw_to_array(panel)
     array_right_time, array_right_length = gradient_arrays(array_right)
     array_right_time_scaled = scaling(array_right_time)
 
     # clustering
-    model = cl.AgglomerativeClustering(n_clusters=3)
+    model = cl.AgglomerativeClustering(n_clusters=n)
     cluster = model.fit_predict(array_right_time_scaled)
     cluster_values = np.unique(cluster)
 

@@ -94,7 +94,7 @@ def demo(panel):
     plot_arrays(image_right, time_derivative_image_right, length_derivative_image_right,
                 delta_length_right, delta_time_right, panel, left=False)
 
-    # k-means
+    # # k-means
     k_means_cluster, k_means_values = k_means(panel)
 
     plot_cluster(time_derivative_image_right, k_means_cluster, 'K-means', k_means_values,
