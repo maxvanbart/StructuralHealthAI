@@ -1,6 +1,8 @@
 import matplotlib.colors as mpl
 import matplotlib.pyplot as plt
 
+import numpy as np
+
 from LUNA.luna_data_to_array import raw_to_array, gradient_arrays, array_to_image
 from LUNA.luna_array_to_cluster import k_means, mean_shift, aff_prop, agglo
 
@@ -38,7 +40,6 @@ def plot_arrays(image, image_time, image_length, length, time, panel, left=True)
 
 
 def plot_cluster(image_time, cluster_vector, cluster_name, cluster_values, length, time):
-
     plt.subplot(1, 2, 1)
     plt.imshow(image_time, extent=[0, length, 0, time])
     plt.xlabel('L [mm]')
@@ -46,12 +47,18 @@ def plot_cluster(image_time, cluster_vector, cluster_name, cluster_values, lengt
     plt.title('Reference')
 
     plt.subplot(1, 2, 2)
-    plt.pcolormesh(cluster_vector, cmap='inferno')
-    plt.xlabel(f'Number of clusters: {len(cluster_values)}')
+    plt.imshow(np.flip(cluster_vector, axis=0), extent=[0, length, 0, time], cmap='inferno')
+    plt.xlabel('L [mm]')
     plt.ylabel('Timestamp [-]')
-    plt.xticks([])
-    plt.yticks([])
-    plt.title(f'{cluster_name} clustering')
+    plt.title('Reference')
+    #
+    # plt.subplot(1, 2, 2)
+    # plt.pcolormesh(cluster_vector, cmap='inferno')
+    # plt.xlabel(f'Number of clusters: {len(cluster_values)}')
+    # plt.ylabel('Timestamp [-]')
+    # plt.xticks([])
+    # plt.yticks([])
+    # plt.title(f'{cluster_name} clustering')
 
     plt.show()
 
