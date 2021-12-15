@@ -14,9 +14,12 @@ class Panel:
     """An object which represents a panel"""
     def __init__(self, name, debug=False):
         self.name = name
-        self.ae_database = None
         self.debug = debug
+
+        # AE
+        self.ae_database = None
         self.ae_clustered_database = None
+        self.ae_start_time = None
 
     @staticmethod
     def initialize_all():

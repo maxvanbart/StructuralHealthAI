@@ -8,46 +8,47 @@ import pandas as pd
 
 def init_clustering(database, delta=100, debug=False, debug_graph=False):
     # select the features for the clustering
-    cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts']
+    cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts', 'channel']
     features = database.hits[cols]
 
-    # features = features[-500000:]
-    # debug_graph = True
-
-    # ['time', 'channel', 'param_id', 'amplitude', 'duration', 'energy', 'rms', 'threshold', 'rise_time', 'counts',
-    # 'cascade_hits']
+    # Extract the header and the channels as important variables
+    channels = features['channel'].unique()
     header = list(features)
-
-    batches = batch_split(features, delta, debug=debug)
-
-    # print some information about the batches
     if debug:
-        print(len(batches))
-        for batch in batches:
-            print(batch.shape)
+        print(channels)
 
-    # Enabeling this debug graph will show the batch division of the selected datapoints
-    if debug_graph:
-        n = 0
-        for batch in batches:
-            n += len(batch)
-            plt.scatter(batch[:, 0], batch[:, 4], s=4)
-        print(n)
-        plt.xlabel("Time")
-        plt.ylabel("RMS voltage")
-        plt.show()
-
-    # cluster all the batches found by the batch splitter
     combined_batches = []
-    for batch in tqdm(batches):
-        if batch.shape[0] > 1:
-            clustered_batch = batch_cluster(batch, debug=debug)
-            combined_batches.append(batch_combine_points(clustered_batch, debug=debug))
-        else:
-            combined_batches.append(batch)
+    for channel in channels:
+        features_channel = features[features["channel"] == channel]
+        batches = batch_split(features_channel, delta, debug=debug)
 
+        # print some information about the batches if debug is enabled
+        if debug:
+            print(len(batches))
+            for batch in batches:
+                print(batch.shape)
+
+        # Enabeling this debug graph will show the batch division of the selected datapoints
+        if debug_graph:
+            n = 0
+            for batch in batches:
+                n += len(batch)
+                plt.scatter(batch[:, 0], batch[:, 4], s=4)
+            print(n)
+            plt.xlabel("Time")
+            plt.ylabel("RMS voltage")
+            plt.show()
+
+        # cluster all the batches found by the batch splitter
+        for batch in tqdm(batches):
+            if batch.shape[0] > 1:
+                clustered_batch = batch_cluster(batch, debug=debug)
+                combined_batches.append(batch_combine_points(clustered_batch, debug=debug))
+            else:
+                combined_batches.append(batch)
+
+    # Combine all the clustered batches back together and return them
     combined_database = pd.DataFrame(np.vstack(combined_batches), columns=header)
-
     return combined_database
 
 
@@ -164,7 +165,10 @@ def batch_combine_points(batch, debug=False):
             final_array.append(array[0, 4])
             final_array.append(array[:, 5][max_amp_index])
             final_array.append(sum(array[:, 6]))
+            final_array.append(array[:, 7][0])
+
             final_array = np.array(final_array)
+
             if debug:
                 print(f"Mean for cluster {cluster}")
                 print(array.shape)
