@@ -1,15 +1,14 @@
 from matplotlib import pyplot as plt
 from matplotlib import colors
-import numpy as np
 from AE.feature_extraction import frequency_extraction
+import numpy as np
 
 
 def freq_amp_cluster(database):
-    features = database
+    features = database.hits
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / (10 ** (-5)))
     ndx = np.random.randint(0, len(amp), 100000)
-    plt.clf()
     plt.ylim(0, 1000)
     plt.xlabel("Amplitude [dB]")
     plt.ylabel("Frequency [kHz]")
