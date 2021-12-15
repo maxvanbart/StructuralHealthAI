@@ -60,3 +60,4 @@ class Panel:
 
     def __str__(self):
         return f"Panel {self.name}"
+
