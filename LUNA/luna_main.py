@@ -1,5 +1,6 @@
 import matplotlib.colors as mpl
 import matplotlib.pyplot as plt
+import numpy as np
 
 from LUNA.luna_data_to_array import raw_to_array, gradient_arrays, array_to_image
 from LUNA.luna_array_to_cluster import k_means, mean_shift
@@ -37,7 +38,7 @@ def plot_arrays(image, image_time, image_length, length, time, left=True):
     plt.show()
 
 
-def plot_cluster(image_time, cluster_vector, cluster_values, cluster_name, length, time):
+def plot_cluster(image_time, cluster_vector, cluster_name, length, time):
     plt.subplot(1, 2, 1)
     plt.imshow(image_time, extent=[0, length, 0, time])
     plt.xlabel('L [mm]')
@@ -46,7 +47,7 @@ def plot_cluster(image_time, cluster_vector, cluster_values, cluster_name, lengt
 
     plt.subplot(1, 2, 2)
     plt.pcolormesh(cluster_vector, cmap='inferno')
-    plt.xlabel(f'Number of clusters: {len(cluster_values)}')
+    plt.xlabel(f'Number of clusters: {len(np.unique(cluster_vector))}')
     plt.ylabel('Timestamp [-]')
     plt.xticks([])
     plt.yticks([])
@@ -56,7 +57,7 @@ def plot_cluster(image_time, cluster_vector, cluster_values, cluster_name, lengt
 
 
 def demo(panel):
-    # This needed to change for brange merge
+    # This needed to change for branch merge
     # --- USER INPUT ---
     # panel = 'L1-03'
     # # ------------------
@@ -64,14 +65,14 @@ def demo(panel):
     # load data
     array_left, array_right, labels_left, labels_right = raw_to_array(panel)
 
-    # get indecies for begin left and right
+    # get indices for begin left and right
     delta_length_left = float(labels_left[-1]) - float(labels_left[0])
     delta_length_right = float(labels_right[-1]) - float(labels_right[0])
 
     delta_time_left = len(array_left)
     delta_time_right = len(array_right)
 
-    # get the two derivatives of the two foots
+    # get the two derivatives of the two arrays
     time_derivative_array_left, length_derivative_array_left = gradient_arrays(array_left[:, 1:])
     time_derivative_array_right, length_derivative_array_right = gradient_arrays(array_right[:, 1:])
 
@@ -87,7 +88,7 @@ def demo(panel):
     time_derivative_image_right = array_to_image(time_derivative_array_right)
     length_derivative_image_right = array_to_image(length_derivative_array_right)
 
-    #plot all of the images of left and right foot
+    # plot all of the images of left and right foot
     plot_arrays(image_left, time_derivative_image_left, length_derivative_image_left,
                 delta_length_left, delta_time_left)
 
@@ -95,14 +96,15 @@ def demo(panel):
                 delta_length_right, delta_time_right, left=False)
 
     # get clusters?
-    k_means_cluster, k_means_cluster_values = k_means(panel)
+    k_means_cluster = k_means(panel)
 
-    plot_cluster(time_derivative_image_right, k_means_cluster, k_means_cluster_values, 'K-means',
+    plot_cluster(time_derivative_image_right, k_means_cluster, 'K-means',
                  delta_length_right, delta_time_right)
 
-    mean_shift_cluster, mean_shift_cluster_values = mean_shift(panel)
+    mean_shift_cluster = mean_shift(panel)
 
-    plot_cluster(time_derivative_image_right, mean_shift_cluster, mean_shift_cluster_values, 'Mean shift',
+    plot_cluster(time_derivative_image_right, mean_shift_cluster, 'Mean shift',
                  delta_length_right, delta_time_right)
 
 
+demo('L1-03')

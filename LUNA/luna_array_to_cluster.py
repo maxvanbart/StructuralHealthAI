@@ -23,10 +23,10 @@ def mean_shift(panel):
 
     # clustering
     model = cl.MeanShift()
-    clusters = model.fit_predict(array_right_time)
+    cluster = model.fit_predict(array_right_time)
 
     # output
-    return clusters.reshape(-1, 1)
+    return cluster.reshape(-1, 1)
 
 
 def aff_prop(panel):
@@ -40,6 +40,7 @@ def aff_prop(panel):
 
     # output
     return clusters.reshape(-1, 1)
+
 
 def Agglo(panel):
     # get array
