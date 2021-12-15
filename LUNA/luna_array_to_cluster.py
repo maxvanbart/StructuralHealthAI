@@ -53,7 +53,7 @@ def agglo(panel):
     array_right_time, array_right_length = gradient_arrays(array_right)
 
     # clustering
-    model = cl.AgglomerativeClustering()
+    model = cl.AgglomerativeClustering(n_clusters=3)
     cluster = model.fit_predict(array_right_time)
     cluster_values = np.unique(cluster)
 
