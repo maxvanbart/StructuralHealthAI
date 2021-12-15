@@ -91,7 +91,7 @@ def demo(panel):
                 delta_length_right, delta_time_right, left=False)
 
     # get clusters?
-    k_means_cluster, k_means_values = k_means(panel)
+    k_means_cluster, k_means_values = k_means(panel, 3)
 
     plot_cluster(time_derivative_image_right, k_means_cluster, 'K-means', k_means_values,
                  delta_length_right, delta_time_right)
