@@ -52,7 +52,7 @@ class Panel:
         """A function to analyse the LUNA data in the folder"""
         # LUNA code relating to analysis should go here
         demo(self.name)
-        # print(f"Successfully analysed LUNA data for {self.name}.")
+        print(f"Successfully analysed LUNA data for {self.name}.")
 
     def __repr__(self):
         return f"PanelObject({self.name})"
