@@ -1,6 +1,6 @@
 from LUNA.luna_data_to_array import raw_to_array, gradient_arrays, array_to_image
 from LUNA.luna_array_to_cluster import k_means, mean_shift, aff_prop, agglo
-from luna_plotting import plot_arrays, plot_cluster
+from LUNA.luna_plotting import plot_arrays, plot_cluster
 
 
 def demo(panel):
@@ -59,7 +59,7 @@ def demo(panel):
     # agglomerative clustering
     agglo_cluster, agglo_values = agglo(panel)
 
-    plot_cluster(time_derivative_image_right, agglo_cluster, 'Agglomerative clustering', agglo_values,
+    plot_cluster(time_derivative_image_right, agglo_cluster, 'Agglomerative', agglo_values,
                  delta_length_right, delta_time_right)
 
 

@@ -1,6 +1,6 @@
 import os
 
-from LUNA.luna_main import demo
+from luna_main import demo
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
 from AE.feature_analysis import freq_amp_cluster
