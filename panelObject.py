@@ -3,7 +3,7 @@ import os
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import freq_amp_cluster
+from AE.feature_analysis import freq_amp_energy_cluster, freq_amp_time_cluster
 
 files_folder = "Files"
 
@@ -39,7 +39,8 @@ class Panel:
         """Function to analyse the AE data in the folder"""
         self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
         # self.ae_database.corr_matrix()
-        freq_amp_cluster(self.ae_database)
+        # freq_amp_energy_cluster(self.ae_database)
+        # freq_amp_time_cluster()
         print(f"Successfully analysed AE data for {self.name}.")
 
     # All the LUNA related code for the object
