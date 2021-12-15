@@ -107,14 +107,12 @@ def demo(panel):
                  delta_length_right, delta_time_right)
 
     # affinity propagation
-
     aff_prop_cluster, aff_prop_values = aff_prop(panel)
 
     plot_cluster(time_derivative_image_right, aff_prop_cluster, 'Affinity propagation', aff_prop_values,
                  delta_length_right, delta_time_right)
 
     # agglomerative clustering
-
     agglo_cluster, agglo_values = agglo(panel)
 
     plot_cluster(time_derivative_image_right, agglo_cluster, 'Agglomerative clustering', agglo_values,
