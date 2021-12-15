@@ -12,9 +12,10 @@ files_folder = "Files"
 
 class Panel:
     """An object which represents a panel"""
-    def __init__(self, name, debug=False):
+    def __init__(self, name, debug=False, debug_graph=False):
         self.name = name
         self.debug = debug
+        self.debug_graph = debug_graph
 
         # AE
         self.ae_database = None
@@ -22,14 +23,14 @@ class Panel:
         self.ae_start_time = None
 
     @staticmethod
-    def initialize_all():
+    def initialize_all(debug=False, debug_graph=False):
         """A static method which checks the folders present and generates a Panel object for every folder"""
         entries = os.scandir(files_folder)
         lst = []
 
         for entry in entries:
             if entry.is_dir():
-                lst.append(Panel(entry.name))
+                lst.append(Panel(entry.name, debug=debug, debug_graph=debug_graph))
         return lst
 
     # All the AE related code for the object

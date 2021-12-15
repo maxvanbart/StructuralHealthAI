@@ -17,6 +17,7 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
     if debug:
         print(channels)
 
+    # Here we cluster all the datapoints per channel
     combined_batches = []
     for channel in channels:
         features_channel = features[features["channel"] == channel]
@@ -42,7 +43,7 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
         # cluster all the batches found by the batch splitter
         for batch in tqdm(batches):
             if batch.shape[0] > 1:
-                clustered_batch = batch_cluster(batch, debug=debug)
+                clustered_batch = batch_cluster(batch, debug=debug, debug_graph=debug_graph)
                 combined_batches.append(batch_combine_points(clustered_batch, debug=debug))
             else:
                 combined_batches.append(batch)
@@ -126,7 +127,7 @@ def batch_cluster(batch, debug=False, debug_graph=False):
         plt.xlabel("Time")
         plt.ylabel("RMS voltage")
         for i, label in enumerate(labels):
-            plt.annotate(f"{int(batch[:, 11][i])}", (batch[:, 0][i], batch[:, 6][i]))
+            plt.annotate(f"{int(batch[:, 8][i])}", (batch[:, 0][i], batch[:, 4][i]))
         plt.show()
     return batch
 
