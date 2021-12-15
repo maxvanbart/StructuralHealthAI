@@ -1,2 +1,2 @@
 # StructuralHealthAI
-This readme should be filled in when delivering the final product
+This readme should provide context for the client on how to utilize the final product
