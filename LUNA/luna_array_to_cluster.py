@@ -19,7 +19,7 @@ def k_means(panel, n=5):
 
     # clustering
     model = cl.KMeans(n_clusters=n, random_state=42)
-    cluster = model.fit_predict(array_right_time)
+    cluster = model.fit_predict(array_right_time_scaled)
     cluster_values = np.unique(cluster)
 
     # output
