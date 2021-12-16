@@ -55,7 +55,6 @@ class Pridb:
 
         # From the earliest starting time we determine the absolute time delta between files
         delta_time_dict = {x: start_time_dict[x] - self.abs_start_time for x in start_time_dict}
-        print(delta_time_dict)
 
         # We now add the time delta to every dataframe such that they can be appended to each other
         for file in hits_dict:
@@ -74,6 +73,7 @@ class Pridb:
 
         # We finally add the absolute time for every measurement and return the final dataframe
         final_df['abs_time'] = final_df['time'] + self.abs_start_time
+        final_df = final_df.sort_values(by=['time'])
         self.hits = final_df
 
     def corr_matrix(self):

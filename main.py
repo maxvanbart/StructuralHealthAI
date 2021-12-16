@@ -11,10 +11,10 @@ if __name__ == "__main__":
     panels = Panel.initialize_all()
 
     # shorten the list of panels which should be processed, comment to run through all panels
-    panels = panels[1:2]
+    # panels = panels[:1]
 
     # for every panel we perform the following actions
-    for panel in tqdm.tqdm(panels):
+    for panel in tqdm.tqdm(panels, desc='Panel'):
         print('\n'+str(panel))
         panel.load_ae()
         panel.analyse_ae()

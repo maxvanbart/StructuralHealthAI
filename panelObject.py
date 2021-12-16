@@ -77,6 +77,10 @@ class Panel:
         pass
         # print(f"Successfully analysed LUNA data for {self.name}.")
 
+    def time_synchronise(self):
+        """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
+        pass
+
     def __repr__(self):
         return f"PanelObject({self.name})"
 

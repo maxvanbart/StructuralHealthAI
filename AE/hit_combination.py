@@ -22,6 +22,7 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
     # Find the available memory and use it to determine the maximum cluster size
     # Larger maximum clusters will avoid clusters getting split up
     available_memory = psutil.virtual_memory()[0] / 1024 ** 3
+    print(f"Detected {round(available_memory,1)}GB of system memory...")
     max_size = 20000
     if available_memory > 30:
         max_size = 30000
@@ -52,7 +53,7 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
             plt.show()
 
         # cluster all the batches found by the batch splitter
-        for batch in tqdm(batches):
+        for batch in tqdm(batches, desc=f"Channel {channel}"):
             if batch.shape[0] > 1:
                 clustered_batch = batch_cluster(batch, debug=debug, debug_graph=debug_graph)
                 combined_batches.append(batch_combine_points(clustered_batch, debug=debug))
