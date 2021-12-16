@@ -184,7 +184,6 @@ def batch_combine_points(batch, debug=False):
             final_array.append(sum(array[:, 6]) / len(array[:, 6]))
             # add the cluster number of the first index
             final_array.append(array[:, 7][0])
-
             final_array = np.array(final_array)
 
             if debug:
