@@ -1,9 +1,10 @@
 import os
 
-from luna_main import demo
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
 from AE.feature_analysis import freq_amp_cluster
+
+from LUNA.luna_data_to_array import raw_to_array, gradient_arrays
 
 files_folder = "Files"
 
@@ -13,6 +14,7 @@ class Panel:
     def __init__(self, name, debug=False):
         self.name = name
         self.ae_database = None
+        self.luna_database = None
         self.debug = debug
 
     @staticmethod
@@ -24,6 +26,7 @@ class Panel:
         for entry in entries:
             if entry.is_dir():
                 lst.append(Panel(entry.name))
+
         return lst
 
     # All the AE related code for the object
@@ -45,13 +48,18 @@ class Panel:
     def load_luna(self):
         """A function to load the LUNA data"""
         # LUNA code related to loading stuff should go here
-        pass
-        # print(f"Successfully loaded LUNA data for {self.name}.")
+
+        luna_data_left, luna_data_right, labels_left, labels_right = raw_to_array(self.name)
+        luna_data_left_time, luna_data_left_length = gradient_arrays(luna_data_left)
+        luna_data_right_time, luna_data_right_length = gradient_arrays(luna_data_right)
+
+        self.luna_database = [luna_data_left_time, luna_data_right_time, luna_data_left_length, luna_data_right_length]
+
+        print(f"Successfully loaded LUNA data for {self.name}.")
 
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
         # LUNA code relating to analysis should go here
-        demo(self.name)
         print(f"Successfully analysed LUNA data for {self.name}.")
 
     def __repr__(self):
