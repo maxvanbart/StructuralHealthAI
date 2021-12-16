@@ -41,11 +41,13 @@ class Panel:
         # print(self.ae_database.hits)
         print(f"Successfully loaded AE data for {self.name}.")
 
-    def analyse_ae(self):
+    def analyse_ae(self, force_clustering=False):
         """Function to analyse the AE data in the folder"""
         # Try to find a clustered file else cluster the data
         location = 'Files/' + self.name + "/AE/" + self.name + "-clustered.csv"
         try:
+            if force_clustering:
+                raise FileNotFoundError
             self.ae_clustered_database = pd.read_csv(location)
         except FileNotFoundError:
             print('Clustered file not found, clustering data...')

@@ -4,6 +4,7 @@ import numpy as np
 import time
 from tqdm import tqdm
 import pandas as pd
+import psutil
 
 
 def init_clustering(database, delta=100, debug=False, debug_graph=False):
@@ -17,11 +18,18 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
     if debug:
         print(channels)
 
+    # Find the available memory and use it to determine the maximum cluster size
+    # Larger maximum clusters will avoid clusters getting split up
+    available_memory = psutil.virtual_memory()[0] / 1024 ** 3
+    max_size = 20000
+    if available_memory > 30:
+        max_size = 30000
+
     # Here we cluster all the datapoints per channel
     combined_batches = []
     for channel in channels:
         features_channel = features[features["channel"] == channel]
-        batches = batch_split(features_channel, delta, debug=debug)
+        batches = batch_split(features_channel, delta, debug=debug, max_size=max_size)
 
         # print some information about the batches if debug is enabled
         if debug:
@@ -53,7 +61,7 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
     return combined_database
 
 
-def batch_split(df, delta, dynamic_splitting=True, debug=False):
+def batch_split(df, delta, dynamic_splitting=True, debug=False, max_size=20000):
     """This function takes a pandas dataframe and converts it into batches ready for clustering"""
     if type(df) == pd.core.frame.DataFrame:
         matrix = df.values.tolist()
@@ -83,10 +91,10 @@ def batch_split(df, delta, dynamic_splitting=True, debug=False):
         for batch in batches:
             # if we find a large batch we will recursively decrease the delta until we find a batch size which works
             # the cutoff for dynamic splitting should still be tweaked as 30000 might not be optimal
-            if len(batch) > 20000 and delta > 10:
+            if len(batch) > max_size and delta > 10:
                 if debug:
                     print(f"Found batch of size {len(batch)}, splitting...")
-                final_batches += batch_split(batch, delta-10)
+                final_batches += batch_split(batch, delta-10, max_size=max_size)
             else:
                 final_batches.append(batch)
     else:
