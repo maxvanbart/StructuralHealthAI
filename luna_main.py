@@ -7,7 +7,7 @@ import os
 
 def demo(panel):
 
-    specific_panel = 'L1-23-2.txt'
+    specific_panel = 'L1-03.txt'
 
     path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{specific_panel}'
 
@@ -69,4 +69,4 @@ def demo(panel):
                  delta_length_right, delta_time_right)
 
 
-demo('L1-23')
+demo('L1-03')
