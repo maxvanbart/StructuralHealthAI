@@ -22,6 +22,10 @@ class Panel:
         self.ae_clustered_database = None
         self.ae_start_time = None
 
+        # LUNA
+        self.luna_database = None
+
+
     @staticmethod
     def initialize_all(debug=False, debug_graph=False):
         """A static method which checks the folders present and generates a Panel object for every folder"""
