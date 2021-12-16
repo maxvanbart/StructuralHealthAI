@@ -2,7 +2,7 @@ import numpy as np
 
 import sklearn.cluster as cl
 from sklearn.preprocessing import StandardScaler
-from sklear.metrics import silhouette_score
+from sklearn import metrics
 
 
 def scaling(array):
@@ -66,15 +66,41 @@ def agglo(array, n=5, scaled=True):
     return cluster.reshape(-1, 1), cluster_values
 
 
-# def get_scores():
-#     if get_silhouette:
-#         silhouette = silhouette_score((cluster, labels))
-#     return
-#
-#
-# def silhouette_score(cluster, labels):
-#
-#
-#     score = silhouette_score(cluster, labels=labels, random_state=42)
-#
-#     return score
+def silhouette_score(array, labels):
+
+    score = metrics.silhouette_score(array, labels)
+    return score
+
+
+def calinski_score(array, labels):
+
+    score = metrics.calinski_harabasz_score(array, labels)
+    return score
+
+
+def davies_score(array, labels):
+
+    score = metrics.davies_bouldin_score(array, labels)
+    return score
+
+
+def print_scores_of_clusters(array, labels, panel_name, cluster_name, get_silhouette=True, get_calinski=True, get_davies=True):
+    print(f"These are the scores for panel {panel_name}, for cluster {cluster_name}")
+    if get_silhouette:
+        silhouette = silhouette_score(array, labels)
+        print(f'----------------------------')
+        print(f'silhouette score = {silhouette}')
+
+    if get_calinski:
+        calinski = calinski_score(array, labels)
+        print(f'----------------------------')
+        print(f'calinski score = {calinski}')
+
+    if get_davies:
+        davies = davies_score(array, labels)
+        print(f'----------------------------')
+        print(f'davies score = {davies}')
+
+    print(f'----------------------------')
+    return
+
