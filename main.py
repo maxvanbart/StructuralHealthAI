@@ -7,21 +7,11 @@ from panelObject import Panel
 if __name__ == "__main__":
     # start time
     t0 = time.time()
+
     # initialize all the panels from the folders
     panels = Panel.initialize_all()
 
-    # shorten the list of panels which should be processed, comment to run through all panels
-    # panels = panels[:1]
-
-    # LUNA example
-
-    for panel in panels:
-        if panel.name == 'L1-03':
-            panel.load_luna()
-            panel.analyse_luna()
-
     # for every array we perform the following actions
-
     for panel in tqdm.tqdm(panels):
         print('\n'+str(panel))
 
@@ -33,4 +23,5 @@ if __name__ == "__main__":
 
     # end time, it also prints the elapsed time
     t1 = time.time()
+
     print(f"Total time elapsed: {round(t1-t0,3)} seconds")
