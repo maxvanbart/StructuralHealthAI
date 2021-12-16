@@ -29,7 +29,6 @@ class Pridb:
     def load_csv(self):
         """A function which tries to load the data from a csv file, otherwise it will generate it from the pridb file"""
         try:
-            raise FileNotFoundError
             self.hits = pd.read_csv('Files/'+self.filename+"/AE/"+self.filename+".csv")
         except FileNotFoundError:
             print('File not found, generating from pridb file')
