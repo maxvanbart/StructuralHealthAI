@@ -4,6 +4,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
+import os
 
 
 class Pridb:
@@ -11,6 +12,13 @@ class Pridb:
     def __init__(self, file_name):
         self.filename = file_name
         self.hits = None
+
+        # Make a list of all pridb files
+        content = os.listdir(f"Files/{self.filename}/AE")
+        self.pridb_files = []
+        for item in content:
+            if '.pridb' in item:
+                self.pridb_files.append(item)
 
     def save_csv(self):
         """A function to save the hits from the pridb to a csv file"""
