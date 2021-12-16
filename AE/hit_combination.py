@@ -25,8 +25,6 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
     max_size = 20000
     if available_memory > 30:
         max_size = 30000
-    elif available_memory < 10:
-        max_size = 10000
 
     # Here we cluster all the datapoints per channel
     combined_batches = []
