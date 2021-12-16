@@ -13,11 +13,22 @@ if __name__ == "__main__":
     # shorten the list of panels which should be processed, comment to run through all panels
     # panels = panels[:1]
 
-    # for every panel we perform the following actions
+    # LUNA example
+
+    for panel in panels:
+        if panel.name == 'L1-03':
+            panel.load_luna()
+            panel.analyse_luna()
+
+    # for every array we perform the following actions
+
     for panel in tqdm.tqdm(panels):
         print('\n'+str(panel))
-        # panel.load_ae()
-        # panel.analyse_ae()
+
+        panel.load_ae()
+        panel.analyse_ae()
+
+        panel.load_luna()
         panel.analyse_luna()
 
     # end time, it also prints the elapsed time

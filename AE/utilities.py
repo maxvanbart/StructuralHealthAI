@@ -32,7 +32,7 @@ class Pridb:
         self.hits = hits
 
     def corr_matrix(self):
-        """Creation of correlation matrix for a panel using CSV file"""
+        """Creation of correlation matrix for a array using CSV file"""
         # uncomment for scatter correlation matrix (scatter + histogram)
         '''cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time','counts']
         df = pd.read_csv('Files/' + self.filename + "/AE/" + self.filename + ".csv", usecols=cols,

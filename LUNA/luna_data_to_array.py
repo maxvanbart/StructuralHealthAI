@@ -1,17 +1,18 @@
 import numpy as np
 
 import datetime
+import os
 
 
-def raw_to_array(panel):
+def raw_to_array(panel, path):
     """
     Opens file in default LUNA data format and converts this into left and right foot numpy arrays.
     """
     def read_sensor_file():
-        sensor_file = 'LUNA_sensor.txt'
+        sensor_file = '/LUNA_sensor.txt'
         sensor_data = {}
 
-        with open(sensor_file) as file:
+        with open(os.path.dirname(__file__) + sensor_file) as file:
             data = np.genfromtxt(file, delimiter=',', skip_header=True, dtype=str)
 
             for line in data:
@@ -23,7 +24,6 @@ def raw_to_array(panel):
         """
         Creates the unconverted vector and feature label list to be used later.
         """
-        path = f'Files/{panel[:5]}/LUNA/{panel}.txt'
 
         with open(path) as file:
             lines = file.readlines()

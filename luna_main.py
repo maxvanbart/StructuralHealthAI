@@ -2,11 +2,17 @@ from LUNA.luna_data_to_array import raw_to_array, gradient_arrays, array_to_imag
 from LUNA.luna_array_to_cluster import k_means, mean_shift, aff_prop, agglo
 from LUNA.luna_plotting import plot_arrays, plot_cluster
 
+import os
+
 
 def demo(panel):
 
+    specific_panel = 'L1-23-2.txt'
+
+    path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{specific_panel}'
+
     # load data
-    array_left, array_right, labels_left, labels_right = raw_to_array(panel)
+    array_left, array_right, labels_left, labels_right = raw_to_array(panel, path)
 
     # get indices for begin left and right
     delta_length_left = float(labels_left[-1]) - float(labels_left[0])
@@ -39,28 +45,28 @@ def demo(panel):
                 delta_length_right, delta_time_right, panel, left=False)
 
     # # k-means
-    k_means_cluster, k_means_values = k_means(panel)
+    k_means_cluster, k_means_values = k_means(time_derivative_array_right)
 
     plot_cluster(time_derivative_image_right, k_means_cluster, 'K-means', k_means_values,
                  delta_length_right, delta_time_right)
 
     # mean shift
-    mean_shift_cluster, mean_shift_values = mean_shift(panel)
+    mean_shift_cluster, mean_shift_values = mean_shift(time_derivative_array_right)
 
     plot_cluster(time_derivative_image_right, mean_shift_cluster, 'Mean shift', mean_shift_values,
                  delta_length_right, delta_time_right)
 
     # affinity propagation
-    aff_prop_cluster, aff_prop_values = aff_prop(panel)
+    aff_prop_cluster, aff_prop_values = aff_prop(time_derivative_array_right)
 
     plot_cluster(time_derivative_image_right, aff_prop_cluster, 'Affinity propagation', aff_prop_values,
                  delta_length_right, delta_time_right)
 
     # agglomerative clustering
-    agglo_cluster, agglo_values = agglo(panel)
+    agglo_cluster, agglo_values = agglo(time_derivative_array_right)
 
     plot_cluster(time_derivative_image_right, agglo_cluster, 'Agglomerative', agglo_values,
                  delta_length_right, delta_time_right)
 
 
-demo('L1-23-3')
+demo('L1-23')
