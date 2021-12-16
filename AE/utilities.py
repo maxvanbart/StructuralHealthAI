@@ -5,6 +5,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import os
+import datetime
 
 
 class Pridb:
@@ -12,6 +13,7 @@ class Pridb:
     def __init__(self, file_name):
         self.filename = file_name
         self.hits = None
+        self.abs_start_time = None
 
         # Make a list of all pridb files
         content = os.listdir(f"Files/{self.filename}/AE")
@@ -27,6 +29,7 @@ class Pridb:
     def load_csv(self):
         """A function which tries to load the data from a csv file, otherwise it will generate it from the pridb file"""
         try:
+            raise FileNotFoundError
             self.hits = pd.read_csv('Files/'+self.filename+"/AE/"+self.filename+".csv")
         except FileNotFoundError:
             print('File not found, generating from pridb file')
@@ -35,15 +38,44 @@ class Pridb:
 
     def pridb_read_hits(self):
         """Function to retrieve the hits from the pridb file"""
-        pridb_lst = []
-        for
+        start_time_dict = {}
+        hits_dict = {}
+        # We first open all pridb files which where found during init
+        for file in self.pridb_files:
+            pridb = vae.io.PriDatabase("Files/" + self.filename + "/AE/" + file)
+            # Extract the start time for the pridb file
+            markers = pridb.read_markers()
+            start_time_dict[file] = markers["data"].loc[3]
+            # Extract the hits for the pridb file
+            hits_dict[file] = pridb.read_hits()
 
+        # Here we convert the starting times for all files to a datetime timestamp format
+        start_time_dict = {x: convert_to_datetime(start_time_dict[x]) for x in start_time_dict}
+        # We use this dictionary to determine the earliest starting time
+        self.abs_start_time = min(start_time_dict.values())
 
+        # From the earliest starting time we determine the absolute time delta between files
+        delta_time_dict = {x: start_time_dict[x] - self.abs_start_time for x in start_time_dict}
+        print(delta_time_dict)
 
-        pridb = vae.io.PriDatabase("Files/"+self.filename+"/AE/"+self.filename+".pridb")
-        hits = pridb.read_hits()
+        # We now add the time delta to every dataframe such that they can be appended to each other
+        for file in hits_dict:
+            dt = delta_time_dict[file]
+            df = hits_dict[file]
+            df['time'] = df['time'].map(lambda time: time+dt)
+            hits_dict[file] = df
 
-        self.hits = hits
+        # Here we append all the different dataframes for the panel together
+        final_df = None
+        for file in hits_dict:
+            if final_df is None:
+                final_df = hits_dict[file]
+            else:
+                final_df = pd.concat([final_df, hits_dict[file]], axis=0)
+
+        # We finally add the absolute time for every measurement and return the final dataframe
+        final_df['abs_time'] = final_df['time'] + self.abs_start_time
+        self.hits = final_df
 
     def corr_matrix(self):
         """Creation of correlation matrix for a panel using CSV file"""
@@ -83,10 +115,24 @@ class Pridb:
         g.map_upper(reg_coef)
         plt.show()
 
-        pass
-
     def __str__(self):
         return f"Pridb object for {self.filename}"
 
     def __repr__(self):
         return f"Pridb({self.filename})"
+
+
+def convert_to_datetime(text):
+    """Function to convert a datetime string to a timestamp"""
+    date, t = text.split(' ')
+    year, month, day = date.split('-')
+    year, month, day = int(year), int(month), int(day)
+
+    hour, minute, seconds = t.split(':')
+    hour, minute, seconds = int(hour), int(minute), int(seconds)
+    second = int(seconds // 1)
+    milisecond = int(round((seconds % 1)*10**6))
+    date_obj = datetime.datetime(year, month, day, hour, minute, second, milisecond)
+    return datetime.datetime.timestamp(date_obj)
+
+
