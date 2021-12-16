@@ -5,11 +5,9 @@ from LUNA.luna_plotting import plot_arrays, plot_cluster
 import os
 
 
-def demo(panel):
+def demo(panel, file):
 
-    specific_panel = 'L1-23-2.txt'
-
-    path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{specific_panel}'
+    path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{file}'
 
     # load data
     array_left, array_right, labels_left, labels_right = raw_to_array(panel, path)
@@ -69,4 +67,11 @@ def demo(panel):
                  delta_length_right, delta_time_right)
 
 
-demo('L1-23')
+# USER INPUT #
+
+panel = 'L1-23'
+file = 'L1-23-2.txt'
+
+# END USER INPUT #
+
+demo(panel, file)
