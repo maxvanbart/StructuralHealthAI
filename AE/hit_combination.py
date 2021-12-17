@@ -11,7 +11,7 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
     # select the features for the clustering
     cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts', 'channel', 'abs_time']
     features = database.hits[cols]
-    features = features[features["counts"] > 2]
+    features = features[features["counts"] >= 2]
 
     # Extract the header and the channels as important variables
     channels = features['channel'].unique()
