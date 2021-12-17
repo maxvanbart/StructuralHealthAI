@@ -10,7 +10,7 @@ if __name__ == "__main__":
     # initialize all the panels from the folders
     panels = Panel.initialize_all()
 
-    # shorten the list of panels which should be processed, comment to run through all panels
+    # shorten the list of panels which should be processed, comment to run through all panels.
     # panels = panels[:1]
 
     # for every panel we perform the following actions

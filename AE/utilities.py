@@ -98,7 +98,8 @@ class Pridb:
         sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, square=True, linewidths=.5, cbar_kws={"shrink": .5})
         plt.show()'''
 
-        # most recent correlation matrix using SNS to plot distribution function, regression line and the regression coef
+        # most recent correlation matrix using SNS to plot distribution function
+        # regression line and the regression coef
         def reg_coef(x, y, label=None, color=None, **kwargs):
             ax = plt.gca()
             r, p = pearsonr(x, y)
@@ -107,7 +108,7 @@ class Pridb:
 
         cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts']
         data_array = pd.read_csv('Files/' + self.filename + "/AE/" + self.filename + ".csv", usecols=cols,
-                                 delimiter=',').sample(n = 25000)
+                                 delimiter=',').sample(n=25000)
         g = sns.PairGrid(data_array, height=2)
         g.map_diag(sns.distplot)
         g.map_lower(sns.regplot)
@@ -133,5 +134,3 @@ def convert_to_datetime(text):
     milisecond = int(round((seconds % 1)*10**6))
     date_obj = datetime.datetime(year, month, day, hour, minute, second, milisecond)
     return datetime.datetime.timestamp(date_obj)
-
-

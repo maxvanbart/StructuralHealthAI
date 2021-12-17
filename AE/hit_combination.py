@@ -163,18 +163,18 @@ def batch_combine_points(batch, debug=False):
             lst.append(obj)
         array = np.array(lst)
         if array.shape[0] == 1:
-            # This is a 2d matrix so we flatten it (removed cluster index)
+            # This is a 2d matrix, so we flatten it (removed cluster index)
             matrix.append(array.flatten()[:-1])
         # Combination of the clusters into new points
         else:
             # ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time','counts']
             # [avg, high, avg, high, same, from high amp, avg]
-            final_array = []
+            final_array = list()
             # take the average time
             final_array.append(sum(array[:, 0]) / len(array[:, 0]))
             # take the maximum amplitude
-            final_array.append(max(array[:,1]))
-            max_amp_index = list(array[:,1]).index(max(array[:,1]))
+            final_array.append(max(array[:, 1]))
+            max_amp_index = list(array[:, 1]).index(max(array[:, 1]))
             # take the average of the duration
             final_array.append(sum(array[:, 2]) / len(array[:, 2]))
             # take the maximum energy
@@ -197,6 +197,6 @@ def batch_combine_points(batch, debug=False):
                 print(array)
             matrix.append(final_array)
 
-    # Finally we turn the matrix into a numpy array (index column already removed in the creation of the matrix)
+    # Finally, we turn the matrix into a numpy array (index column already removed in the creation of the matrix)
     matrix = np.array(matrix)
     return matrix
