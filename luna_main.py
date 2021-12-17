@@ -12,7 +12,7 @@ def demo(panel, file):
     plot_array = False
     plot_k_means = False
     plot_mean_shift = False
-    plot_aff_prop = True
+    plot_aff_prop = False
     plot_agglo = False
 
     path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{file}'
