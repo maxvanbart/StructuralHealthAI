@@ -12,7 +12,7 @@ def demo(panel, file):
     plot_array = False
     plot_k_means = False
     plot_mean_shift = False
-    plot_aff_prop = False
+    plot_aff_prop = True
     plot_agglo = False
 
     path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{file}'
@@ -79,7 +79,7 @@ def demo(panel, file):
                              delta_length_right, delta_time_right)
 
     if plot_aff_prop:
-        time_derivative_array_right_reshaped = time_derivative_array_right.reshape(-1, 1)
+        time_derivative_array_right_reshaped = time_derivative_array_right
 
         aff_prop_cluster, aff_prop_values = aff_prop(time_derivative_array_right_reshaped)
         aff_prop_cluster_array = aff_prop_cluster.reshape(time_derivative_array_right.shape)
