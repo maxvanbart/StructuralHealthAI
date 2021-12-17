@@ -51,34 +51,49 @@ def demo(panel, file):
                     delta_length_right, delta_time_right, panel, left=False)
 
     if plot_k_means:
-        time_derivative_array_right_reshaped = np.reshape(time_derivative_array_right, -1).reshape(-1, 1)
+        time_derivative_array_right_reshaped = time_derivative_array_right.reshape(-1, 1)
+
         k_means_cluster, k_means_values = k_means(time_derivative_array_right_reshaped)
-        k_means_cluster_array = k_means_cluster.reshape(len(time_derivative_array_right), len(time_derivative_array_right[0]))
-        print_scores_of_clusters(time_derivative_array_right_reshaped, k_means_cluster.ravel(), panel, "K means")
-        plot_cluster(time_derivative_image_right, k_means_cluster_array, 'K_means', k_means_values,
+        k_means_cluster_array = k_means_cluster.reshape(time_derivative_array_right.shape)
+
+        print_scores_of_clusters(time_derivative_array_right_reshaped, k_means_cluster.flatten(),
+                                 panel, 'K means')
+
+        plot_cluster(time_derivative_image_right, k_means_cluster_array, 'K-means', k_means_values,
                      delta_length_right, delta_time_right)
 
     if plot_mean_shift:
-        time_derivative_array_right_reshaped = np.reshape(time_derivative_array_right, -1).reshape(-1, 1)
+        time_derivative_array_right_reshaped = time_derivative_array_right.reshape(-1, 1)
+
         mean_shift_cluster, mean_shift_values = mean_shift(time_derivative_array_right_reshaped)
-        mean_shift_cluster_array = mean_shift_cluster.reshape(len(time_derivative_array_right),len(time_derivative_array_right[0]))
-        print_scores_of_clusters(time_derivative_array_right_reshaped, mean_shift_cluster.ravel(), panel, "Mean shift")
+        mean_shift_cluster_array = mean_shift_cluster.reshape(time_derivative_array_right.shape)
+
+        print_scores_of_clusters(time_derivative_array_right_reshaped, mean_shift_cluster.flatten(),
+                                 panel, 'Mean shift')
+
         plot_cluster(time_derivative_image_right, mean_shift_cluster_array, 'Mean shift', mean_shift_values,
                      delta_length_right, delta_time_right)
 
     if plot_aff_prop:
-        time_derivative_array_right_reshaped = np.reshape(time_derivative_array_right, -1).reshape(-1, 1)
+        time_derivative_array_right_reshaped = time_derivative_array_right.reshape(-1, 1)
+
         aff_prop_cluster, aff_prop_values = aff_prop(time_derivative_array_right_reshaped)
-        aff_prop_cluster_array = aff_prop_cluster.reshape(len(time_derivative_array_right),len(time_derivative_array_right[0]))
-        print_scores_of_clusters(time_derivative_array_right_reshaped, aff_prop_cluster.ravel(), panel, "affinity propagation")
+        aff_prop_cluster_array = aff_prop_cluster.reshape(time_derivative_array_right.shape)
+
+        print_scores_of_clusters(time_derivative_array_right_reshaped, aff_prop_cluster.flatten(),
+                                 panel, 'affinity propagation')
+
         plot_cluster(time_derivative_image_right, aff_prop_cluster_array, 'Affinity propagation', aff_prop_values,
                      delta_length_right, delta_time_right)
 
     if plot_agglo:
-        time_derivative_array_right_reshaped = np.reshape(time_derivative_array_right, -1).reshape(-1, 1)
+        time_derivative_array_right_reshaped = time_derivative_array_right.reshape(-1, 1)
+
         agglo_cluster, agglo_values = agglo(time_derivative_array_right_reshaped)
-        agglo_cluster_array = agglo_cluster.reshape(len(time_derivative_array_right),len(time_derivative_array_right[0]))
-        print_scores_of_clusters(time_derivative_array_right_reshaped, agglo_cluster.ravel(), panel, "agglomerative clustering")
+        agglo_cluster_array = agglo_cluster.reshape(time_derivative_array_right.shape)
+
+        print_scores_of_clusters(time_derivative_array_right_reshaped, agglo_cluster.flatten(),
+                                 panel, 'agglomerative clustering')
         plot_cluster(time_derivative_image_right, agglo_cluster_array, 'Agglomerative', agglo_values,
                      delta_length_right, delta_time_right)
 

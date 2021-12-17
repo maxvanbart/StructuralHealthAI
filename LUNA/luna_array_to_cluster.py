@@ -81,6 +81,14 @@ def davies_score(array, labels):  # if needed could be called independent
     return score
 
 
+def array_to_cluster(array_time_left, array_time_right, array_length_left, array_length_right):
+    array_time = np.hstack((array_time_left, array_time_right))
+    array_length = np.hstack((array_length_left, array_length_right))
+
+    cluster_time = k_means(array_time)
+    cluster_length = k_means(array_length)
+
+
 def print_scores_of_clusters(array, labels, panel_name, cluster_name, get_silhouette=True, get_calinski=True, get_davies=True):
     print(f"\nThese are the scores for panel {panel_name}, for cluster {cluster_name}")
     if get_silhouette:
