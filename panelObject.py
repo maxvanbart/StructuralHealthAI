@@ -3,27 +3,37 @@ import os
 from LUNA.luna_main import demo
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import freq_amp_cluster
+from AE.feature_analysis import freq_amp_energy_cluster, freq_amp_time_cluster
+
+import pandas as pd
 
 files_folder = "Files"
 
 
 class Panel:
     """An object which represents a panel"""
-    def __init__(self, name, debug=False):
+    def __init__(self, name, debug=False, debug_graph=False):
         self.name = name
-        self.ae_database = None
         self.debug = debug
+        self.debug_graph = debug_graph
+
+        # AE
+        self.ae_database = None
+        self.ae_clustered_database = None
+        self.ae_start_time = None
+
+        # LUNA
+        self.luna_database = None
 
     @staticmethod
-    def initialize_all():
+    def initialize_all(debug=False, debug_graph=False):
         """A static method which checks the folders present and generates a Panel object for every folder"""
         entries = os.scandir(files_folder)
         lst = []
 
         for entry in entries:
             if entry.is_dir():
-                lst.append(Panel(entry.name))
+                lst.append(Panel(entry.name, debug=debug, debug_graph=debug_graph))
         return lst
 
     # All the AE related code for the object
@@ -34,11 +44,23 @@ class Panel:
         # print(self.ae_database.hits)
         print(f"Successfully loaded AE data for {self.name}.")
 
-    def analyse_ae(self):
+    def analyse_ae(self, force_clustering=False):
         """Function to analyse the AE data in the folder"""
-        self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
+        # Try to find a clustered file else cluster the data
+        location = 'Files/' + self.name + "/AE/" + self.name + "-clustered.csv"
+        try:
+            if force_clustering:
+                raise FileNotFoundError
+            self.ae_clustered_database = pd.read_csv(location)
+            print(f"Successfully loaded clustered data for {self.name}.")
+        except FileNotFoundError:
+            print('Clustered file not found, clustering data...')
+            self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
+            pd.DataFrame(self.ae_clustered_database).to_csv(location, index=False)
         # self.ae_database.corr_matrix()
-        freq_amp_cluster(self.ae_clustered_database)
+        # freq_amp_energy_cluster(self.ae_database.hits)
+        # freq_amp_energy_cluster(self.ae_database.hits)
+        freq_amp_time_cluster(self.ae_clustered_database)
         print(f"Successfully analysed AE data for {self.name}.")
 
     # All the LUNA related code for the object
@@ -53,6 +75,10 @@ class Panel:
         # LUNA code relating to analysis should go here
         demo(self.name)
         print(f"Successfully analysed LUNA data for {self.name}.")
+
+    def time_synchronise(self):
+        """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
+        pass
 
     def __repr__(self):
         return f"PanelObject({self.name})"

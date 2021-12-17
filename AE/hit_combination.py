@@ -4,53 +4,68 @@ import numpy as np
 import time
 from tqdm import tqdm
 import pandas as pd
+import psutil
 
 
 def init_clustering(database, delta=100, debug=False, debug_graph=False):
     # select the features for the clustering
-    cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts']
+    cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts', 'channel', 'abs_time']
     features = database.hits[cols]
-    features = features[-500000:]
-    # debug_graph = True
+    features = features[features["counts"] >= 2]
 
-    # ['time', 'channel', 'param_id', 'amplitude', 'duration', 'energy', 'rms', 'threshold', 'rise_time', 'counts',
-    # 'cascade_hits']
+    # Extract the header and the channels as important variables
+    channels = features['channel'].unique()
     header = list(features)
-
-    batches = batch_split(features, delta, debug=debug)
-
-    # print some information about the batches
     if debug:
-        print(len(batches))
-        for batch in batches:
-            print(batch.shape)
+        print(channels)
 
-    # Enabeling this debug graph will show the batch division of the selected datapoints
-    if debug_graph:
-        n = 0
-        for batch in batches:
-            n += len(batch)
-            plt.scatter(batch[:, 0], batch[:, 4], s=4)
-        print(n)
-        plt.xlabel("Time")
-        plt.ylabel("RMS voltage")
-        plt.show()
+    # Find the available memory and use it to determine the maximum cluster size
+    # Larger maximum clusters will avoid clusters getting split up
+    available_memory = psutil.virtual_memory()[0] / 1024 ** 3
+    print(f"Detected {round(available_memory,1)}GB of system memory...")
+    max_size = 20000
+    if available_memory > 30:
+        max_size = 30000
+    elif available_memory < 10:
+        max_size = 10000
 
-    # cluster all the batches found by the batch splitter
+    # Here we cluster all the datapoints per channel
     combined_batches = []
-    for batch in tqdm(batches):
-        if batch.shape[0] > 1:
-            clustered_batch = batch_cluster(batch, debug=debug)
-            combined_batches.append(batch_combine_points(clustered_batch, debug=debug))
-        else:
-            combined_batches.append(batch)
+    for channel in channels:
+        features_channel = features[features["channel"] == channel]
+        batches = batch_split(features_channel, delta, debug=debug, max_size=max_size)
 
+        # print some information about the batches if debug is enabled
+        if debug:
+            print(len(batches))
+            for batch in batches:
+                print(batch.shape)
+
+        # Enabeling this debug graph will show the batch division of the selected datapoints
+        if debug_graph:
+            n = 0
+            for batch in batches:
+                n += len(batch)
+                plt.scatter(batch[:, 0], batch[:, 4], s=4)
+            print(n)
+            plt.xlabel("Time")
+            plt.ylabel("RMS voltage")
+            plt.show()
+
+        # cluster all the batches found by the batch splitter
+        for batch in tqdm(batches, desc=f"Channel {channel}"):
+            if batch.shape[0] > 1:
+                clustered_batch = batch_cluster(batch, debug=debug, debug_graph=debug_graph)
+                combined_batches.append(batch_combine_points(clustered_batch, debug=debug))
+            else:
+                combined_batches.append(batch)
+
+    # Combine all the clustered batches back together and return them
     combined_database = pd.DataFrame(np.vstack(combined_batches), columns=header)
-
     return combined_database
 
 
-def batch_split(df, delta, dynamic_splitting=True, debug=False):
+def batch_split(df, delta, dynamic_splitting=True, debug=False, max_size=20000):
     """This function takes a pandas dataframe and converts it into batches ready for clustering"""
     if type(df) == pd.core.frame.DataFrame:
         matrix = df.values.tolist()
@@ -80,10 +95,10 @@ def batch_split(df, delta, dynamic_splitting=True, debug=False):
         for batch in batches:
             # if we find a large batch we will recursively decrease the delta until we find a batch size which works
             # the cutoff for dynamic splitting should still be tweaked as 30000 might not be optimal
-            if len(batch) > 25000 and delta > 10:
+            if len(batch) > max_size and delta > 10:
                 if debug:
                     print(f"Found batch of size {len(batch)}, splitting...")
-                final_batches += batch_split(batch, delta-10)
+                final_batches += batch_split(batch, delta-10, max_size=max_size)
             else:
                 final_batches.append(batch)
     else:
@@ -124,7 +139,7 @@ def batch_cluster(batch, debug=False, debug_graph=False):
         plt.xlabel("Time")
         plt.ylabel("RMS voltage")
         for i, label in enumerate(labels):
-            plt.annotate(f"{int(batch[:, 11][i])}", (batch[:, 0][i], batch[:, 6][i]))
+            plt.annotate(f"{int(batch[:, 8][i])}", (batch[:, 0][i], batch[:, 4][i]))
         plt.show()
     return batch
 
@@ -148,28 +163,40 @@ def batch_combine_points(batch, debug=False):
             lst.append(obj)
         array = np.array(lst)
         if array.shape[0] == 1:
-            # This is a 2d matrix so we flatten it (removed cluster index)
+            # This is a 2d matrix, so we flatten it (removed cluster index)
             matrix.append(array.flatten()[:-1])
         # Combination of the clusters into new points
         else:
             # ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time','counts']
-            # [avg, high, add, add, same, from high amp, add]
-            final_array = []
+            # [avg, high, avg, high, same, from high amp, avg]
+            final_array = list()
+            # take the average time
             final_array.append(sum(array[:, 0]) / len(array[:, 0]))
-            final_array.append(max(array[:,1]))
-            max_amp_index = list(array[:,1]).index(max(array[:,1]))
-            final_array.append(sum(array[:, 2]))
-            final_array.append(sum(array[:, 3]))
+            # take the maximum amplitude
+            final_array.append(max(array[:, 1]))
+            max_amp_index = list(array[:, 1]).index(max(array[:, 1]))
+            # take the average of the duration
+            final_array.append(sum(array[:, 2]) / len(array[:, 2]))
+            # take the maximum energy
+            final_array.append(max(array[:, 3]))
+            # take the RMS of the first instance
             final_array.append(array[0, 4])
+            # take the rise time of the maximum amplitude index
             final_array.append(array[:, 5][max_amp_index])
-            final_array.append(sum(array[:, 6]))
+            # take the average of the counts
+            final_array.append(sum(array[:, 6]) / len(array[:, 6]))
+            # add the cluster number of the first index
+            final_array.append(array[:, 7][0])
+            # take the average absolute time
+            final_array.append(sum(array[:, 8]) / len(array[:, 8]))
             final_array = np.array(final_array)
+
             if debug:
                 print(f"Mean for cluster {cluster}")
                 print(array.shape)
                 print(array)
             matrix.append(final_array)
 
-    # Finally we turn the matrix into a numpy array (index column already removed in the creation of the matrix)
+    # Finally, we turn the matrix into a numpy array (index column already removed in the creation of the matrix)
     matrix = np.array(matrix)
     return matrix

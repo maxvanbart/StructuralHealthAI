@@ -29,3 +29,10 @@ def agglomerative(X, time_lst, rms, features):
         plt.annotate(f"{label}", (np.array(features["time"])[i], np.array(features["rms"])[i]))
 
     plt.show()
+
+
+if False:
+    """Extract markers from pridb file"""
+    pridb = vae.io.PriDatabase("Files/" + self.filename + "/AE/" + self.filename + ".pridb")
+    markers = pridb.read_markers()
+    self.start_time = markers["data"].loc[3]
