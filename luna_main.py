@@ -1,6 +1,6 @@
 from LUNA.luna_data_to_array import data_to_array, gradient_arrays, array_to_image
-from LUNA.luna_array_to_cluster import k_means, mean_shift, aff_prop, agglo
-from LUNA.luna_plotting import plot_arrays, plot_cluster
+from LUNA.luna_array_to_cluster import k_means, mean_shift, aff_prop, agglo, array_to_cluster, cluster_to_image
+from LUNA.luna_plotting import plot_arrays, plot_example_cluster
 from LUNA.luna_array_to_cluster import print_scores_of_clusters
 
 import os
@@ -8,10 +8,10 @@ import os
 
 def demo(panel, file):
     plot_array = False
-    plot_k_means = True
-    plot_mean_shift = True
-    plot_aff_prop = True
-    plot_agglo = True
+    plot_k_means = False
+    plot_mean_shift = False
+    plot_aff_prop = False
+    plot_agglo = False
 
     path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{file}'
 
@@ -58,8 +58,8 @@ def demo(panel, file):
         print_scores_of_clusters(time_derivative_array_right_reshaped, k_means_cluster.flatten(),
                                  panel, 'K means')
 
-        plot_cluster(time_derivative_image_right, k_means_cluster_array, 'K-means', k_means_values,
-                     delta_length_right, delta_time_right)
+        plot_example_cluster(time_derivative_image_right, k_means_cluster_array, 'K-means', k_means_values,
+                             delta_length_right, delta_time_right)
 
     if plot_mean_shift:
         time_derivative_array_right_reshaped = time_derivative_array_right.reshape(-1, 1)
@@ -70,8 +70,8 @@ def demo(panel, file):
         print_scores_of_clusters(time_derivative_array_right_reshaped, mean_shift_cluster.flatten(),
                                  panel, 'Mean shift')
 
-        plot_cluster(time_derivative_image_right, mean_shift_cluster_array, 'Mean shift', mean_shift_values,
-                     delta_length_right, delta_time_right)
+        plot_example_cluster(time_derivative_image_right, mean_shift_cluster_array, 'Mean shift', mean_shift_values,
+                             delta_length_right, delta_time_right)
 
     if plot_aff_prop:
         time_derivative_array_right_reshaped = time_derivative_array_right.reshape(-1, 1)
@@ -82,8 +82,8 @@ def demo(panel, file):
         print_scores_of_clusters(time_derivative_array_right_reshaped, aff_prop_cluster.flatten(),
                                  panel, 'affinity propagation')
 
-        plot_cluster(time_derivative_image_right, aff_prop_cluster_array, 'Affinity propagation', aff_prop_values,
-                     delta_length_right, delta_time_right)
+        plot_example_cluster(time_derivative_image_right, aff_prop_cluster_array, 'Affinity propagation', aff_prop_values,
+                             delta_length_right, delta_time_right)
 
     if plot_agglo:
         time_derivative_array_right_reshaped = time_derivative_array_right.reshape(-1, 1)
@@ -93,8 +93,15 @@ def demo(panel, file):
 
         print_scores_of_clusters(time_derivative_array_right_reshaped, agglo_cluster.flatten(),
                                  panel, 'agglomerative clustering')
-        plot_cluster(time_derivative_image_right, agglo_cluster_array, 'Agglomerative', agglo_values,
-                     delta_length_right, delta_time_right)
+        plot_example_cluster(time_derivative_image_right, agglo_cluster_array, 'Agglomerative', agglo_values,
+                             delta_length_right, delta_time_right)
+
+    final_cluster = array_to_cluster(time_derivative_array_left, time_derivative_array_right,
+                                     length_derivative_array_left, length_derivative_array_right)
+
+    final_cluster_image = cluster_to_image(final_cluster)
+
+    plot_example_cluster(time_derivative_image_right, final_cluster_image, panel, [1, 2], delta_length_right + delta_length_left, delta_time_left)
 
 
 # USER INPUT #

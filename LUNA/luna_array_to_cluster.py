@@ -85,8 +85,23 @@ def array_to_cluster(array_time_left, array_time_right, array_length_left, array
     array_time = np.hstack((array_time_left, array_time_right))
     array_length = np.hstack((array_length_left, array_length_right))
 
-    cluster_time = k_means(array_time)
-    cluster_length = k_means(array_length)
+    cluster_time, cluster_time_values = k_means(array_time.reshape(-1, 1))
+    cluster_length, cluster_length_values = k_means(array_length. reshape(-1, 1))
+
+    cluster = cluster_time.reshape(array_time.shape) + cluster_length.reshape(array_length.shape)
+
+    return cluster
+
+
+def cluster_to_image(cluster):
+    cluster_image = np.zeros(cluster.shape)
+
+    for i in range(len(cluster)):
+        for j in range(len(cluster[i])):
+            if not cluster[i, j]:
+                cluster_image[i, j] = 1.0
+
+    return cluster_image
 
 
 def print_scores_of_clusters(array, labels, panel_name, cluster_name, get_silhouette=True, get_calinski=True, get_davies=True):
