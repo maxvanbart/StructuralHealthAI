@@ -31,6 +31,11 @@ def analyse_pzt(pzt_database):
 
         for f in frequency_array_dict:
             # Here we compile the data into an array to use for plotting
+            # this header can be used with the generated array to get create a pandas dataframe
+            # header = ['state', 'chan1', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6', 'chan7', 'chan8']
+            pre_array = []
+            for s in frequency_array_dict[f]:
+                lst = [s[0]] + list(s[1]['Actionneur3'].values())
             # header = ['state', 'chan1', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6', 'chan7', 'chan8']
             pre_array = []
             for s in frequency_array_dict[f]:
