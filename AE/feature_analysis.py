@@ -3,7 +3,9 @@ from matplotlib import colors
 from AE.feature_extraction import frequency_extraction
 import numpy as np
 import psutil
+import pandas as pd
 from AE.hit_combination import batch_split
+from sklearn.cluster import AgglomerativeClustering
 
 
 def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
@@ -44,13 +46,14 @@ def freq_amp_energy_cluster(database, ref_amp=10 ** (-5)):
     features = database
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
-    ndx = np.random.randint(0, len(amp), 100000)
+    full_data = pd.concat([amp_db, freq], axis=1)
+    print(full_data)
+    data = full_data.sample(n=10000, random_state=1)
+    clusters = AgglomerativeClustering(n_clusters=6, compute_full_tree=True).fit(data.to_numpy())
     plt.ylim(0, 1000)
     plt.xlabel("Amplitude [dB]")
     plt.ylabel("Frequency [kHz]")
-    plt.scatter(amp_db.loc[ndx], freq.loc[ndx], s=1, c=features["energy"].loc[ndx], norm=colors.LogNorm())
-    cbar = plt.colorbar()
-    cbar.set_label('Energy [eu]')
+    plt.scatter(data["amplitude"], data["frequency"], c=clusters.labels_, s=1)
     plt.show()
 
 
