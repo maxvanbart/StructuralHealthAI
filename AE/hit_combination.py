@@ -41,7 +41,7 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
             for batch in batches:
                 print(batch.shape)
 
-        # Enabeling this debug graph will show the batch division of the selected datapoints
+        # Enabling this debug graph will show the batch division of the selected datapoints
         if debug_graph:
             n = 0
             for batch in batches:
