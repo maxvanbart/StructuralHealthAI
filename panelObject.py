@@ -3,8 +3,8 @@ import os
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import freq_amp_cluster, all_features_cluster, create_cluster_batches
-
+from AE.feature_analysis import freq_amp_cluster, all_features_cluster, create_cluster_batches, energy_time_cluster
+from AE.clustering import clustering_time_energy
 import pandas as pd
 
 files_folder = "Files"
@@ -62,6 +62,7 @@ class Panel:
         # freq_amp_cluster(self.ae_clustered_database)
         # all_features_cluster(self.ae_clustered_database)
         # freq_amp_time_cluster(self.ae_clustered_database)
+        # energy_time_cluster(self.ae_clustered_database)
 
         print(f"Successfully analysed AE data for {self.name}.")
 

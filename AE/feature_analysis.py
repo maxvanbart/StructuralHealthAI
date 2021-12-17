@@ -81,7 +81,7 @@ def all_features_cluster(database, ref_amp=10**(-5)):
     """DBSCAN Clustering"""
     # clusters = sklearn.cluster.DBSCAN(eps=5, min_samples=2).fit(data.to_numpy())
 
-    """OPTICS Clustering"""
+    """OPTICS Clustering - only one that gives interpretable results"""
     clusters = sklearn.cluster.OPTICS(min_samples=4).fit(data.to_numpy())
 
     plt.ylim(0, 1000)
@@ -102,4 +102,19 @@ def freq_amp_time_cluster(database, ref_amp=10**(-5)):
     plt.scatter(amp_db.loc[ndx], freq.loc[ndx], s=1, c=features["time"].loc[ndx], norm=colors.LogNorm())
     cbar = plt.colorbar()
     cbar.set_label('Time [s]')
+    plt.show()
+
+
+def energy_time_cluster(database):
+    features = database
+    energy, time = features["energy"], features["time"]
+    full_data = pd.concat([energy, time], axis=1)
+    data = full_data.sample(n=10000, random_state=1)
+
+    """OPTICS Clustering"""
+    clusters = sklearn.cluster.OPTICS(min_samples=200).fit(data.to_numpy())
+
+    plt.xlabel("Time [s]")
+    plt.ylabel("Peak energy of emission [$10^{-14}$ J]")
+    plt.scatter(data["time"], data["energy"], c=clusters.labels_, s=10)
     plt.show()
