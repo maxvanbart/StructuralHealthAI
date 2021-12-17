@@ -3,7 +3,7 @@ import os
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import freq_amp_energy_cluster, freq_amp_time_cluster
+from AE.feature_analysis import freq_amp_energy_cluster, freq_amp_time_cluster, create_cluster_batches
 
 import pandas as pd
 
@@ -57,10 +57,11 @@ class Panel:
             print('Clustered file not found, clustering data...')
             self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
             pd.DataFrame(self.ae_clustered_database).to_csv(location, index=False)
+
         # self.ae_database.corr_matrix()
-        # freq_amp_energy_cluster(self.ae_database.hits)
-        # freq_amp_energy_cluster(self.ae_database.hits)
-        freq_amp_time_cluster(self.ae_clustered_database)
+        # freq_amp_energy_cluster(self.ae_clustered_database)
+        # freq_amp_time_cluster(self.ae_clustered_database)
+
         print(f"Successfully analysed AE data for {self.name}.")
 
     # All the LUNA related code for the object
