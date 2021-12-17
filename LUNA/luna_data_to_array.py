@@ -4,7 +4,7 @@ import datetime
 import os
 
 
-def raw_to_array(panel, path):
+def data_to_array(panel, path):
     """
     Opens file in default LUNA data format and converts this into left and right foot numpy arrays.
     """

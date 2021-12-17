@@ -1,6 +1,6 @@
 import numpy as np
 
-from LUNA.luna_data_to_array import raw_to_array, gradient_arrays, array_to_image
+from LUNA.luna_data_to_array import data_to_array, gradient_arrays, array_to_image
 from LUNA.luna_array_to_cluster import k_means, mean_shift, aff_prop, agglo
 from LUNA.luna_plotting import plot_arrays, plot_cluster
 from LUNA.luna_array_to_cluster import print_scores_of_clusters
@@ -8,7 +8,7 @@ import os
 
 
 def demo(panel, file):
-    plot_array = True
+    plot_array = False
     plot_k_means = True
     plot_mean_shift = True
     plot_aff_prop = True
@@ -17,7 +17,7 @@ def demo(panel, file):
     path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{file}'
 
     # load data
-    array_left, array_right, labels_left, labels_right = raw_to_array(panel, path)
+    array_left, array_right, labels_left, labels_right = data_to_array(panel, path)
 
     # get indices for begin left and right
     delta_length_left = float(labels_left[-1]) - float(labels_left[0])
