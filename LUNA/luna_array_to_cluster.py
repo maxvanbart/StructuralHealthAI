@@ -101,4 +101,3 @@ def print_scores_of_clusters(array, labels, panel_name, cluster_name, get_silhou
 
     print(f'----------------------------')
     return
-
