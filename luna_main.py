@@ -1,3 +1,5 @@
+import numpy as np
+
 from LUNA.luna_data_to_array import raw_to_array, gradient_arrays, array_to_image
 from LUNA.luna_array_to_cluster import k_means, mean_shift, aff_prop, agglo
 from LUNA.luna_plotting import plot_arrays, plot_cluster
@@ -35,7 +37,7 @@ def demo(panel, file):
     time_derivative_image_right = array_to_image(time_derivative_array_right)
     length_derivative_image_right = array_to_image(length_derivative_array_right)
 
-    if False:
+    if True:
         # plot all of the images of left and right foot
         plot_arrays(image_left, time_derivative_image_left, length_derivative_image_left,
                     delta_length_left, delta_time_left, panel)
@@ -44,9 +46,12 @@ def demo(panel, file):
                     delta_length_right, delta_time_right, panel, left=False)
 
 
+    # Kmeans
     if True:
-        k_means_cluster, k_means_values = k_means(time_derivative_array_right)
-        print_scores_of_clusters(time_derivative_array_right, k_means_cluster.ravel(), panel, "K means")
+        time_derivative_array_right_reshaped = np.reshape(time_derivative_array_right, -1).reshape(-1, 1)
+        k_means_cluster, k_means_values = k_means(time_derivative_array_right_reshaped)
+        k_means_cluster = k_means_cluster.reshape(len(time_derivative_array_right), len(time_derivative_array_right[0]))
+        print_scores_of_clusters(time_derivative_array_right, k_means_cluster, panel, "K means")
         plot_cluster(time_derivative_image_right, k_means_cluster, 'K_means', k_means_values,
                     delta_length_right, delta_time_right)
 
@@ -74,8 +79,8 @@ def demo(panel, file):
 
 # USER INPUT #
 
-panel = 'L1-03'
-file = f'{panel}.txt'
+panel = 'L1-05'
+file = 'L1-05-2.txt'
 
 # END USER INPUT #
 
