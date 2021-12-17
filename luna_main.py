@@ -53,9 +53,9 @@ def demo(panel, file):
     if plot_k_means:
         time_derivative_array_right_reshaped = np.reshape(time_derivative_array_right, -1).reshape(-1, 1)
         k_means_cluster, k_means_values = k_means(time_derivative_array_right_reshaped)
-        k_means_cluster = k_means_cluster.reshape(len(time_derivative_array_right), len(time_derivative_array_right[0]))
+        k_means_cluster_array = k_means_cluster.reshape(len(time_derivative_array_right), len(time_derivative_array_right[0]))
         print_scores_of_clusters(time_derivative_array_right, k_means_cluster, panel, "K means")
-        plot_cluster(time_derivative_image_right, k_means_cluster, 'K_means', k_means_values,
+        plot_cluster(time_derivative_image_right, k_means_cluster_array, 'K_means', k_means_values,
                      delta_length_right, delta_time_right)
 
     if plot_mean_shift:
