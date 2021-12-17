@@ -4,7 +4,7 @@ from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
 from AE.feature_analysis import freq_amp_cluster
 
-from LUNA.luna_data_to_array import data_to_array, gradient_arrays
+from LUNA.luna_data_to_array import file_to_array, gradient_arrays
 from LUNA.luna_array_to_cluster import k_means
 
 files_folder = "Files"
@@ -59,7 +59,7 @@ class Panel:
         """A function to load the LUNA data"""
         path = self.folder_luna + f'{self.name}.txt'
 
-        luna_data_left, luna_data_right, labels_left, labels_right = data_to_array(self.name, path)
+        luna_data_left, luna_data_right, labels_left, labels_right = file_to_array(self.name, path)
         luna_data_left_time, luna_data_left_length = gradient_arrays(luna_data_left)
         luna_data_right_time, luna_data_right_length = gradient_arrays(luna_data_right)
 
