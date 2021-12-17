@@ -5,6 +5,7 @@ from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
 from AE.feature_analysis import freq_amp_energy_cluster, freq_amp_time_cluster
 
+from PZT.analyze_pzt import analyse_pzt
 from PZT.load_pzt import StatePZT
 
 import pandas as pd
@@ -86,9 +87,7 @@ class Panel:
         print(f"Successfully loaded PZT data for {self.name}.")
 
     def analyse_pzt(self):
-        for run in self.pzt_database:
-            for state in self.pzt_database[run]:
-                state.analyse()
+        analyse_pzt(self.pzt_database)
         print(f"Successfully analysed PZT data for {self.name}.")
 
     def time_synchronise(self):

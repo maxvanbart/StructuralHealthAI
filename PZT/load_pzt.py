@@ -9,9 +9,24 @@ class TestPZT:
         self.name = name
         self.location = f"{location}/{name}"
 
+        self.max_amp_dict = {}
+        self.frequency = int(self.name[:-11])*1000
+
     def analyse(self):
-        print('Hello World!')
-        print(self.name)
+        for actionneur in os.listdir(self.location):
+            y = os.listdir(self.location + '/' + actionneur)
+            self.max_amp_dict[actionneur] = {}
+
+            # Matlab files loaded as dictionary files
+            z = [scipy.io.loadmat(f"{self.location}/{actionneur}/{x}") for x in y]
+            z = [x['Time_Response'] for x in z]
+
+            for i in range(1, 9):
+                max_lst = list()
+                for j in range(len(z)):
+                    max_lst.append(max(z[j][:, i]))
+                self.max_amp_dict[actionneur][i] = sum(max_lst) / len(max_lst)
+        #print(self.max_amp_dict)
 
     def __repr__(self):
         return f"TestPZT({self.name})"
@@ -19,9 +34,15 @@ class TestPZT:
 
 class StatePZT:
     def __init__(self, name, location):
+        # simple information
         self.name = name
         self.location = location + '/' + name
         self.test_lst = [TestPZT(x, self.location) for x in get_subfolders(self.location)]
+        self.state_number = int(name.split('_')[1])
+        self.f_list = [x.frequency for x in self.test_lst]
+
+        # analysis stuff
+        self.frequency_dict = dict()
 
     @staticmethod
     def initialize_pzt(name):
@@ -36,8 +57,14 @@ class StatePZT:
         return subfolder_dict
 
     def analyse(self):
+        # print(self.name, self.state_number)
         for test in self.test_lst:
             test.analyse()
+
+        for test in self.test_lst:
+            # ['amplitude']
+            self.frequency_dict[test.frequency] = (test.max_amp_dict)
+        return self.frequency_dict, self.state_number
 
     def __repr__(self):
         return f"StatePZT({self.name})"
