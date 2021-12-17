@@ -5,7 +5,7 @@ import numpy as np
 import psutil
 import pandas as pd
 from AE.hit_combination import batch_split
-from sklearn.cluster import AgglomerativeClustering
+import sklearn.cluster
 
 
 def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
@@ -42,29 +42,63 @@ def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
     return batches
 
 
-def freq_amp_energy_cluster(database, ref_amp=10 ** (-5)):
+def freq_amp_cluster(database, ref_amp=10**(-5)):
+    """Extracting frequency, amplitude and energy for clustering"""
     features = database
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
-    full_data = pd.concat([amp_db, freq, features], axis=1)
-    print(full_data)
+    full_data = pd.concat([amp_db, freq], axis=1)
     data = full_data.sample(n=10000, random_state=1)
-    clusters = AgglomerativeClustering(n_clusters=6, compute_full_tree=True).fit(data.to_numpy())
+
+    """Different clustering algorithms to try"""
+    """Agglomerative Clustering"""
+    # clusters = sklearn.cluster.AgglomerativeClustering(n_clusters=2, compute_full_tree=True).fit(data.to_numpy())
+
+    """DBSCAN Clustering - good for outlier detection"""
+    clusters = sklearn.cluster.DBSCAN(eps=10, min_samples=150).fit(data.to_numpy())
+
+    """OPTICS Clustering"""
+    # clusters = sklearn.cluster.OPTICS(min_samples=2).fit(data.to_numpy())
+
     plt.ylim(0, 1000)
-    plt.xlabel("Amplitude [dB]")
-    plt.ylabel("Frequency [kHz]")
-    plt.scatter(data["amplitude"], data["frequency"], c=clusters.labels_, s=1)
+    plt.xlabel("Peak amplitude of emission [dB]")
+    plt.ylabel("Average frequency of emission [kHz]")
+    plt.scatter(data["amplitude"], data["frequency"], c=clusters.labels_, s=4)
     plt.show()
 
 
-def freq_amp_time_cluster(database, ref_amp=10 ** (-5)):
+def all_features_cluster(database, ref_amp=10**(-5)):
+    """Extract all features for clustering, and convert ampltiude to dB"""
+    features = database
+    features["amplitude"] = 20 * np.log10(features["amplitude"] / ref_amp)
+    full_data = pd.concat([features, frequency_extraction(features).divide(1000)], axis=1)
+    data = full_data.sample(n=10000, random_state=1)
+
+    """Different clustering algorithms to try"""
+    """Agglomerative Clustering"""
+    # clusters = sklearn.cluster.AgglomerativeClustering(n_clusters=2, compute_full_tree=True).fit(data.to_numpy())
+
+    """DBSCAN Clustering"""
+    # clusters = sklearn.cluster.DBSCAN(eps=5, min_samples=2).fit(data.to_numpy())
+
+    """OPTICS Clustering"""
+    clusters = sklearn.cluster.OPTICS(min_samples=4).fit(data.to_numpy())
+
+    plt.ylim(0, 1000)
+    plt.xlabel("Peak amplitude of emission [dB]")
+    plt.ylabel("Average frequency of emission [kHz]")
+    plt.scatter(data["amplitude"], data["frequency"], c=clusters.labels_, s=4)
+    plt.show()
+
+
+def freq_amp_time_cluster(database, ref_amp=10**(-5)):
     features = database
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
     ndx = np.random.randint(0, len(amp), 100000)
     plt.ylim(0, 1000)
-    plt.xlabel("Amplitude [dB]")
-    plt.ylabel("Frequency [kHz]")
+    plt.xlabel("Peak amplitude of emission [dB]")
+    plt.ylabel("Average frequency of emission [kHz]")
     plt.scatter(amp_db.loc[ndx], freq.loc[ndx], s=1, c=features["time"].loc[ndx], norm=colors.LogNorm())
     cbar = plt.colorbar()
     cbar.set_label('Time [s]')
