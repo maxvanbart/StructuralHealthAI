@@ -17,6 +17,9 @@ def demo(panel, file):
 
     path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{file}'
 
+    parent_folder = os.path.dirname(__file__)
+    files = os.listdir(parent_folder + f'/Files/L1-05/LUNA/')
+
     # load data
     array_left, array_right, labels_left, labels_right = data_to_array(panel, path)
 
