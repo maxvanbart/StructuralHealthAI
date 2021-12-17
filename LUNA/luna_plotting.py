@@ -36,23 +36,19 @@ def plot_arrays(image, image_time, image_length, length, time, panel, left=True)
     plt.show()
 
 
-def plot_cluster(image_time, cluster_array, cluster_name, cluster_values, length, time):
-    plt.subplot(1, 2, 1)
-    plt.imshow(image_time, extent=[0, length, 0, time])
-    plt.xlabel('L [mm]')
-    plt.ylabel('Timestamp [-]')
-    plt.title('Reference')
+def plot_cluster(image_time, image_length, image_cluster, panel_name, cluster_name, length, time):
+    fig, axs = plt.subplots(1, 3, sharex='all')
 
-    image_cluster = np.flip(cluster_array, axis=0)
+    axs[0].imshow(image_time, extent=[0, length, 0, time])
+    axs[0].set(xlabel='L [mm]', ylabel='Measurement [-]', title='Time derivative')
 
-    plt.subplot(1, 2, 2)
-    plt.imshow(image_cluster, extent=[0, length, 0, time], cmap='inferno')
-    plt.xlabel(f'Number of clusters: {len(cluster_values)}')
-    plt.ylabel('Timestamp [-]')
-    plt.xticks([])
-    plt.yticks([])
-    plt.title(f'{cluster_name} clustering')
+    axs[1].imshow(image_length, extent=[0, length, 0, time])
+    axs[1].set(xlabel='L [mm]', ylabel='Measurement [-]', title='Length derivative')
 
+    axs[2].imshow(image_cluster, extent=[0, length, 0, time], cmap='gray')
+    axs[2].set(xlabel='L [mm]', ylabel='Measurement [-]', title='Cluster')
+
+    plt.suptitle(f'{panel_name} with {cluster_name} clustering')
     plt.show()
 
 

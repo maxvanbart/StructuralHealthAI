@@ -1,6 +1,8 @@
+import numpy as np
+
 from LUNA.luna_data_to_array import data_to_array, gradient_arrays, array_to_image
 from LUNA.luna_array_to_cluster import k_means, mean_shift, aff_prop, agglo, array_to_cluster, cluster_to_image
-from LUNA.luna_plotting import plot_arrays, plot_example_cluster
+from LUNA.luna_plotting import plot_arrays, plot_cluster, plot_example_cluster
 from LUNA.luna_array_to_cluster import print_scores_of_clusters
 
 import os
@@ -40,6 +42,9 @@ def demo(panel, file):
     # plot time and space derivative image of right foot
     time_derivative_image_right = array_to_image(time_derivative_array_right)
     length_derivative_image_right = array_to_image(length_derivative_array_right)
+
+    image_time = np.hstack((time_derivative_image_left, time_derivative_image_right))
+    image_length = np.hstack((length_derivative_image_left, length_derivative_image_right))
 
     if plot_array:
         # plot all of the images of left and right foot
@@ -96,12 +101,14 @@ def demo(panel, file):
         plot_example_cluster(time_derivative_image_right, agglo_cluster_array, 'Agglomerative', agglo_values,
                              delta_length_right, delta_time_right)
 
-    final_cluster = array_to_cluster(time_derivative_array_left, time_derivative_array_right,
-                                     length_derivative_array_left, length_derivative_array_right)
+    final_cluster, array_time, array_length = array_to_cluster(time_derivative_array_left, time_derivative_array_right,
+                                                               length_derivative_array_left, length_derivative_array_right)
 
-    final_cluster_image = cluster_to_image(final_cluster)
+    image_cluster = cluster_to_image(final_cluster)
 
-    plot_example_cluster(time_derivative_image_right, final_cluster_image, panel, [1, 2], delta_length_right + delta_length_left, delta_time_left)
+    time, length = image_cluster.shape
+
+    plot_cluster(image_time, image_length, image_cluster, panel, 'k-means', length, time)
 
 
 # USER INPUT #

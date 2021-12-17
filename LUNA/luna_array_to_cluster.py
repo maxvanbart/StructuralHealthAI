@@ -90,7 +90,7 @@ def array_to_cluster(array_time_left, array_time_right, array_length_left, array
 
     cluster = cluster_time.reshape(array_time.shape) + cluster_length.reshape(array_length.shape)
 
-    return cluster
+    return cluster, array_time, array_length
 
 
 def cluster_to_image(cluster):
@@ -101,7 +101,7 @@ def cluster_to_image(cluster):
             if not cluster[i, j]:
                 cluster_image[i, j] = 1.0
 
-    return cluster_image
+    return np.flip(cluster_image, axis=0)
 
 
 def print_scores_of_clusters(array, labels, panel_name, cluster_name, get_silhouette=True, get_calinski=True, get_davies=True):
