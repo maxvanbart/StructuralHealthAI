@@ -1,9 +1,8 @@
-import numpy as np
-
 from LUNA.luna_data_to_array import data_to_array, gradient_arrays, array_to_image
 from LUNA.luna_array_to_cluster import k_means, mean_shift, aff_prop, agglo
 from LUNA.luna_plotting import plot_arrays, plot_cluster
 from LUNA.luna_array_to_cluster import print_scores_of_clusters
+
 import os
 
 
