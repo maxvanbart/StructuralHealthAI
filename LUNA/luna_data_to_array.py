@@ -123,3 +123,30 @@ def array_to_image(array):
         image.append(image_row)
 
     return np.flip(image, axis=0)
+
+
+def panel_to_array(path):
+    """
+    reads all files of a panel and converts them to left foot and right foot numpy arrays
+    """
+
+    all_files = os.listdir(path)
+
+    files = []
+    for file in all_files:
+        if file[0] == 'L' and file[2] == '-' and file[-4:] == '.txt':
+            files.append(file)
+
+    left_arrays = []
+    right_arrays = []
+    for file in files:
+        data_np_left, data_np_right, labels_left, labels_right = file_to_array(file[:5], f'{path}{file}')
+        left_arrays.append(data_np_left)
+        right_arrays.append(data_np_right)
+
+    final_array_left = np.vstack(array for array in left_arrays)
+    final_array_right = np.vstack(array for array in right_arrays)
+
+    return final_array_left, final_array_right
+
+panel_to_array('C:\\Users\\stein\\PycharmProjects\\StructuralHealthAI\\Files/L1-05/LUNA/')
