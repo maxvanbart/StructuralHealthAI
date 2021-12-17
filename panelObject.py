@@ -5,6 +5,8 @@ from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
 from AE.feature_analysis import freq_amp_energy_cluster, freq_amp_time_cluster
 
+from PZT.load_pzt import StatePZT
+
 import pandas as pd
 
 files_folder = "Files"
@@ -24,6 +26,9 @@ class Panel:
 
         # LUNA
         self.luna_database = None
+
+        # PZT
+        self.pzt_database = None
 
     @staticmethod
     def initialize_all(debug=False, debug_graph=False):
@@ -75,6 +80,11 @@ class Panel:
         # LUNA code relating to analysis should go here
         demo(self.name)
         print(f"Successfully analysed LUNA data for {self.name}.")
+
+    def load_pzt(self):
+        self.pzt_database = StatePZT.initialize_pzt(self.name)
+        print(self.pzt_database)
+        print(f"Successfully loaded PZT data for {self.name}.")
 
     def time_synchronise(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
