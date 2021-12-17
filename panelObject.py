@@ -83,8 +83,13 @@ class Panel:
 
     def load_pzt(self):
         self.pzt_database = StatePZT.initialize_pzt(self.name)
-        print(self.pzt_database)
         print(f"Successfully loaded PZT data for {self.name}.")
+
+    def analyse_pzt(self):
+        for run in self.pzt_database:
+            for state in self.pzt_database[run]:
+                state.analyse()
+        print(f"Successfully analysed PZT data for {self.name}.")
 
     def time_synchronise(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""

@@ -9,6 +9,10 @@ class TestPZT:
         self.name = name
         self.location = f"{location}/{name}"
 
+    def analyse(self):
+        print('Hello World!')
+        print(self.name)
+
     def __repr__(self):
         return f"TestPZT({self.name})"
 
@@ -30,6 +34,10 @@ class StatePZT:
             subfolders = [StatePZT(x, location + folder) for x in subfolders]
             subfolder_dict[folder] = subfolders
         return subfolder_dict
+
+    def analyse(self):
+        for test in self.test_lst:
+            test.analyse()
 
     def __repr__(self):
         return f"StatePZT({self.name})"
