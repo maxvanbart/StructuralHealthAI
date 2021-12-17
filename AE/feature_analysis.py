@@ -46,7 +46,7 @@ def freq_amp_energy_cluster(database, ref_amp=10 ** (-5)):
     features = database
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
-    full_data = pd.concat([amp_db, freq], axis=1)
+    full_data = pd.concat([amp_db, freq, features], axis=1)
     print(full_data)
     data = full_data.sample(n=10000, random_state=1)
     clusters = AgglomerativeClustering(n_clusters=6, compute_full_tree=True).fit(data.to_numpy())
