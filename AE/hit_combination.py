@@ -9,7 +9,7 @@ import psutil
 
 def init_clustering(database, delta=100, debug=False, debug_graph=False):
     # select the features for the clustering
-    cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts', 'channel']
+    cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts', 'channel', 'abs_time']
     features = database.hits[cols]
     features = features[features["counts"] > 2]
 
@@ -187,6 +187,8 @@ def batch_combine_points(batch, debug=False):
             final_array.append(sum(array[:, 6]) / len(array[:, 6]))
             # add the cluster number of the first index
             final_array.append(array[:, 7][0])
+            # take the average absolute time
+            final_array.append(sum(array[:, 8]) / len(array[:, 8]))
             final_array = np.array(final_array)
 
             if debug:
