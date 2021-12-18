@@ -38,6 +38,18 @@ def demo(panel):
     time_derivative_image_right = array_to_image(time_derivative_array_right)
     length_derivative_image_right = array_to_image(length_derivative_array_right)
 
+    # main part
+    cluster_left, cluster_right = array_to_cluster(time_derivative_array_left, time_derivative_array_right,
+                                                   length_derivative_array_left, length_derivative_array_right)
+
+    image_cluster_left = cluster_to_image(cluster_left)
+    image_cluster_right = cluster_to_image(cluster_right)
+
+    plot_cluster(time_derivative_image_left, time_derivative_image_right,
+                 length_derivative_image_left, length_derivative_image_right,
+                 image_cluster_left, image_cluster_right,
+                 delta_length_left, delta_length_right, delta_time, panel)
+
     if plot_array:
         # plot all of the images of left and right foot
         plot_arrays(image_left, time_derivative_image_left, length_derivative_image_left,
@@ -93,21 +105,11 @@ def demo(panel):
         plot_example_cluster(time_derivative_image_right, agglo_cluster_array, 'Agglomerative', agglo_values,
                              delta_length_right, delta_time)
 
-    cluster_left, cluster_right = array_to_cluster(time_derivative_array_left, time_derivative_array_right,
-                                                   length_derivative_array_left, length_derivative_array_right)
-
-    image_cluster_left = cluster_to_image(cluster_left)
-    image_cluster_right = cluster_to_image(cluster_right)
-
-    plot_cluster(time_derivative_image_left, time_derivative_image_right, length_derivative_image_left,
-                 length_derivative_image_right, image_cluster_left, image_cluster_right, delta_length_left, delta_length_right, delta_time, panel)
-
 
 # USER INPUT #
 
-panel = 'L1-05'
-file = 'L1-05-2.txt'
+panel_name = 'L1-05'
 
 # END USER INPUT #
 
-demo(panel)
+demo(panel_name)
