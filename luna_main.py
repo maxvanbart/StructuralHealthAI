@@ -1,14 +1,12 @@
-import numpy as np
-
-from LUNA.luna_data_to_array import file_to_array, gradient_arrays, array_to_image, folder_to_array
+from LUNA.luna_data_to_array import gradient_arrays, array_to_image, folder_to_array
 from LUNA.luna_array_to_cluster import k_means, mean_shift, aff_prop, agglo, array_to_cluster, cluster_to_image
-from LUNA.luna_plotting import plot_arrays, plot_cluster, plot_example_cluster
+from LUNA.luna_plotting import plot_arrays, plot_example_cluster, plot_cluster
 from LUNA.luna_array_to_cluster import print_scores_of_clusters
 
 import os
 
 
-def demo(panel, file):
+def demo(panel):
     plot_array = False
     plot_k_means = False
     plot_mean_shift = False
@@ -17,20 +15,12 @@ def demo(panel, file):
 
     path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/'
 
-    folder_to_array(panel, path)
-
-    parent_folder = os.path.dirname(__file__)
-    files = os.listdir(parent_folder + f'/Files/L1-05/LUNA/')
-
     # load data
-    array_left, array_right, labels_left, labels_right = file_to_array(panel, path)
+    array_left, array_right = folder_to_array(panel, path)
 
     # get indices for begin left and right
-    delta_length_left = float(labels_left[-1]) - float(labels_left[0])
-    delta_length_right = float(labels_right[-1]) - float(labels_right[0])
-
-    delta_time_left = len(array_left)
-    delta_time_right = len(array_right)
+    delta_time, delta_length_left = array_left.shape
+    delta_time, delta_length_right = array_right.shape
 
     # get the two derivatives of the two arrays
     time_derivative_array_left, length_derivative_array_left = gradient_arrays(array_left[:, 1:])
@@ -51,10 +41,10 @@ def demo(panel, file):
     if plot_array:
         # plot all of the images of left and right foot
         plot_arrays(image_left, time_derivative_image_left, length_derivative_image_left,
-                    delta_length_left, delta_time_left, panel)
+                    delta_length_left, delta_time, panel)
 
         plot_arrays(image_right, time_derivative_image_right, length_derivative_image_right,
-                    delta_length_right, delta_time_right, panel, left=False)
+                    delta_length_right, delta_time, panel, left=False)
 
     if plot_k_means:
         time_derivative_array_right_reshaped = time_derivative_array_right.reshape(-1, 1)
@@ -66,7 +56,7 @@ def demo(panel, file):
                                  panel, 'K means')
 
         plot_example_cluster(time_derivative_image_right, k_means_cluster_array, 'K-means', k_means_values,
-                             delta_length_right, delta_time_right)
+                             delta_length_right, delta_time)
 
     if plot_mean_shift:
         time_derivative_array_right_reshaped = time_derivative_array_right.reshape(-1, 1)
@@ -78,7 +68,7 @@ def demo(panel, file):
                                  panel, 'Mean shift')
 
         plot_example_cluster(time_derivative_image_right, mean_shift_cluster_array, 'Mean shift', mean_shift_values,
-                             delta_length_right, delta_time_right)
+                             delta_length_right, delta_time)
 
     if plot_aff_prop:
         time_derivative_array_right_reshaped = time_derivative_array_right
@@ -90,7 +80,7 @@ def demo(panel, file):
                                  panel, 'affinity propagation')
 
         plot_example_cluster(time_derivative_image_right, aff_prop_cluster_array, 'Affinity propagation', aff_prop_values,
-                             delta_length_right, delta_time_right)
+                             delta_length_right, delta_time)
 
     if plot_agglo:
         time_derivative_array_right_reshaped = time_derivative_array_right.reshape(-1, 1)
@@ -101,7 +91,7 @@ def demo(panel, file):
         print_scores_of_clusters(time_derivative_array_right_reshaped, agglo_cluster.flatten(),
                                  panel, 'agglomerative clustering')
         plot_example_cluster(time_derivative_image_right, agglo_cluster_array, 'Agglomerative', agglo_values,
-                             delta_length_right, delta_time_right)
+                             delta_length_right, delta_time)
 
     cluster_left, cluster_right = array_to_cluster(time_derivative_array_left, time_derivative_array_right,
                                                    length_derivative_array_left, length_derivative_array_right)
@@ -109,17 +99,8 @@ def demo(panel, file):
     image_cluster_left = cluster_to_image(cluster_left)
     image_cluster_right = cluster_to_image(cluster_right)
 
-    time, length_left = time_derivative_array_left.shape
-    print(time, length_left)
-
-    time, length_right = time_derivative_array_right.shape
-
-    print(time, length_right)
-    #
-    # plot_cluster(time_derivative_image_left, time_derivative_image_right, length_derivative_image_left, length_derivative_image_right,
-    #              image_cluster_left, image_cluster_right, panel, 'k-means', length_left, length_right, time)
-
-    plot_cluster(time_derivative_image_left, length_derivative_image_left, image_cluster_left, panel, 'k-means', length_left, time)
+    plot_cluster(time_derivative_image_left, time_derivative_image_right, length_derivative_image_left,
+                 length_derivative_image_right, image_cluster_left, image_cluster_right, delta_length_left, delta_length_right, delta_time, panel)
 
 
 # USER INPUT #
@@ -129,4 +110,4 @@ file = 'L1-05-2.txt'
 
 # END USER INPUT #
 
-demo(panel, file)
+demo(panel)

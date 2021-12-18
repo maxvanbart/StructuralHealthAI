@@ -99,12 +99,12 @@ def array_to_cluster(array_time_left, array_time_right, array_length_left, array
 
 
 def cluster_to_image(cluster):
-    cluster_image = np.zeros(cluster.shape)
+    cluster_image = np.ones(cluster.shape)
 
     for i in range(len(cluster)):
         for j in range(len(cluster[i])):
             if not cluster[i, j]:
-                cluster_image[i, j] = 1.0
+                cluster_image[i, j] = 0.0
 
     return np.flip(cluster_image, axis=0)
 
