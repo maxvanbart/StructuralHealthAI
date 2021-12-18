@@ -90,9 +90,7 @@ def array_to_cluster(array_time_left, array_time_right, array_length_left, array
     cluster_length, cluster_length_values = k_means(array_length. reshape(-1, 1))
 
     cluster = cluster_time.reshape(array_time.shape) + cluster_length.reshape(array_length.shape)
-
     split = array_time_left.shape[1]
-
     cluster_left, cluster_right = cluster[:, :split], cluster[:, split:]
 
     return cluster_left, cluster_right
