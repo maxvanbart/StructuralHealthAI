@@ -62,8 +62,10 @@ class Panel:
     def load_luna(self):
         """A function to load the LUNA data"""
         luna_data_left, luna_data_right = folder_to_array(self.name, self.folder_luna)
-        luna_data_left_time, luna_data_left_length = gradient_arrays(luna_data_left)
-        luna_data_right_time, luna_data_right_length = gradient_arrays(luna_data_right)
+
+        # First entry each row removed as this is the timestamp!
+        luna_data_left_time, luna_data_left_length = gradient_arrays(luna_data_left[:, 1:])
+        luna_data_right_time, luna_data_right_length = gradient_arrays(luna_data_right[:, 1:])
 
         self.luna_database = [luna_data_left_time, luna_data_right_time, luna_data_left_length, luna_data_right_length]
 
@@ -101,9 +103,3 @@ class Panel:
 
     def __str__(self):
         return f"Panel {self.name}"
-
-
-panel = Panel('L1-23')
-panel.load_luna()
-panel.analyse_luna()
-panel.plot_luna()

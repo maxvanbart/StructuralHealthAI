@@ -5,6 +5,9 @@ from LUNA.luna_array_to_cluster import print_scores_of_clusters
 
 import os
 
+# This file is now redundant, everything runs via main.py!
+# This file is now redundant, everything runs via main.py!
+
 
 def demo(panel):
     plot_array = False
