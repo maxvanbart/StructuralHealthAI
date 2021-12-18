@@ -1,6 +1,6 @@
 import numpy as np
 
-from LUNA.luna_data_to_array import file_to_array, gradient_arrays, array_to_image
+from LUNA.luna_data_to_array import file_to_array, gradient_arrays, array_to_image, folder_to_array
 from LUNA.luna_array_to_cluster import k_means, mean_shift, aff_prop, agglo, array_to_cluster, cluster_to_image
 from LUNA.luna_plotting import plot_arrays, plot_cluster, plot_example_cluster
 from LUNA.luna_array_to_cluster import print_scores_of_clusters
@@ -15,7 +15,9 @@ def demo(panel, file):
     plot_aff_prop = False
     plot_agglo = False
 
-    path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{file}'
+    path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/'
+
+    folder_to_array(panel, path)
 
     parent_folder = os.path.dirname(__file__)
     files = os.listdir(parent_folder + f'/Files/L1-05/LUNA/')
@@ -45,9 +47,6 @@ def demo(panel, file):
     # plot time and space derivative image of right foot
     time_derivative_image_right = array_to_image(time_derivative_array_right)
     length_derivative_image_right = array_to_image(length_derivative_array_right)
-
-    image_time = np.hstack((time_derivative_image_left, time_derivative_image_right))
-    image_length = np.hstack((length_derivative_image_left, length_derivative_image_right))
 
     if plot_array:
         # plot all of the images of left and right foot
@@ -104,14 +103,23 @@ def demo(panel, file):
         plot_example_cluster(time_derivative_image_right, agglo_cluster_array, 'Agglomerative', agglo_values,
                              delta_length_right, delta_time_right)
 
-    final_cluster, array_time, array_length = array_to_cluster(time_derivative_array_left, time_derivative_array_right,
-                                                               length_derivative_array_left, length_derivative_array_right)
+    cluster_left, cluster_right = array_to_cluster(time_derivative_array_left, time_derivative_array_right,
+                                                   length_derivative_array_left, length_derivative_array_right)
 
-    image_cluster = cluster_to_image(final_cluster)
+    image_cluster_left = cluster_to_image(cluster_left)
+    image_cluster_right = cluster_to_image(cluster_right)
 
-    time, length = image_cluster.shape
+    time, length_left = time_derivative_array_left.shape
+    print(time, length_left)
 
-    plot_cluster(image_time, image_length, image_cluster, panel, 'k-means', length, time)
+    time, length_right = time_derivative_array_right.shape
+
+    print(time, length_right)
+    #
+    # plot_cluster(time_derivative_image_left, time_derivative_image_right, length_derivative_image_left, length_derivative_image_right,
+    #              image_cluster_left, image_cluster_right, panel, 'k-means', length_left, length_right, time)
+
+    plot_cluster(time_derivative_image_left, length_derivative_image_left, image_cluster_left, panel, 'k-means', length_left, time)
 
 
 # USER INPUT #
