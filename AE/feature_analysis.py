@@ -20,7 +20,7 @@ def freq_amp_energy_plot(database, ref_amp=10**(-5), title=None):
     plt.title(title)
     plt.xlabel("Peak amplitude of emission [dB]")
     plt.ylabel("Average frequency of emission [kHz]")
-    plt.scatter(data["amplitude"], data["frequency"], c=data["energy"], s=2)
+    plt.scatter(data["amplitude"], data["frequency"], c=data["energy"], s=2, norm=colors.LogNorm())
     cbar = plt.colorbar()
     cbar.set_label('Energy [$10^(-14)$ J]')
     plt.figure(figsize=(9, 7))
@@ -119,6 +119,7 @@ def freq_amp_time_cluster(database, ref_amp=10**(-5)):
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
     ndx = np.random.randint(0, len(amp), 100000)
+
     plt.ylim(0, 1000)
     plt.figure(figsize=(9, 7))
     plt.xlabel("Peak amplitude of emission [dB]")

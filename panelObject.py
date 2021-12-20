@@ -63,7 +63,7 @@ class Panel:
         # all_features_cluster(self.ae_clustered_database)
         # freq_amp_time_cluster(self.ae_clustered_database)
         # energy_time_cluster(self.ae_clustered_database)
-        # freq_amp_energy_plot(self.ae_database, title="Frequency, amplitude and energy for uncombined randomly sampled emissions in the L1-03 panel")
+        # freq_amp_energy_plot(self.ae_database.hits, title="Frequency, amplitude and energy for uncombined randomly sampled emissions in the L1-03 panel")
 
         print(f"Successfully analysed AE data for {self.name}.")
 
