@@ -136,14 +136,16 @@ def folder_to_array(panel, path):
         if file[:5] == panel:
             files_data.append(path + file)
 
-    left_arrays = []
-    right_arrays = []
+    final_left_array = []
+    final_right_array = []
 
     for file in files_data:
         left_array, right_array, _, _ = file_to_array(panel, file)
-        left_arrays.append(left_array), right_arrays.append(right_array)
 
-    final_array_left = np.vstack(array for array in left_arrays)
-    final_array_right = np.vstack(array for array in right_arrays)
+        if not final_left_array:
+            final_left_array, final_right_array = left_array, right_array
+        else:
+            final_left_array = np.vstack((final_left_array, left_array))
+            final_right_array = np.vstack((final_right_array, right_array))
 
-    return final_array_left, final_array_right
+    return final_left_array, final_right_array
