@@ -48,6 +48,7 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
                 n += len(batch)
                 plt.scatter(batch[:, 0], batch[:, 4], s=4)
             print(n)
+            plt.title("Batch division of datapoints")
             plt.xlabel("Time")
             plt.ylabel("RMS voltage")
             plt.show()
@@ -131,15 +132,17 @@ def batch_cluster(batch, debug=False, debug_graph=False):
     if debug:
         print(f"Amount of datapoints: {n_points}")
         print(f"Amount of clusters: {max(labels)}")
-        print(f"That is {100*round((n_points-len(labels))/n_points,3)}% less datapoints...")
+        print(f"That is {100*round((n_points-max(labels))/n_points,3)}% less datapoints...")
 
     # Plot a graph which shows the datapoints with labels
     if debug_graph:
         plt.scatter(batch[:, 0], batch[:, 4], s=4, c=clustering.labels_)
+        plt.title("Clustered datapoints")
         plt.xlabel("Time")
         plt.ylabel("RMS voltage")
-        for i, label in enumerate(labels):
-            plt.annotate(f"{int(batch[:, 8][i])}", (batch[:, 0][i], batch[:, 4][i]))
+        if True:
+            for i, label in enumerate(labels):
+                plt.annotate(f"{int(batch[:, -1][i])}", (batch[:, 0][i], batch[:, 4][i]))
         plt.show()
     return batch
 
@@ -191,10 +194,6 @@ def batch_combine_points(batch, debug=False):
             final_array.append(sum(array[:, 8]) / len(array[:, 8]))
             final_array = np.array(final_array)
 
-            if debug:
-                print(f"Mean for cluster {cluster}")
-                print(array.shape)
-                print(array)
             matrix.append(final_array)
 
     # Finally, we turn the matrix into a numpy array (index column already removed in the creation of the matrix)
