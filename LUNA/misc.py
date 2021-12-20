@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import time
 
 import datetime
 
@@ -136,3 +137,21 @@ def cluster_to_image(vector):
         image.append(image_row)
 
     return np.flip(image, axis=0)
+
+
+def do_in_batches(array, batches, function):
+    i = 0
+    output = None
+    values_output = []
+    for sub_array in np.array_split(array, batches, axis=0):
+        begin_time = time.time()
+        print(sub_array)
+        cluster, values = function(sub_array) # meanshift(sub_array)
+        values_output.append(values)
+        if i == 0:
+            output = cluster
+        if i != 0:
+            output = np.hstack((output, cluster))
+        i += 1
+        print(f'runtime for batch {i} = {begin_time - time.time()}')
+    return output, values_output
