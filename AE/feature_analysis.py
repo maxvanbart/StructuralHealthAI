@@ -17,13 +17,13 @@ def freq_amp_energy_plot(database, ref_amp=10**(-5), title=None):
     data = full_data.sample(n=100000, random_state=1)
 
     plt.ylim(0, 1000)
+    plt.figure(figsize=(9, 7))
     plt.title(title)
     plt.xlabel("Peak amplitude of emission [dB]")
     plt.ylabel("Average frequency of emission [kHz]")
     plt.scatter(data["amplitude"], data["frequency"], c=data["energy"], s=2, norm=colors.LogNorm())
     cbar = plt.colorbar()
-    cbar.set_label('Energy [$10^(-14)$ J]')
-    plt.figure(figsize=(9, 7))
+    cbar.set_label('Energy [$10^{-14}$ J]')
     plt.show()
 
 
@@ -52,9 +52,9 @@ def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
         n = 0
         for batch in batches:
             n += len(batch)
+            plt.figure(figsize=(9, 7))
             plt.scatter(batch[:, 0], batch[:, 4], s=4)
         print(n)
-        plt.figure(figsize=(9, 7))
         plt.xlabel("Time")
         plt.ylabel("RMS voltage")
         plt.show()
@@ -81,11 +81,11 @@ def freq_amp_cluster(database, ref_amp=10**(-5)):
     # clusters = sklearn.cluster.OPTICS(min_samples=2).fit(data.to_numpy())
 
     plt.ylim(0, 1000)
+    plt.figure(figsize=(9, 7))
     plt.title(f"DBSCAN Clustering with min_samples = {samp}")
     plt.xlabel("Peak amplitude of emission [dB]")
     plt.ylabel("Average frequency of emission [kHz]")
     plt.scatter(data["amplitude"], data["frequency"], c=clusters.labels_, s=4)
-    plt.figure(figsize=(9, 7))
     plt.show()
 
 
@@ -139,6 +139,7 @@ def energy_time_cluster(database):
     """OPTICS Clustering"""
     clusters = sklearn.cluster.OPTICS(min_samples=200).fit(data.to_numpy())
 
+    plt.figure(figsize=(9, 7))
     plt.xlabel("Time [s]")
     plt.ylabel("Peak energy of emission [$10^{-14}$ J]")
     plt.scatter(data["time"], data["energy"], c=clusters.labels_, s=10)
