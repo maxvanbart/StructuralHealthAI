@@ -49,8 +49,8 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
                 plt.scatter(batch[:, 0], batch[:, 4], s=4)
             print(n)
             plt.title("Batch division of datapoints")
-            plt.xlabel("Time")
-            plt.ylabel("RMS voltage")
+            plt.xlabel("Time [s]")
+            plt.ylabel("RMS voltage [µV]")
             plt.show()
 
         # cluster all the batches found by the batch splitter
@@ -136,14 +136,15 @@ def batch_cluster(batch, debug=False, debug_graph=False):
 
     # Plot a graph which shows the datapoints with labels
     if debug_graph:
-        plt.scatter(batch[:, 0], batch[:, 4], s=4, c=clustering.labels_)
-        plt.title("Clustered datapoints")
-        plt.xlabel("Time")
-        plt.ylabel("RMS voltage")
-        if True:
-            for i, label in enumerate(labels):
-                plt.annotate(f"{int(batch[:, -1][i])}", (batch[:, 0][i], batch[:, 4][i]))
-        plt.show()
+        for Annote in [True, False]:
+            plt.scatter(batch[:, 0], batch[:, 4], s=4, c=clustering.labels_)
+            plt.title("Clustered datapoints")
+            plt.xlabel("Time [s]")
+            plt.ylabel("RMS voltage [µV]")
+            if Annote:
+                for i, label in enumerate(labels):
+                    plt.annotate(f"{int(batch[:, -1][i])}", (batch[:, 0][i], batch[:, 4][i]))
+            plt.show()
     return batch
 
 
