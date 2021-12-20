@@ -1,5 +1,4 @@
 import time
-import tqdm
 
 from panelObject import Panel
 
@@ -12,14 +11,12 @@ if __name__ == "__main__":
     panels = Panel.initialize_all()
 
     # for every array we perform the following actions
-    for panel in tqdm.tqdm(panels):
+    for panel in panels:
         print('\n'+str(panel))
-
-        panel.load_ae()
-        panel.analyse_ae()
 
         panel.load_luna()
         panel.analyse_luna()
+        panel.plot_luna()
 
     # end time, it also prints the elapsed time
     t1 = time.time()

@@ -49,10 +49,10 @@ def file_to_array(panel, path):
                 data_lists_left.append([line_data[0]] + line_data[left_index_start:left_index_stop + 1])
                 data_lists_right.append([line_data[0]] + line_data[right_index_start:right_index_stop + 1])
 
-            array_left = np.array(data_lists_left, dtype=object)
-            array_right = np.array(data_lists_right, dtype=object)
+            data_left = np.array(data_lists_left, dtype=object)
+            data_right = np.array(data_lists_right, dtype=object)
 
-            return array_left, array_right, feature_labels_left, feature_labels_right
+            return data_left, data_right, feature_labels_left, feature_labels_right
 
     def convert_array(array):
         """
@@ -74,12 +74,12 @@ def file_to_array(panel, path):
                 else:
                     array[i, j] = float(array[i, j])
 
-    data_np_left, data_np_right, labels_left, labels_right = read_data_file()
+    array_left, array_right, labels_left, labels_right = read_data_file()
 
-    convert_array(data_np_left)
-    convert_array(data_np_right)
+    convert_array(array_left)
+    convert_array(array_right)
 
-    return data_np_left, data_np_right, labels_left, labels_right
+    return array_left, array_right, labels_left, labels_right
 
 
 def gradient_arrays(array):
@@ -125,28 +125,25 @@ def array_to_image(array):
     return np.flip(image, axis=0)
 
 
-def panel_to_array(path):
+def folder_to_array(panel, path):
     """
-    reads all files of a panel and converts them to left foot and right foot numpy arrays
+    Reads all files of a panel and converts them to left foot and right foot numpy arrays.
     """
+    files_all = os.listdir(path)
+    files_data = []
 
-    all_files = os.listdir(path)
-
-    files = []
-    for file in all_files:
-        if file[0] == 'L' and file[2] == '-' and file[-4:] == '.txt':
-            files.append(file)
+    for file in files_all:
+        if file[:5] == panel:
+            files_data.append(path + file)
 
     left_arrays = []
     right_arrays = []
-    for file in files:
-        data_np_left, data_np_right, labels_left, labels_right = file_to_array(file[:5], f'{path}{file}')
-        left_arrays.append(data_np_left)
-        right_arrays.append(data_np_right)
+
+    for file in files_data:
+        left_array, right_array, _, _ = file_to_array(panel, file)
+        left_arrays.append(left_array), right_arrays.append(right_array)
 
     final_array_left = np.vstack(array for array in left_arrays)
     final_array_right = np.vstack(array for array in right_arrays)
 
     return final_array_left, final_array_right
-
-panel_to_array('C:\\Users\\stein\\PycharmProjects\\StructuralHealthAI\\Files/L1-05/LUNA/')

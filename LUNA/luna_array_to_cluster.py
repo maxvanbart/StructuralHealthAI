@@ -90,17 +90,19 @@ def array_to_cluster(array_time_left, array_time_right, array_length_left, array
     cluster_length, cluster_length_values = k_means(array_length. reshape(-1, 1))
 
     cluster = cluster_time.reshape(array_time.shape) + cluster_length.reshape(array_length.shape)
+    split = array_time_left.shape[1]
+    cluster_left, cluster_right = cluster[:, :split], cluster[:, split:]
 
-    return cluster, array_time, array_length
+    return cluster_left, cluster_right
 
 
 def cluster_to_image(cluster):
-    cluster_image = np.zeros(cluster.shape)
+    cluster_image = np.ones(cluster.shape)
 
     for i in range(len(cluster)):
         for j in range(len(cluster[i])):
             if not cluster[i, j]:
-                cluster_image[i, j] = 1.0
+                cluster_image[i, j] = 0.0
 
     return np.flip(cluster_image, axis=0)
 

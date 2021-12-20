@@ -48,7 +48,7 @@ class Pridb:
         df = pd.DataFrame(data=data_array.values, columns=cols).sample(n = 25000)
         corr = df.corr()
         mask = np.triu(np.ones_like(corr, dtype=bool))
-        f, ax = plt.subplots(figsize=(11, 9))
+        figure, ax = plt.subplots(figsize=(11, 9))
         cmap = sns.diverging_palette(230, 20, as_cmap=True)
         sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0, square=True, linewidths=.5, cbar_kws={"shrink": .5})
         plt.show()'''
@@ -72,7 +72,7 @@ class Pridb:
         pass
 
     def __str__(self):
-        return f"Pridb object for {self.filename}"
+        return figure"Pridb object for {self.filename}"
 
     def __repr__(self):
-        return f"Pridb({self.filename})"
+        return figure"Pridb({self.filename})"
