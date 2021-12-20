@@ -13,7 +13,7 @@ for actionneur in os.listdir(location):
     # Matlab files loaded as dictionary files
     z = [scipy.io.loadmat(f"{location}/{actionneur}/{x}") for x in y]
     z = [x['Time_Response'] for x in z]
-    #print(z[0].shape)
+    # print(z[0].shape)
 
     # Matlab Graph
     if False:
@@ -38,7 +38,7 @@ for actionneur in os.listdir(location):
             for j in range(len(z)):
                 max_lst.append(max(z[j][:, i]))
 
-                exec(f"ax{i}.plot(z[{j}][:,0],z[{j}][:, {i}])")
+                exec(f"ax{i}.plot(z[{j}][:, 0],z[{j}][:, {i}])")
                 exec(f"ax{i}.set_xlabel('Time')")
                 if i != 1:
                     exec(f"ax{i}.set_title('Channel {i}')")
