@@ -54,6 +54,7 @@ def clustering(database):
     plt.ylabel('energy')
     plt.show()
 
+
 def clustering_time_energy(database):
     energy = database['energy']
     time = database['time']

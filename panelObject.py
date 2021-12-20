@@ -3,7 +3,7 @@ import os
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import freq_amp_cluster, all_features_cluster, create_cluster_batches, energy_time_cluster
+from AE.feature_analysis import freq_amp_cluster, all_features_cluster, create_cluster_batches, energy_time_cluster, freq_amp_energy_plot
 from AE.clustering import clustering_time_energy
 import pandas as pd
 
@@ -63,6 +63,7 @@ class Panel:
         # all_features_cluster(self.ae_clustered_database)
         # freq_amp_time_cluster(self.ae_clustered_database)
         # energy_time_cluster(self.ae_clustered_database)
+        # freq_amp_energy_plot(self.ae_database, title="Frequency, amplitude and energy for uncombined randomly sampled emissions in the L1-03 panel")
 
         print(f"Successfully analysed AE data for {self.name}.")
 
