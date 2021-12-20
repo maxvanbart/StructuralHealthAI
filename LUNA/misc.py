@@ -138,6 +138,7 @@ def cluster_to_image(vector):
 
     return np.flip(image, axis=0)
 
+
 def do_in_batches(array, batches, function):
     i = 0
     output = None
