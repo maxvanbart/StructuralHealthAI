@@ -35,13 +35,13 @@ def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
     # Larger maximum clusters will avoid clusters getting split up
     available_memory = psutil.virtual_memory()[0] / 1024 ** 3
     print(f"Detected {round(available_memory,1)}GB of system memory...")
-    max_size = 20000
+    '''max_size = 20000
     if available_memory > 30:
         max_size = 30000
     elif available_memory < 10:
         max_size = 10000
-
-    batches = batch_split_clst(df, max_size=max_size)
+    '''
+    batches = batch_split_clst(df)
 
     # print some information about the batches if debug is enabled
     if debug:
@@ -64,7 +64,7 @@ def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
     return batches
 
 
-def batch_split_clst(df, max_size=20000):
+def batch_split_clst(df, max_size=10000):
     """Batch splitting fro clustering using only a maximum size"""
     if type(df) == pd.core.frame.DataFrame:
         matrix = df.values.tolist()
@@ -77,7 +77,7 @@ def batch_split_clst(df, max_size=20000):
             batches.append([row])
         # after inserting the first row we use the max_size to decide if we put it in the latest batch
         # or if we should start a new batch
-        elif len(batches[-1]) > max_size:
+        elif len(batches[-1]) >= max_size:
             batches.append([row])
         else:
             batches[-1].append(row)
@@ -156,9 +156,10 @@ def energy_time_cluster(database):
     features = database
     energy, time = features["energy"], features["time"]
     full_data = pd.concat([energy, time], axis=1)
-    data = full_data.sample(n=10000, random_state=1)
+    data = full_data.sample(n=10000)
+    samp = 150
     """OPTICS Clustering"""
-    clusters = sklearn.cluster.OPTICS(min_samples=200).fit(data.to_numpy())
+    clusters = sklearn.cluster.KMeans(n_clusters=20).fit(data["energy"].to_numpy().reshape(-1, 1))
 
     plt.figure(figsize=(9, 7))
     plt.xlabel("Time [s]")
@@ -167,6 +168,7 @@ def energy_time_cluster(database):
     plt.ylabel("Peak energy of emission [$10^{-14}$ J]")
     plt.scatter(data["time"] / 100, data["energy"], c=clusters.labels_, s=10)
     plt.show()
+
 
 def batch_fre_amp_clst(database, ref_amp=10**(-5)):
     features = database
@@ -177,8 +179,21 @@ def batch_fre_amp_clst(database, ref_amp=10**(-5)):
     batches = create_cluster_batches(data)
     clusters = []
     for batch in tqdm.tqdm(batches):
-        clusters.append(sklearn.cluster.DBSCAN(min_samples=4).fit(batch).labels_)
+        clusters.append(sklearn.cluster.DBSCAN(eps=10, min_samples=150).fit(batch).labels_)
     clusters = [point for lst in clusters for point in lst]
     plt.scatter(data['amplitude'], data['frequency'], c=clusters, s=10)
     plt.show()
 
+
+def batch_eny_time_clst(database):
+    features = database
+    energy, time = features["energy"], features["time"]
+    full_data = pd.concat([energy, time], axis=1)
+    data = full_data.sample(100000)
+    batches = create_cluster_batches(data)
+    clusters = []
+    for batch in tqdm.tqdm(batches):
+        clusters.append(sklearn.cluster.KMeans(n_clusters=15).fit(np.array(batch)[:,0].reshape(-1, 1)).labels_)
+    clusters = [point for lst in clusters for point in lst]
+    plt.scatter(data['time'], data['energy'], c=clusters, s=10)
+    plt.show()
