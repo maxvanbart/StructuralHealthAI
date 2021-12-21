@@ -13,6 +13,7 @@ files_folder = "Files"
 class Panel:
     """An object which represents a panel"""
     def __init__(self, name, debug=False, debug_graph=False):
+        # General
         self.name = name
         self.debug = debug
         self.debug_graph = debug_graph
