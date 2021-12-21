@@ -65,6 +65,10 @@ def analyse_pzt(pzt_database, graphing=False):
 
         # get matlab_array for initial state
 
+        #####################
+        # Niels begins here #
+        #####################
+
         z = state.get_matlab_array()
         print(z)
 
