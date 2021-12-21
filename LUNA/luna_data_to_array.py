@@ -1,17 +1,18 @@
 import numpy as np
 
 import datetime
+import os
 
 
-def raw_to_array(panel):
+def file_to_array(panel, path):
     """
     Opens file in default LUNA data format and converts this into left and right foot numpy arrays.
     """
     def read_sensor_file():
-        sensor_file = 'LUNA/LUNA_sensor.txt'
+        sensor_file = '/LUNA_sensor.txt'
         sensor_data = {}
 
-        with open(sensor_file) as file:
+        with open(os.path.dirname(__file__) + sensor_file) as file:
             data = np.genfromtxt(file, delimiter=',', skip_header=True, dtype=str)
 
             for line in data:
@@ -23,7 +24,6 @@ def raw_to_array(panel):
         """
         Creates the unconverted vector and feature label list to be used later.
         """
-        path = f'Files/{panel[:5]}/LUNA/{panel}.txt'
 
         with open(path) as file:
             lines = file.readlines()
@@ -49,10 +49,10 @@ def raw_to_array(panel):
                 data_lists_left.append([line_data[0]] + line_data[left_index_start:left_index_stop + 1])
                 data_lists_right.append([line_data[0]] + line_data[right_index_start:right_index_stop + 1])
 
-            array_left = np.array(data_lists_left, dtype=object)
-            array_right = np.array(data_lists_right, dtype=object)
+            data_left = np.array(data_lists_left, dtype=object)
+            data_right = np.array(data_lists_right, dtype=object)
 
-            return array_left, array_right, feature_labels_left, feature_labels_right
+            return data_left, data_right, feature_labels_left, feature_labels_right
 
     def convert_array(array):
         """
@@ -74,12 +74,12 @@ def raw_to_array(panel):
                 else:
                     array[i, j] = float(array[i, j])
 
-    data_np_left, data_np_right, labels_left, labels_right = read_data_file()
+    array_left, array_right, labels_left, labels_right = read_data_file()
 
-    convert_array(data_np_left)
-    convert_array(data_np_right)
+    convert_array(array_left)
+    convert_array(array_right)
 
-    return data_np_left, data_np_right, labels_left, labels_right
+    return array_left, array_right, labels_left, labels_right
 
 
 def gradient_arrays(array):
@@ -123,3 +123,29 @@ def array_to_image(array):
         image.append(image_row)
 
     return np.flip(image, axis=0)
+
+
+def folder_to_array(panel, path):
+    """
+    Reads all files of a panel and converts them to left foot and right foot numpy arrays.
+    """
+    files_all = os.listdir(path)
+    files_data = []
+
+    for file in files_all:
+        if file[:5] == panel:
+            files_data.append(path + file)
+
+    final_left_array = []
+    final_right_array = []
+
+    for file in files_data:
+        left_array, right_array, _, _ = file_to_array(panel, file)
+
+        if not final_left_array:
+            final_left_array, final_right_array = left_array, right_array
+        else:
+            final_left_array = np.vstack((final_left_array, left_array))
+            final_right_array = np.vstack((final_right_array, right_array))
+
+    return final_left_array, final_right_array

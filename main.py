@@ -7,6 +7,7 @@ from panelObject import Panel
 if __name__ == "__main__":
     # start time
     t0 = time.time()
+
     # initialize all the panels from the folders
     panels = Panel.initialize_all()
 
@@ -18,7 +19,10 @@ if __name__ == "__main__":
         print('\n'+str(panel))
         # panel.load_ae()
         # panel.analyse_ae()
+
+        panel.load_luna()
         panel.analyse_luna()
+        panel.plot_luna()
 
     # end time, it also prints the elapsed time
     t1 = time.time()

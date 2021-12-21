@@ -1,11 +1,14 @@
 import os
 
-from LUNA.luna_main import demo
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
 from AE.feature_analysis import freq_amp_cluster, all_features_cluster, create_cluster_batches, energy_time_cluster, freq_amp_energy_plot
 from AE.clustering import clustering_time_energy
 import pandas as pd
+
+from LUNA.luna_data_to_array import folder_to_array, gradient_arrays, array_to_image
+from LUNA.luna_array_to_cluster import array_to_cluster, cluster_to_image
+from LUNA.luna_plotting import plot_cluster
 
 files_folder = "Files"
 
@@ -25,6 +28,11 @@ class Panel:
 
         # LUNA
         self.luna_database = None
+        self.luna_database_clustered = None
+
+        self.folder_parent = os.path.dirname(__file__)
+        self.folder_ae = None
+        self.folder_luna = self.folder_parent + f'/Files/{self.name}/LUNA/'
 
     @staticmethod
     def initialize_all(debug=False, debug_graph=False):
@@ -71,15 +79,43 @@ class Panel:
     # All the LUNA related code for the object
     def load_luna(self):
         """A function to load the LUNA data"""
-        # LUNA code related to loading stuff should go here
-        pass
-        # print(f"Successfully loaded LUNA data for {self.name}.")
+        luna_data_left, luna_data_right = folder_to_array(self.name, self.folder_luna)
+
+        # First entry each row removed as this is the timestamp!
+        luna_data_left_time, luna_data_left_length = gradient_arrays(luna_data_left[:, 1:])
+        luna_data_right_time, luna_data_right_length = gradient_arrays(luna_data_right[:, 1:])
+
+        self.luna_database = [luna_data_left_time, luna_data_right_time, luna_data_left_length, luna_data_right_length]
+
+        print(f"Successfully loaded LUNA data for {self.name}.")
 
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
-        # LUNA code relating to analysis should go here
-        demo(self.name)
+        time_left, time_right, length_left, length_right = self.luna_database
+
+        self.luna_database_clustered = array_to_cluster(time_left, time_right, length_left, length_right)
+
         print(f"Successfully analysed LUNA data for {self.name}.")
+
+    def plot_luna(self):
+        """Plots the final result for LUNA"""
+        time_left, time_right, length_left, length_right = self.luna_database
+        cluster_left, cluster_right = self.luna_database_clustered
+
+        image_time_left = array_to_image(time_left)
+        image_time_right = array_to_image(time_right)
+
+        image_length_left = array_to_image(length_left)
+        image_length_right = array_to_image(length_right)
+
+        image_cluster_left = cluster_to_image(cluster_left)
+        image_cluster_right = cluster_to_image(cluster_right)
+
+        time, delta_length_left = time_left.shape
+        time, delta_length_right = time_right.shape
+
+        plot_cluster(image_time_left, image_time_right, image_length_left, image_length_right,
+                     image_cluster_left, image_cluster_right, delta_length_left, delta_length_right, time, self.name)
 
     def time_synchronise(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
