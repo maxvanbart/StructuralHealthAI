@@ -69,6 +69,7 @@ def freq_amp_cluster(database, ref_amp=10**(-5)):
     amp_db = 20 * np.log10(amp / ref_amp)
     full_data = pd.concat([amp_db, freq], axis=1)
     data = full_data.sample(n=10000, random_state=1)
+    samp = 200
 
     """Different clustering algorithms to try"""
     """Agglomerative Clustering"""
@@ -118,8 +119,7 @@ def freq_amp_time_cluster(database, ref_amp=10**(-5)):
     features = database
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
-    ndx = np.random.randint(0, len(amp), 100000)
-
+    ndx = np.random.randint(0, len(amp), 10000)
     plt.ylim(0, 1000)
     plt.figure(figsize=(9, 7))
     plt.xlabel("Peak amplitude of emission [dB]")
@@ -134,13 +134,14 @@ def energy_time_cluster(database):
     features = database
     energy, time = features["energy"], features["time"]
     full_data = pd.concat([energy, time], axis=1)
-    data = full_data.sample(n=1000, random_state=1)
-
+    data = full_data.sample(n=10000, random_state=1)
     """OPTICS Clustering"""
     clusters = sklearn.cluster.OPTICS(min_samples=200).fit(data.to_numpy())
 
     plt.figure(figsize=(9, 7))
     plt.xlabel("Time [s]")
+    plt.title(f"OPTICS Clustering with min_samples = {samp}")
+    plt.xlabel("Time [$10^{-2}$ s]")
     plt.ylabel("Peak energy of emission [$10^{-14}$ J]")
-    plt.scatter(data["time"], data["energy"], c=clusters.labels_, s=10)
+    plt.scatter(data["time"] / 100, data["energy"], c=clusters.labels_, s=10)
     plt.show()
