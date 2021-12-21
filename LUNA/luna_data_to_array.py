@@ -142,7 +142,7 @@ def folder_to_array(panel, path):
     for file in files_data:
         left_array, right_array, _, _ = file_to_array(panel, file)
 
-        if not final_left_array:
+        if len(final_left_array) == 0:
             final_left_array, final_right_array = left_array, right_array
         else:
             final_left_array = np.vstack((final_left_array, left_array))

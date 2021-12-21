@@ -21,6 +21,9 @@ def demo(panel):
     # load data
     array_left, array_right = folder_to_array(panel, path)
 
+    for i in range(16):
+        print(array_left[i + 1, 0] - array_left[i, 0])
+
     # get indices for begin left and right
     delta_time, delta_length_left = array_left.shape
     delta_time, delta_length_right = array_right.shape
@@ -111,7 +114,7 @@ def demo(panel):
 
 # USER INPUT #
 
-panel_name = 'L1-05'
+panel_name = 'L1-04'
 
 # END USER INPUT #
 

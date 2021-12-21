@@ -82,6 +82,8 @@ class Panel:
         luna_data_left, luna_data_right = folder_to_array(self.name, self.folder_luna)
 
         # First entry each row removed as this is the timestamp!
+        timestamps_left, timestamps_right = luna_data_left[0], luna_data_right[0]
+
         luna_data_left_time, luna_data_left_length = gradient_arrays(luna_data_left[:, 1:])
         luna_data_right_time, luna_data_right_length = gradient_arrays(luna_data_right[:, 1:])
 
