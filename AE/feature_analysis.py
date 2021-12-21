@@ -15,10 +15,10 @@ def freq_amp_energy_plot(database, ref_amp=10**(-5), title=None):
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
     full_data = pd.concat([amp_db, freq, features["energy"]], axis=1)
-    data = full_data.sample(n=100000, random_state=1)
+    data = full_data.sample(n=100000)
 
-    plt.ylim(0, 1000)
     plt.figure(figsize=(9, 7))
+    plt.ylim(0, 1000)
     plt.title(title)
     plt.xlabel("Peak amplitude of emission [dB]")
     plt.ylabel("Average frequency of emission [kHz]")
@@ -28,7 +28,7 @@ def freq_amp_energy_plot(database, ref_amp=10**(-5), title=None):
     plt.show()
 
 
-def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
+def create_cluster_batches(df, delta=100, debug=False, debug_graph=False, max_size=10000):
     """Creation of batches for clustering"""
     print("Beginning feature clustering...")
     # Find the available memory and use it to determine the maximum cluster size
@@ -41,7 +41,7 @@ def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
     elif available_memory < 10:
         max_size = 10000
     '''
-    batches = batch_split_clst(df)
+    batches = batch_split_clst(df, max_size=max_size)
 
     # print some information about the batches if debug is enabled
     if debug:
@@ -64,7 +64,7 @@ def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
     return batches
 
 
-def batch_split_clst(df, max_size=10000):
+def batch_split_clst(df, max_size):
     """Batch splitting fro clustering using only a maximum size"""
     if type(df) == pd.core.frame.DataFrame:
         matrix = df.values.tolist()
@@ -90,22 +90,20 @@ def freq_amp_cluster(database, ref_amp=10**(-5)):
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
     full_data = pd.concat([amp_db, freq], axis=1)
-    data = full_data.sample(n=10000, random_state=1)
-    samp = 200
+    data = full_data.sample(n=30000)
 
     """Different clustering algorithms to try"""
     """Agglomerative Clustering"""
     # clusters = sklearn.cluster.AgglomerativeClustering(n_clusters=2, compute_full_tree=True).fit(data.to_numpy())
 
     """DBSCAN Clustering - good for outlier detection"""
-    clusters = sklearn.cluster.DBSCAN(eps=10, min_samples=samp).fit(data.to_numpy())
-
+    clusters = sklearn.cluster.DBSCAN(eps=10, min_samples=150).fit(data.to_numpy())
+    print(set(clusters.labels_))
     """OPTICS Clustering"""
     # clusters = sklearn.cluster.OPTICS(min_samples=2).fit(data.to_numpy())
 
     plt.ylim(0, 1000)
-    plt.figure(figsize=(9, 7))
-    plt.title(f"DBSCAN Clustering with min_samples = {samp}")
+    plt.title(f"DBSCAN Clustering with min_samples = 150")
     plt.xlabel("Peak amplitude of emission [dB]")
     plt.ylabel("Average frequency of emission [kHz]")
     plt.scatter(data["amplitude"], data["frequency"], c=clusters.labels_, s=4)
@@ -170,18 +168,28 @@ def energy_time_cluster(database):
     plt.show()
 
 
-def batch_fre_amp_clst(database, ref_amp=10**(-5)):
+def batch_fre_amp_clst(database, ref_amp=10**(-5),  min_samples=100):
+    """DBSCAN clustering"""
     features = database
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
     full_data = pd.concat([amp_db, freq], axis=1)
-    data = full_data.sample(100000)
-    batches = create_cluster_batches(data)
+    data = full_data.sample(len(full_data))
+    batches = create_cluster_batches(data, max_size=12000)
     clusters = []
     for batch in tqdm.tqdm(batches):
-        clusters.append(sklearn.cluster.DBSCAN(eps=10, min_samples=150).fit(batch).labels_)
+        new_cluster = sklearn.cluster.DBSCAN(eps=10, min_samples=min_samples).fit(batch).labels_
+        if len(set(new_cluster)) > 2:
+            print(set(new_cluster))
+            clusters.append(new_cluster)
+            # raise Exception("More than two clusters, unexpected result. Please change the max_size")
+        else:
+            clusters.append(new_cluster)
+
     clusters = [point for lst in clusters for point in lst]
-    plt.scatter(data['amplitude'], data['frequency'], c=clusters, s=10)
+    data["clusters"] = clusters
+    # data = data.loc[(data['clusters'] != 0) & (data['clusters'] != 1)]
+    plt.scatter(data['amplitude'], data['frequency'], c=data["clusters"], s=4)
     plt.show()
 
 
@@ -189,11 +197,11 @@ def batch_eny_time_clst(database):
     features = database
     energy, time = features["energy"], features["time"]
     full_data = pd.concat([energy, time], axis=1)
-    data = full_data.sample(100000)
+    data = full_data.sample(1000000)
     batches = create_cluster_batches(data)
     clusters = []
     for batch in tqdm.tqdm(batches):
-        clusters.append(sklearn.cluster.KMeans(n_clusters=15).fit(np.array(batch)[:,0].reshape(-1, 1)).labels_)
+        clusters.append(sklearn.cluster.KMeans(n_clusters=15).fit(np.array(batch)[:, 0].reshape(-1, 1)).labels_)
     clusters = [point for lst in clusters for point in lst]
     plt.scatter(data['time'], data['energy'], c=clusters, s=10)
     plt.show()

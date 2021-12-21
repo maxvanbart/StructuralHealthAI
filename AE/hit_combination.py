@@ -85,7 +85,7 @@ def batch_split(df, delta, dynamic_splitting=True, debug=False, max_size=20000):
             batches.append([row])
         # after inserting the first row we use the delta to decide if we put it in the latest batch
         # or if we should start a new batch
-        if abs(row[0] - batches[-1][-1][0]) > delta:
+        elif abs(row[0] - batches[-1][-1][0]) > delta:
             batches.append([row])
         else:
             batches[-1].append(row)
