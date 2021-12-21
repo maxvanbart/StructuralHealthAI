@@ -1,2 +1,0 @@
-L1-05-1.txt is a measurement before impact at 0 kN
-L1-05-2.txt is fatigue test

@@ -1,2 +1,0 @@
-L1-23-2 is from start to 30k cycles
-L1-23-3 is after 30k cycles
