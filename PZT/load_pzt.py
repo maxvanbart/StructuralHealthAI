@@ -8,7 +8,7 @@ class TestPZT:
     def __init__(self, name, location):
         self.name = name
         self.location = f"{location}/{name}"
-
+        self.matlab_array = None
         self.max_amp_dict = {}
         self.frequency = int(self.name[:-11])*1000
 
@@ -20,6 +20,7 @@ class TestPZT:
             # Matlab files loaded as dictionary files
             z = [scipy.io.loadmat(f"{self.location}/{actionneur}/{x}") for x in y]
             z = [x['Time_Response'] for x in z]
+            self.matlab_array = z
 
             for i in range(1, 9):
                 max_lst = list()
@@ -65,6 +66,9 @@ class StatePZT:
             # ['amplitude']
             self.frequency_dict[test.frequency] = (test.max_amp_dict)
         return self.frequency_dict, self.state_number
+
+    def get_matlab_array(self):
+        return self.test_lst
 
     def __repr__(self):
         return f"StatePZT({self.name})"

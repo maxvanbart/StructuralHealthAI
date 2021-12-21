@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from PZT.load_pzt import StatePZT
 
 
-def analyse_pzt(pzt_database, graphing=True):
+def analyse_pzt(pzt_database, graphing=False):
     # for every run we will do a seperate analysis
     for run in pzt_database:
         # here we extract all the frequencies which are present in the data
@@ -19,7 +19,6 @@ def analyse_pzt(pzt_database, graphing=True):
         frequency_array_dict = dict()
         for f in f_list:
             frequency_array_dict[f] = []
-
         # here we fill the frequency array dict with the results for the different frequencies
         for state in tqdm(pzt_database[run], desc='State'):
             z, state_number = state.analyse()
@@ -42,7 +41,10 @@ def analyse_pzt(pzt_database, graphing=True):
                 lst = [s[0]] + list(s[1]['Actionneur1'].values())
                 pre_array.append(lst)
 
-            # convert to an array and sort by state (which represents time)
+
+
+
+            # convert to an array and sort by state (which represents time) -> max amplitude
             X = np.array(pre_array)
             X = X[np.argsort(X[:, 0])]
 
@@ -60,3 +62,40 @@ def analyse_pzt(pzt_database, graphing=True):
                     else:
                         exec(f"ax{i}.set_title('Emission')")
                 plt.show()
+
+        # get matlab_array for initial state
+
+        z = state.get_matlab_array()
+        print(z)
+
+        for i in z:  # iterate over freq
+            # convert to numpy array
+            array_i = np.array(i.matlab_array)
+            print(array_i.shape)
+
+            avg_of_channels, time = get_avg_for_8channels(array_i)
+            print(avg_of_channels.shape)
+            plt.plot(avg_of_channels)
+            plt.show()
+
+        #         print(measure.shape)
+        #         print(measure[0])
+        #         if measure[0, -1] not in test_dict:
+        #             test_dict[measure[0, -1]] = 1
+        # print("last item of list =", test_dict)
+        break
+
+
+def get_avg_for_8channels(array):
+    # input = array for
+    avg_of_channels = []
+    for channel_numb in range(0, 8):  # do it amount of times there are channels
+        channel = []
+        for numb, measure in enumerate(array):  # iterate over measurements
+            time = measure[:, 0]
+            channels = measure[:, 1:]  # get rid of time
+            channel.append(channels[:, channel_numb])  # select channel 1
+        channel = np.average(channel, axis=0)
+        avg_of_channels.append(channel)
+    avg_of_channels = np.array(avg_of_channels)
+    return avg_of_channels.T, time

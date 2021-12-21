@@ -3,8 +3,8 @@ import scipy.io
 from matplotlib import pyplot as plt
 
 
-matlab_graph = True
-weird_graph = False
+matlab_graph = False
+weird_graph = True
 location = "Files/L1-03/PZT/L103_2019_12_06_17_35_05/State_1_2019_12_06_17_35_05/250kHz_5cycles"
 
 for actionneur in os.listdir(location):
