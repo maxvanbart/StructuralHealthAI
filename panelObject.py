@@ -22,9 +22,9 @@ class Panel:
         self.debug_graph = debug_graph
 
         # AE
+        self.ae_start_time = None
         self.ae_database = None
         self.ae_clustered_database = None
-        self.ae_start_time = None
 
         # LUNA
         self.luna_database = None
