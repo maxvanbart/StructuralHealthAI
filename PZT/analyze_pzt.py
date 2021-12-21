@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from PZT.load_pzt import StatePZT
 
 
-def analyse_pzt(pzt_database):
+def analyse_pzt(pzt_database, graphing=True):
     # for every run we will do a seperate analysis
     for run in pzt_database:
         # here we extract all the frequencies which are present in the data
@@ -33,7 +33,7 @@ def analyse_pzt(pzt_database):
             # Here we compile the data into an array to use for plotting
             # this header can be used with the generated array to get create a pandas dataframe
             # header = ['state', 'chan1', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6', 'chan7', 'chan8']
-            pre_array = []
+            # pre_array = []
             for s in frequency_array_dict[f]:
                 lst = [s[0]] + list(s[1]['Actionneur3'].values())
             # header = ['state', 'chan1', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6', 'chan7', 'chan8']
@@ -46,16 +46,17 @@ def analyse_pzt(pzt_database):
             X = np.array(pre_array)
             X = X[np.argsort(X[:, 0])]
 
-            # Do some graphing
-            fig, ((ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8)) = plt.subplots(nrows=2, ncols=4)
-            fig.suptitle(f"Max amp over states with f = {f}")
+            if graphing is True:
+                # Do some graphing
+                fig, ((ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8)) = plt.subplots(nrows=2, ncols=4)
+                fig.suptitle(f"Max amp over states with f = {f}")
 
-            # i indicates the i'th channel of the matrix
-            for i in range(1, 9):
-                exec(f"ax{i}.plot(X[:,0],X[:, {i}])")
-                exec(f"ax{i}.set_xlabel('Time')")
-                if i != 1:
-                    exec(f"ax{i}.set_title('Channel {i}')")
-                else:
-                    exec(f"ax{i}.set_title('Emission')")
-            plt.show()
+                # i indicates the i'th channel of the matrix
+                for i in range(1, 9):
+                    exec(f"ax{i}.plot(X[:,0],X[:, {i}])")
+                    exec(f"ax{i}.set_xlabel('Time')")
+                    if i != 1:
+                        exec(f"ax{i}.set_title('Channel {i}')")
+                    else:
+                        exec(f"ax{i}.set_title('Emission')")
+                plt.show()
