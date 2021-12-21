@@ -6,6 +6,7 @@ import psutil
 import pandas as pd
 from AE.hit_combination import batch_split
 import sklearn.cluster
+import tqdm
 
 
 def freq_amp_energy_plot(database, ref_amp=10**(-5), title=None):
@@ -28,6 +29,7 @@ def freq_amp_energy_plot(database, ref_amp=10**(-5), title=None):
 
 
 def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
+    """Creation of batches for clustering"""
     print("Beginning feature clustering...")
     # Find the available memory and use it to determine the maximum cluster size
     # Larger maximum clusters will avoid clusters getting split up
@@ -39,7 +41,7 @@ def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
     elif available_memory < 10:
         max_size = 10000
 
-    batches = batch_split(df, delta, debug=debug, max_size=max_size)
+    batches = batch_split_clst(df, max_size=max_size)
 
     # print some information about the batches if debug is enabled
     if debug:
@@ -59,6 +61,26 @@ def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
         plt.ylabel("RMS voltage")
         plt.show()
 
+    return batches
+
+
+def batch_split_clst(df, max_size=20000):
+    """Batch splitting fro clustering using only a maximum size"""
+    if type(df) == pd.core.frame.DataFrame:
+        matrix = df.values.tolist()
+    else:
+        matrix = df
+    batches = []
+    for row in matrix:
+        # insert the first row if the batches list is empty
+        if len(batches) == 0:
+            batches.append([row])
+        # after inserting the first row we use the max_size to decide if we put it in the latest batch
+        # or if we should start a new batch
+        elif len(batches[-1]) > max_size:
+            batches.append([row])
+        else:
+            batches[-1].append(row)
     return batches
 
 
@@ -145,3 +167,18 @@ def energy_time_cluster(database):
     plt.ylabel("Peak energy of emission [$10^{-14}$ J]")
     plt.scatter(data["time"] / 100, data["energy"], c=clusters.labels_, s=10)
     plt.show()
+
+def batch_fre_amp_clst(database, ref_amp=10**(-5)):
+    features = database
+    amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
+    amp_db = 20 * np.log10(amp / ref_amp)
+    full_data = pd.concat([amp_db, freq], axis=1)
+    data = full_data.sample(100000)
+    batches = create_cluster_batches(data)
+    clusters = []
+    for batch in tqdm.tqdm(batches):
+        clusters.append(sklearn.cluster.DBSCAN(min_samples=4).fit(batch).labels_)
+    clusters = [point for lst in clusters for point in lst]
+    plt.scatter(data['amplitude'], data['frequency'], c=clusters, s=10)
+    plt.show()
+
