@@ -4,6 +4,8 @@ import scipy.io
 import os
 import datetime
 
+from PZT.feature_extractor import relative_amp_calc, duration_calc, rise_time_calc, energy_calc, travel_time_calc
+
 
 class TestPZT:
     def __init__(self, name, location):
@@ -36,21 +38,29 @@ class TestPZT:
         for actionneur in self.matlab_array:
             # here we collect all the features that we want to use
             data = np.array(self.matlab_array[actionneur])
+            # get the maximum amplitudes
             maximum_column = np.max(data, axis=0)[1:]
             minimum_column = np.min(data, axis=0)[1:]
             abs_column = (abs(minimum_column) + maximum_column)*0.5
             # relative amplitude: amplitude relative to channel 1
+            relative_amp_column = relative_amp_calc(data)
             # duration: time from first threshold crossing to last
+            duration_column = duration_calc(data)
             # rise time: time from first threshold crossing to maximum amplitude
+            rise_time_column = rise_time_calc(data)
             # energy: area under the squared signal envelope
+            energy_column = energy_calc(data)
             # travel time: time between first threshold crossing of emitter to first threshold crossing of receiver
+            travel_time_column = travel_time_calc(data)
 
             # stack all the features together to compile to pandas dataframe
             index = np.array(range(1, 9))
+            # /!\ DO NOT FORGET TO STACK THE OTHER FEATURES ONCE FINISHED /!\
             z = np.vstack((index, maximum_column, minimum_column, abs_column))
             z = np.transpose(z)
 
             # put everything in a dataframe for easy storage
+            # /!\ DO NOT FORGET TO ADD HEADERS FOR THE OTHER FEATURES /!\
             header = ['index', 'max_amp', 'min_amp', 'avg_abs_amp']
             df = pd.DataFrame(data=z, columns=header)
             print(df)
