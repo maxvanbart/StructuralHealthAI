@@ -41,7 +41,7 @@ def time_sync(array_ae, array_luna, samples=100, margin_start=0, margin_end=10):
     timestamps_luna = timestamps_luna[cut_luna_start: cut_luna_end]
 
     # Translating LUNA and AE to synchronize start at zero time.
-    translation_ae = np.mean(timestamps_ae[:100])
+    translation_ae = np.mean(timestamps_ae[:samples])
     translation_luna = timestamps_luna[0] - intervals_big
 
     timestamps_ae = timestamps_ae - translation_ae
