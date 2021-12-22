@@ -6,7 +6,23 @@ import os
 from LUNA.luna_data_to_array import file_to_array
 
 
-def time_sync(array_ae, array_luna, samples=100, margin_start=0, margin_end=10):
+def synchronize_databases(array_ae, array_luna, samples=100, margin_start=0, margin_end=10):
+
+    def remove_outliers_luna():
+        pass
+
+    def remove_outliers_ae():
+        pass
+
+    def synchronize():
+        pass
+
+    def sanity_check():
+        pass
+
+    def package_databases():
+        pass
+
     # Getting timestamps from arrays.
     timestamps_luna = array_luna[:, 0] - array_luna[0, 0]
     timestamps_ae = array_ae[:, 0]
@@ -118,4 +134,4 @@ data_ae_np_unsorted = data_ae_pd_unsorted.to_numpy(dtype=float)
 data_ae_np = data_ae_np_unsorted[np.argsort(data_ae_np_unsorted[:, 0])]
 data_luna_np, _, _, _ = file_to_array(panel, path_luna)
 
-time_sync(data_ae_np, data_luna_np)
+synchronize_databases(data_ae_np, data_luna_np)
