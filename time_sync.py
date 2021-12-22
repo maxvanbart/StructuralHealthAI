@@ -6,7 +6,7 @@ import os
 from LUNA.luna_data_to_array import file_to_array
 
 # opening the files
-panel = 'L1-03'
+panel = 'L1-09'
 file_luna = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{panel}.txt'
 file_ae = os.path.dirname(__file__) + f'/Files/{panel}/AE/{panel}.csv'
 
@@ -27,9 +27,10 @@ for i in range(len(timestamps_LUNA)):
     if timestamps_LUNA[-i] - timestamps_LUNA[-i - 1] > mean_interval:
         cut = -i
 
-timestamps_LUNA = timestamps_LUNA[3:cut]
-
+timestamps_LUNA = timestamps_LUNA[:cut]
 y_values = np.ones((len(timestamps_LUNA))) * 0.000035
+
+# ------ works up until here --------
 
 cut_ae = -1
 
