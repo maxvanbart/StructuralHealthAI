@@ -4,7 +4,7 @@ import scipy.io
 import os
 import datetime
 
-from PZT.feature_extractor import relative_amp_calc, duration_calc, rise_time_calc, energy_calc, travel_time_calc
+from PZT.feature_extractor import relative_amp_calc, duration_calc, rise_time_calc, energy_calc, travel_time_calc, calculate_threshold
 
 
 class TestPZT:
@@ -44,14 +44,16 @@ class TestPZT:
             abs_column = (abs(minimum_column) + maximum_column)*0.5
             # relative amplitude: amplitude relative to channel 1
             relative_amp_column = relative_amp_calc(maximum_column)
+            # Threshold
+            threshold = calculate_threshold(maximum_column)
             # duration: time from first threshold crossing to last
-            duration_column = duration_calc(data)
+            duration_column = duration_calc(data, threshold)
             # rise time: time from first threshold crossing to maximum amplitude
-            rise_time_column = rise_time_calc(data)
+            rise_time_column = rise_time_calc(data, threshold)
             # energy: area under the squared signal envelope
-            energy_column = energy_calc(data)
+            energy_column = energy_calc(data, threshold)
             # travel time: time between first threshold crossing of emitter to first threshold crossing of receiver
-            travel_time_column = travel_time_calc(data)
+            travel_time_column = travel_time_calc(data, threshold)
 
             # stack all the features together to compile to pandas dataframe
             index = np.array(range(1, 9))

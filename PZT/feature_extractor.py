@@ -16,21 +16,25 @@ def relative_amp_calc(maximum_column):
     return relative_max_column
 
 
-def duration_calc(data):
+def calculate_threshold(max_amp):
+    return max_amp * 0.1
+
+
+def duration_calc(data, threshold):
     """duration: time from first threshold crossing to last"""
     pass
 
 
-def rise_time_calc(data):
+def rise_time_calc(data, threshold):
     """rise time: time from first threshold crossing to maximum amplitude"""
     pass
 
 
-def energy_calc(data):
+def energy_calc(data, threshold):
     """energy: area under the squared signal envelope"""
     pass
 
 
-def travel_time_calc(data):
+def travel_time_calc(data, threshold):
     """travel time: time between first threshold crossing of emitter to first threshold crossing of receiver"""
     pass
