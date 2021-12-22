@@ -17,6 +17,7 @@ def freq_amp_energy_plot(database, ref_amp=10**(-5), title=None):
     full_data = pd.concat([amp_db, freq, features["energy"]], axis=1)
     data = full_data.sample(n=100000)
 
+    plt.ylim(0, 1000)
     plt.figure(figsize=(9, 7))
     plt.ylim(0, 1000)
     plt.title(title)
@@ -90,20 +91,20 @@ def freq_amp_cluster(database, ref_amp=10**(-5)):
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
     full_data = pd.concat([amp_db, freq], axis=1)
-    data = full_data.sample(n=30000)
+    data = full_data.sample(n=100000)
 
     """Different clustering algorithms to try"""
     """Agglomerative Clustering"""
     # clusters = sklearn.cluster.AgglomerativeClustering(n_clusters=2, compute_full_tree=True).fit(data.to_numpy())
 
     """DBSCAN Clustering - good for outlier detection"""
-    clusters = sklearn.cluster.DBSCAN(eps=10, min_samples=150).fit(data.to_numpy())
+    clusters = sklearn.cluster.DBSCAN(eps=10, min_samples=1700).fit(data.to_numpy())
     print(set(clusters.labels_))
     """OPTICS Clustering"""
     # clusters = sklearn.cluster.OPTICS(min_samples=2).fit(data.to_numpy())
 
     plt.ylim(0, 1000)
-    plt.title(f"DBSCAN Clustering with min_samples = 150")
+    plt.title(f"DBSCAN Clustering with min_samples = 1700")
     plt.xlabel("Peak amplitude of emission [dB]")
     plt.ylabel("Average frequency of emission [kHz]")
     plt.scatter(data["amplitude"], data["frequency"], c=clusters.labels_, s=4)
@@ -153,35 +154,36 @@ def freq_amp_time_cluster(database, ref_amp=10**(-5)):
 def energy_time_cluster(database):
     features = database
     energy, time = features["energy"], features["time"]
-    full_data = pd.concat([energy, time], axis=1)
-    data = full_data.sample(n=10000)
-    samp = 150
-    """OPTICS Clustering"""
-    clusters = sklearn.cluster.KMeans(n_clusters=20).fit(data["energy"].to_numpy().reshape(-1, 1))
-
+    data = pd.concat([energy, time], axis=1)
+    labels = []
+    percent = np.percentile(energy, 99)
+    for i in energy:
+        if i > percent:
+            labels.append(1)
+        else:
+            labels.append(0)
     plt.figure(figsize=(9, 7))
     plt.xlabel("Time [s]")
-    plt.title(f"OPTICS Clustering with min_samples = {samp}")
+    plt.title(f"Clustering?")
     plt.xlabel("Time [$10^{-2}$ s]")
     plt.ylabel("Peak energy of emission [$10^{-14}$ J]")
-    plt.scatter(data["time"] / 100, data["energy"], c=clusters.labels_, s=10)
+    plt.scatter(data["time"], data["energy"], c=labels, s=1)
     plt.show()
 
 
-def batch_fre_amp_clst(database, ref_amp=10**(-5),  min_samples=150):
+def batch_fre_amp_clst(database, ref_amp=10**(-5),  min_samples=1500):
     """DBSCAN clustering"""
     features = database
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
     full_data = pd.concat([amp_db, freq], axis=1)
-    full_data = full_data.sample(1000000)
-    data = full_data.sample(10000)
+    data = full_data.sample(100000)
     init_clusters = sklearn.cluster.DBSCAN(eps=10, min_samples=min_samples).fit(data).labels_
 
     if len(set(init_clusters)) != 2:
         raise Exception(f"Unexpected number of clusters ({set(init_clusters)} detected, try again.")
     else:
-        knn_classification = sklearn.neighbors.KNeighborsClassifier(n_neighbors=30)
+        knn_classification = sklearn.neighbors.KNeighborsClassifier(n_neighbors=100, weights='distance')
         knn_classification.fit(data, init_clusters)
         clusters = knn_classification.predict(full_data)
 
