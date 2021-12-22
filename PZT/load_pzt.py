@@ -43,7 +43,7 @@ class TestPZT:
             minimum_column = np.min(data, axis=0)[1:]
             abs_column = (abs(minimum_column) + maximum_column)*0.5
             # relative amplitude: amplitude relative to channel 1
-            relative_amp_column = relative_amp_calc(data)
+            relative_amp_column = relative_amp_calc(maximum_column)
             # duration: time from first threshold crossing to last
             duration_column = duration_calc(data)
             # rise time: time from first threshold crossing to maximum amplitude
