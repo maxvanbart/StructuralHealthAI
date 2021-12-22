@@ -36,7 +36,10 @@ class TestPZT:
 
     def analyse(self):
         for actionneur in self.matlab_array:
+            #######################################################
             # here we collect all the features that we want to use
+            #######################################################
+
             data = np.array(self.matlab_array[actionneur])
             # get the maximum amplitudes
             maximum_column = np.max(data, axis=0)[1:]
