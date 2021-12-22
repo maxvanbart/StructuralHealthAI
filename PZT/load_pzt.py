@@ -63,7 +63,6 @@ class TestPZT:
             # /!\ DO NOT FORGET TO ADD HEADERS FOR THE OTHER FEATURES /!\
             header = ['index', 'max_amp', 'min_amp', 'avg_abs_amp']
             df = pd.DataFrame(data=z, columns=header)
-            print(df)
             self.feature_dict[actionneur] = df
 
     def __repr__(self):
@@ -104,7 +103,8 @@ class StatePZT:
 
         for test in self.test_lst:
             # ['amplitude']
-            self.frequency_dict[test.frequency] = test.max_amp_dict
+            # /!\ THIS USED TO RETURN THE MAX AMP DICT BUT THAT IS GONE FOR OBVIOUS REASONS /!\
+            self.frequency_dict[test.frequency] = None
         return self.frequency_dict, self.state_number
 
     def get_matlab_array(self):
