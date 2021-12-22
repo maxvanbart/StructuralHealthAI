@@ -54,20 +54,23 @@ def duration_calc(database, threshold, debug_graph=False):
 
 def rise_time_calc(data, threshold, max_column):
     """rise time: time from first threshold crossing to maximum amplitude"""
+    time_array = data[:, 0]
+    data = data[:, 1:]
+    time_increment = time_array[1].round(8)
+    print("new freq")
+    output = []
 
-    new_data = np.array([[1 if x >= threshold[y.index(x)] else 0 for x in y] for y in data[:, 1:]])
+    # Extract first positive threshold crossing
+    data_list = list(data)
+    data_list = [list(x) for x in data_list]
+    new_data = np.array([[1 if x >= threshold[y.index(x)] else 0 for x in y] for y in data_list])
+    start_index = list(np.argmax(new_data, axis=0))
+    first_threshold_crossing_time = np.array([time_array[x] for x in start_index])
 
-    # time_array = data[:, 0]
-    # time_increment = time_array[1].round(8)
-    # print("new freq")
-    # output = []
-    # for channelnumb, channeldata in enumerate(data[:, 1:].T):
-    #     max_amp_crossing_index = (np.abs(channeldata-max_column[channelnumb])).argmin()
-    #     threshold_crossing_index = (np.abs(channeldata[:max_amp_crossing_index]-threshold[channelnumb])).argmin()
-    #     difference = max_amp_crossing_index - threshold_crossing_index
-    #     output.append((difference*time_increment).round(7))
-    # print(output)
-    return output
+    # Extract time for maximum threshold
+    max_amp_crossing_index = data.argmax(axis=0)
+    max_amp_time = np.array([time_array[x] for x in max_amp_crossing_index])
+    return max_amp_time - first_threshold_crossing_time
 
 
 def energy_calc(data, threshold):
