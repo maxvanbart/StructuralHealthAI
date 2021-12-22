@@ -3,8 +3,7 @@ import os
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import freq_amp_cluster, all_features_cluster, create_cluster_batches, energy_time_cluster, freq_amp_energy_plot, batch_fre_amp_clst
-from AE.clustering import clustering_time_energy
+from AE.feature_analysis import energy_time_cluster, freq_amp_cluster
 from AE.feature_extraction import frequency_extraction
 import pandas as pd
 
@@ -60,6 +59,10 @@ class Panel:
 
             # adding extracted features and clusters
             self.ae_clustered_database["frequency"] = frequency_extraction(self.ae_clustered_database)
+            self.ae_clustered_database["energy_outlier"] = energy_time_cluster(self.ae_clustered_database)
+            # self.ae_clustered_database["frequency_outlier"] = batch_fre_amp_clst(self.ae_clustered_database)
+
+            # create new CSV
             pd.DataFrame(self.ae_clustered_database).to_csv(location, index=False)
 
         # self.ae_database.corr_matrix()
