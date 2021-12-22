@@ -11,6 +11,8 @@ def time_sync(array_ae, array_luna, samples=100, margin_start=0, margin_end=10):
     timestamps_luna = array_luna[:, 0] - array_luna[0, 0]
     timestamps_ae = array_ae[:, 0]
 
+    values_ae = array_ae[:, 4]
+
     # Getting the intervals from LUNA.
     intervals_np = [timestamps_luna[i + 1] - timestamps_luna[i] for i in range(len(timestamps_luna) - 1)]
     intervals_pd = pd.DataFrame(intervals_np, dtype=float)
@@ -66,24 +68,46 @@ def time_sync(array_ae, array_luna, samples=100, margin_start=0, margin_end=10):
     # FROM HERE NOT RELEVANT FOR OTHER MAX #
 
     # Sanity check if data is correctly aligned.
-    values_luna = np.ones(len(timestamps_luna))
-    values_ae = np.zeros(len(timestamps_ae))
+    mean_ae, std_ae = np.mean(values_ae), np.std(values_ae)
 
-    image_array_luna = np.vstack((timestamps_luna, values_luna))
-    image_array_ae = np.vstack((timestamps_ae, values_ae))
+    bar = mean_ae - 1 * std_ae
 
-    sample_y_values_LUNA = np.ones((len(timestamps_luna))) * 0.000035
-    sample_y_values_AE = data_ae_np[cut_ae_start: cut_ae_end, 4]
+    values_ae = np.array([1 if value_ae > bar else 0 for value_ae in values_ae[cut_ae_start: cut_ae_end]])
 
+    sample_y_values_LUNA = np.ones((len(timestamps_luna)))
+    sample_y_values_AE = values_ae
+
+    length_set = 10 * intervals_big + 9 * intervals_small
+
+    with open('reference_ae.txt') as file:
+        reference_array_ae = np.genfromtxt(file)
+    with open('reference_luna.txt') as file:
+        reference_array_luna = np.genfromtxt(file)
+
+    plt.subplot(2, 1, 1)
     plt.scatter(timestamps_ae, sample_y_values_AE)
-    plt.scatter(timestamps_luna, sample_y_values_LUNA)
+    plt.scatter(timestamps_luna, sample_y_values_LUNA, s=100)
+    plt.xlim(-50, length_set + 50)
+    plt.ylim(0.99, 1.01)
+    plt.title('Synced panel')
+    plt.xticks([])
+    plt.yticks([])
+
+    plt.subplot(2, 1, 2)
+    plt.scatter(reference_array_ae[:, 0], reference_array_ae[:, 1])
+    plt.scatter(reference_array_luna[:, 0], reference_array_luna[:, 1], s=100)
+    plt.xlim(-50, length_set + 50)
+    plt.ylim(0.99, 1.01)
+    plt.title('Correctly synced')
+    plt.xticks([])
+    plt.yticks([])
     plt.show()
 
     return (cut_ae_start, cut_ae_end, translation_ae), (cut_luna_start, cut_luna_end, translation_luna)
 
 
 # opening the files
-panel = 'L1-03'
+panel = 'L1-09'
 path_luna = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{panel}.txt'
 path_ae = os.path.dirname(__file__) + f'/Files/{panel}/AE/{panel}.csv'
 
