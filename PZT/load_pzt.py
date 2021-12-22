@@ -108,7 +108,7 @@ class StatePZT:
         for test in self.test_lst:
             # ['amplitude']
             # /!\ THIS USED TO RETURN THE MAX AMP DICT BUT THAT IS GONE FOR OBVIOUS REASONS /!\
-            self.frequency_dict[test.frequency] = None
+            self.frequency_dict[test.frequency] = test.feature_dict
         return self.frequency_dict, self.state_number
 
     def get_matlab_array(self):

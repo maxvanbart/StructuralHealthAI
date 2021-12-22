@@ -28,39 +28,47 @@ def analyse_pzt(pzt_database, graphing=False):
                 # per channel
                 frequency_array_dict[f].append((state_number, z[f]))
 
-        for f in frequency_array_dict:
-            # Here we compile the data into an array to use for plotting
-            # this header can be used with the generated array to get create a pandas dataframe
-            # header = ['state', 'chan1', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6', 'chan7', 'chan8']
-            # pre_array = []
-            for s in frequency_array_dict[f]:
-                lst = [s[0]] + list(s[1]['Actionneur3'].values())
-            # header = ['state', 'chan1', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6', 'chan7', 'chan8']
-            pre_array = []
-            for s in frequency_array_dict[f]:
-                lst = [s[0]] + list(s[1]['Actionneur1'].values())
-                pre_array.append(lst)
+        break
+        ###########################################
+        # # # Code of Niels # # #
+        ###########################################
 
-
-
-
-            # convert to an array and sort by state (which represents time) -> max amplitude
-            X = np.array(pre_array)
-            X = X[np.argsort(X[:, 0])]
-
-            if graphing is True:
-                # Do some graphing
-                fig, ((ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8)) = plt.subplots(nrows=2, ncols=4)
-                fig.suptitle(f"Max amp over states with f = {f}")
-
-                # i indicates the i'th channel of the matrix
-                for i in range(1, 9):
-                    exec(f"ax{i}.plot(X[:,0],X[:, {i}])")
-                    exec(f"ax{i}.set_xlabel('Time')")
-                    if i != 1:
-                        exec(f"ax{i}.set_title('Channel {i}')")
-                    else:
-                        exec(f"ax{i}.set_title('Emission')")
+        features_to_plot = [1, 2, 3, 4, 5, 6, 7, 8]
+        # [[2d], [2d], ... feature 7]
+        for freq in frequency_array_dict:  # select freq -> get state and features dict for each channel
+            state = frequency_array_dict[freq][0][0]
+            features_dict_for_each_channel = frequency_array_dict[freq][0][1]
+            for channel in features_dict_for_each_channel:  # select a channel -> get df
+                print(channel)
+                df = features_dict_for_each_channel[channel]
+                for numb, feature in enumerate(df):     # iterate over features
+                    features_to_plot[numb] = np.array(df[feature])
+                for numb, feature in enumerate(features_to_plot):
+                    plt.plot(feature, label=f"feature {numb}")
+                plt.legend()
                 plt.show()
+            break  # to get features from one source channel
+        break  # just to get one freq
 
 
+
+
+
+
+
+        fig, axs = plt.subplots(2, 4)  # y, x
+
+        axs[0, 0].plot(original_data, state)
+        axs[0, 0].set_title('Axis [0, 0]')
+
+        #  feature 1
+        axs[0, 1].plot(features_plot[0], y, 'tab:orange')
+        axs[0, 1].set_title('Axis [0, 1]')
+        #  feature 2
+        axs[1, 0].plot(x, -y, 'tab:green')
+        axs[1, 0].set_title('Axis [1, 0]')
+        #  feature 3
+        axs[1, 1].plot(x, -y, 'tab:red')
+        axs[1, 1].set_title('Axis [1, 1]')
+
+        break  # just first map for shape
