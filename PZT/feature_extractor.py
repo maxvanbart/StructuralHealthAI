@@ -52,13 +52,10 @@ def duration_calc(database, threshold, debug_graph=False):
     return end_time - start_time
 
 
-def rise_time_calc(data, threshold, max_column):
+def rise_time_calc(data, threshold):
     """rise time: time from first threshold crossing to maximum amplitude"""
     time_array = data[:, 0]
     data = data[:, 1:]
-    time_increment = time_array[1].round(8)
-    print("new freq")
-    output = []
 
     # Extract first positive threshold crossing
     data_list = list(data)
@@ -80,4 +77,14 @@ def energy_calc(data, threshold):
 
 def travel_time_calc(data, threshold):
     """travel time: time between first threshold crossing of emitter to first threshold crossing of receiver"""
-    pass
+    time_array = data[:, 0]
+    data = data[:, 1:]
+
+    # Extract first positive threshold crossing
+    data_list = list(data)
+    data_list = [list(x) for x in data_list]
+    new_data = np.array([[1 if x >= threshold[y.index(x)] else 0 for x in y] for y in data_list])
+    start_index = list(np.argmax(new_data, axis=0))
+    first_threshold_crossing_time = np.array([time_array[x] for x in start_index])
+    travel_time = first_threshold_crossing_time - first_threshold_crossing_time[0]
+    return travel_time
