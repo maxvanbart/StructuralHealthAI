@@ -4,7 +4,7 @@ import pandas as pd
 # all functions should return a 1x8 numpy array
 
 def relative_amp_calc(data):
-    """relative amplitude: amplitude relative to channel 1"""
+    """relative amplitude: max amplitude relative to channel 1"""
     pass
 
 def duration_calc(data):

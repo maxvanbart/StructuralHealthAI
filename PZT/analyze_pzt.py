@@ -63,43 +63,4 @@ def analyse_pzt(pzt_database, graphing=False):
                         exec(f"ax{i}.set_title('Emission')")
                 plt.show()
 
-        # get matlab_array for initial state
 
-        #####################
-        # Niels begins here #
-        #####################
-
-        z = state.get_matlab_array()
-        print(z)
-
-        for i in z:  # iterate over freq
-            # convert to numpy array
-            array_i = np.array(i.matlab_array)
-            print(array_i.shape)
-
-            avg_of_channels, time = get_avg_for_8channels(array_i)
-            print(avg_of_channels.shape)
-            plt.plot(avg_of_channels)
-            plt.show()
-
-        #         print(measure.shape)
-        #         print(measure[0])
-        #         if measure[0, -1] not in test_dict:
-        #             test_dict[measure[0, -1]] = 1
-        # print("last item of list =", test_dict)
-        break
-
-
-def get_avg_for_8channels(array):
-    # input = array for
-    avg_of_channels = []
-    for channel_numb in range(0, 8):  # do it amount of times there are channels
-        channel = []
-        for numb, measure in enumerate(array):  # iterate over measurements
-            time = measure[:, 0]
-            channels = measure[:, 1:]  # get rid of time
-            channel.append(channels[:, channel_numb])  # select channel 1
-        channel = np.average(channel, axis=0)
-        avg_of_channels.append(channel)
-    avg_of_channels = np.array(avg_of_channels)
-    return avg_of_channels.T, time
