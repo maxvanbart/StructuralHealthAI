@@ -58,13 +58,16 @@ class TestPZT:
             # stack all the features together to compile to pandas dataframe
             index = np.array(range(1, 9))
             # /!\ DO NOT FORGET TO STACK THE OTHER FEATURES ONCE FINISHED /!\
-            z = np.vstack((index, maximum_column, minimum_column, abs_column))
+            z = np.vstack((index, maximum_column, minimum_column, abs_column, relative_amp_column, duration_column,
+                           rise_time_column, travel_time_column))
             z = np.transpose(z)
 
             # put everything in a dataframe for easy storage
             # /!\ DO NOT FORGET TO ADD HEADERS FOR THE OTHER FEATURES /!\
-            header = ['index', 'max_amp', 'min_amp', 'avg_abs_amp']
+            header = ['index', 'max_amp', 'min_amp', 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time',
+                      'travel_time']
             df = pd.DataFrame(data=z, columns=header)
+            print(df)
             self.feature_dict[actionneur] = df
 
     def __repr__(self):
