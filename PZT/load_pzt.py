@@ -49,7 +49,7 @@ class TestPZT:
             # duration: time from first threshold crossing to last
             duration_column = duration_calc(data, threshold)
             # rise time: time from first threshold crossing to maximum amplitude
-            rise_time_column = rise_time_calc(data, threshold)
+            rise_time_column = rise_time_calc(data, threshold, maximum_column)
             # energy: area under the squared signal envelope
             energy_column = energy_calc(data, threshold)
             # travel time: time between first threshold crossing of emitter to first threshold crossing of receiver
