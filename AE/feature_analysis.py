@@ -6,7 +6,7 @@ import psutil
 import pandas as pd
 from AE.hit_combination import batch_split
 import sklearn.cluster
-import tqdm
+from tqdm import tqdm
 
 
 def freq_amp_energy_plot(database, ref_amp=10**(-5), title=None):
@@ -168,29 +168,43 @@ def energy_time_cluster(database):
     plt.show()
 
 
-def batch_fre_amp_clst(database, ref_amp=10**(-5),  min_samples=100):
+def batch_fre_amp_clst(database, ref_amp=10**(-5),  min_samples=150):
     """DBSCAN clustering"""
     features = database
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
     full_data = pd.concat([amp_db, freq], axis=1)
-    data = full_data.sample(len(full_data))
-    batches = create_cluster_batches(data, max_size=12000)
-    clusters = []
-    for batch in tqdm.tqdm(batches):
-        new_cluster = sklearn.cluster.DBSCAN(eps=10, min_samples=min_samples).fit(batch).labels_
-        if len(set(new_cluster)) > 2:
-            print(set(new_cluster))
-            clusters.append(new_cluster)
-            # raise Exception("More than two clusters, unexpected result. Please change the max_size")
-        else:
-            clusters.append(new_cluster)
+    full_data = full_data.sample(1000000)
+    data = full_data.sample(10000)
+    init_clusters = sklearn.cluster.DBSCAN(eps=10, min_samples=min_samples).fit(data).labels_
 
-    clusters = [point for lst in clusters for point in lst]
-    data["clusters"] = clusters
-    # data = data.loc[(data['clusters'] != 0) & (data['clusters'] != 1)]
-    plt.scatter(data['amplitude'], data['frequency'], c=data["clusters"], s=4)
+    if len(set(init_clusters)) != 2:
+        raise Exception(f"Unexpected number of clusters ({set(init_clusters)} detected, try again.")
+    else:
+        knn_classification = sklearn.neighbors.KNeighborsClassifier(n_neighbors=30)
+        knn_classification.fit(data, init_clusters)
+        clusters = knn_classification.predict(full_data)
+
+    full_data["clusters"] = clusters
+    plt.scatter(full_data['amplitude'], full_data['frequency'], c=full_data["clusters"], s=4)
     plt.show()
+
+    # batches = create_cluster_batches(data, max_size=12000)
+    # clusters = []
+    # for batch in tqdm.tqdm(batches):
+    #     new_cluster = sklearn.cluster.DBSCAN(eps=10, min_samples=min_samples).fit(batch).labels_
+    #     if len(set(new_cluster)) > 2:
+    #         print(set(new_cluster))
+    #         clusters.append(new_cluster)
+    #         # raise Exception("More than two clusters, unexpected result. Please change the max_size")
+    #     else:
+    #         clusters.append(new_cluster)
+    #
+    # clusters = [point for lst in clusters for point in lst]
+    # data["clusters"] = clusters
+    # # data = data.loc[(data['clusters'] != 0) & (data['clusters'] != 1)]
+    # plt.scatter(data['amplitude'], data['frequency'], c=data["clusters"], s=4)
+    # plt.show()
 
 
 def batch_eny_time_clst(database):
