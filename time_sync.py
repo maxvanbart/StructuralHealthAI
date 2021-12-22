@@ -6,6 +6,10 @@ import os
 from LUNA.luna_data_to_array import file_to_array
 
 
+def package_databases():
+    pass
+
+
 def synchronize_databases(array_ae, array_luna, samples=100, margin_start=0, margin_end=10):
 
     def remove_outliers_luna():
@@ -18,9 +22,6 @@ def synchronize_databases(array_ae, array_luna, samples=100, margin_start=0, mar
         pass
 
     def sanity_check():
-        pass
-
-    def package_databases():
         pass
 
     # Getting timestamps from arrays.
