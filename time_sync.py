@@ -23,7 +23,7 @@ def package_databases(data_ae_np, data_luna_np, timestamps_ae, timestamps_luna):
     for i in range(len(timestamps_luna) - 1):
 
         # check if LUNA timestamp is the first one of a big batch with 10 smaller ribbons.
-        if intervals_np[i] < intervals_small + 20 and intervals_np[i] > intervals_small - 20:
+        if intervals_small - 20 < intervals_np[i] < intervals_small + 20:
             if i == 0 or intervals_np[i - 1] > 2 * intervals_big:
                 dict = {}
                 dict['LUNA_end'] = data_luna_np[i]
@@ -40,7 +40,7 @@ def package_databases(data_ae_np, data_luna_np, timestamps_ae, timestamps_luna):
                 final_array[row].append(dict)
 
         # Check if LUNA timestamp is a 'LUNA start' point
-        elif intervals_np[i] < intervals_big + 20 and intervals_np[i] > intervals_big - 20:
+        elif intervals_big - 20 < intervals_np[i] < intervals_big + 20:
             dict = {}
             dict['LUNA_start'] = data_luna_np[i]
             dict['LUNA_end'] = data_luna_np[i+1]
@@ -48,7 +48,7 @@ def package_databases(data_ae_np, data_luna_np, timestamps_ae, timestamps_luna):
             # collect all corresponding AE data
             ae_lst = []
             for j in range(len(timestamps_ae)):
-                if timestamps_ae[j] < timestamps_luna[i+1] and timestamps_ae[j] > timestamps_luna[i]:
+                if timestamps_luna[i] < timestamps_ae[j] < timestamps_luna[i+1]:
                     ae_lst.append(data_ae_np[j])
 
             dict['AE'] = ae_lst
