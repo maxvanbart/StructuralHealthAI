@@ -131,10 +131,10 @@ def synchronize_databases(array_ae, array_luna, margin_ae=100, margin_luna=20, l
         database = array_luna
         timestamps, database = remove_outliers_end()
         timestamps, database = remove_outliers_start()
-        timestamps, database, completed = remove_outliers_middle()
-
-        while not completed:
-            timestamps, database, completed = remove_outliers_middle()
+        # timestamps, database, completed = remove_outliers_middle()
+        #
+        # while not completed:
+        #     timestamps, database, completed = remove_outliers_middle()
 
         return timestamps, database
 
