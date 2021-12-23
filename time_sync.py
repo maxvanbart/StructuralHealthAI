@@ -6,7 +6,7 @@ import os
 from LUNA.luna_data_to_array import file_to_array
 
 
-def package_databases():
+def package_databases(data_ae_np, data_luna_np, timestamps_AE, timestamps_LUNA):
 
     final_array = [[]]
     row = 0
