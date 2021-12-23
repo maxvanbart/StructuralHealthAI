@@ -77,7 +77,7 @@ def package_databases(data_ae_np, data_luna_np, timestamps_AE, timestamps_LUNA):
     return final_array
 
 
-def synchronize_databases(array_ae, array_luna, samples=100, margin_start=0, margin_end=10):
+def synchronize_databases(array_ae, array_luna, margin_ae=100, margin_luna=20, length=18):
 
     def remove_outliers_luna():
 
@@ -94,16 +94,16 @@ def synchronize_databases(array_ae, array_luna, samples=100, margin_start=0, mar
             cut_start = 0
 
             for i in range(len(timestamps)):
-                if intervals_big + 10 > intervals_np[i] > intervals_big - 10:
+                if intervals_big + margin_luna > intervals_np[i] > intervals_big - margin_luna:
                     cut_start = i
                     break
-                elif intervals_small + 10 > intervals_np[i] > intervals_small - 10:
+                elif intervals_small + margin_luna > intervals_np[i] > intervals_small - margin_luna:
                     cut_start = i
                     break
 
             return timestamps[cut_start:], database[cut_start:]
 
-        def remove_outliers_middle(length=18):
+        def remove_outliers_middle():
             intervals = [timestamps[i + 1] - timestamps[i] for i in range(len(timestamps) - 1)]
             intervals.insert(0, 0)
 
@@ -112,12 +112,12 @@ def synchronize_databases(array_ae, array_luna, samples=100, margin_start=0, mar
             for i in range(len(intervals)):
 
                 if i % 2 == 0 and i != 0 and i % length != 0:
-                    if intervals[i] < intervals_big - 20 or intervals[i] > intervals_big + 20:
+                    if intervals[i] < intervals_big - margin_luna or intervals[i] > intervals_big + margin_luna:
                         index_to_be_removed = i
                         break
 
                 elif i % 2 == 1:
-                    if intervals[i] < intervals_small - 20 or intervals[i] > intervals_small + 20:
+                    if intervals[i] < intervals_small - margin_luna or intervals[i] > intervals_small + margin_luna:
                         index_to_be_removed = i
                         break
 
@@ -137,6 +137,22 @@ def synchronize_databases(array_ae, array_luna, samples=100, margin_start=0, mar
             timestamps, database, completed = remove_outliers_middle()
 
         return timestamps, database
+
+    def synchronization():
+        pass
+
+    def remove_outliers_ae():
+
+        def remove_outliers_start():
+            pass
+
+        def remove_outliers_end():
+            pass
+
+        return
+
+    def sanity_check():
+        pass
 
     # 0. gathering information.
     # Getting timestamps from arrays.
@@ -158,7 +174,7 @@ def synchronize_databases(array_ae, array_luna, samples=100, margin_start=0, mar
     timestamps_luna, database_luna = remove_outliers_luna()
 
     # 2. translating LUNA and AE to synchronize start at zero time.
-    translation_ae = np.mean(timestamps_ae[:samples])
+    translation_ae = np.mean(timestamps_ae[:margin_ae])
     translation_luna = timestamps_luna[0] - intervals_big
 
     timestamps_ae = timestamps_ae - translation_ae
@@ -169,14 +185,14 @@ def synchronize_databases(array_ae, array_luna, samples=100, margin_start=0, mar
     cut_ae_start = 0
 
     for i in range(len(timestamps_ae)):
-        if timestamps_ae[i] < margin_start:
+        if timestamps_ae[i] < 0 - margin_luna:
             cut_ae_start = i
 
     # Cutting outliers from AE end.
     cut_ae_end = -1
 
     for i in range(len(timestamps_ae)):
-        if timestamps_ae[-i] > timestamps_luna[-1] + intervals_big + margin_end:
+        if timestamps_ae[-i] > timestamps_luna[-1] + intervals_big + margin_luna:
             cut_ae_end = -i
 
     timestamps_ae = timestamps_ae[cut_ae_start: cut_ae_end]
