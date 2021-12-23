@@ -246,7 +246,6 @@ def synchronize_databases(array_ae, array_luna, margin_ae=100, margin_luna=20, l
 
     return
 
-
 def cluster_luna(timestamps):
 
     # clustered_timestamps, types = agglo(timestamps.reshape(-1, 1), scaled=True, n=None)
