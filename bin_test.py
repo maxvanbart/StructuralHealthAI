@@ -2,8 +2,13 @@ import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 
+from LUNA.luna_data_to_array import file_to_array
+
+from TimeSync.translateLuna import calc_translation_coeff
+
 
 class Ribbon:
+    """This class can store many variables related to the ribbons observed in the AE data"""
     def __init__(self, bw):
         self.t_lst = []
         self.bin_width = bw
@@ -14,12 +19,16 @@ class Ribbon:
         self.width = None
 
     def add_entry(self, j, m):
+        """This function can be used to add the contents of a bin to the ribbon"""
         self.t_lst.append(j)
         self.point_count += m
 
     def update(self):
-        self.t_start = self.t_lst[0]
-        self.t_end = self.t_lst[-1]
+        """This function can be used to calculate some interesting facts about the ribbon"""
+        # self.t_start = self.t_lst[0]
+        self.t_start = min(self.t_lst)
+        # self.t_end = self.t_lst[-1]
+        self.t_end = max(self.t_lst)
         self.width = (self.t_end - self.t_start + 1)*self.bin_width
 
     def __str__(self):
@@ -37,13 +46,14 @@ class Entry:
 
 
 # Some variables to mimic the PanelObject class
-name = 'L1-03'
+name = 'L1-09'
 location = 'Files/' + name + "/AE/" + name + "-clustered.csv"
 bin_width = 1
 
 # Load the clustered database and sort it by time
 ae_clustered_database = pd.read_csv(location)
 df = ae_clustered_database.sort_values(by=['time'])
+# DF GETS PASSED TO FUNCTION
 array = np.array(df)
 
 # Determine the highest value of t and use it to create the bins which will be used
@@ -91,16 +101,33 @@ while np.std(ribbon_width_lst) > 15:
     ribbon_lst = [x for x in ribbon_lst if x.width > mean_width]
     ribbon_width_lst = [x.width for x in ribbon_lst]
 
-print(np.mean(ribbon_width_lst))
-print(np.std(ribbon_width_lst))
-print(len(ribbon_lst))
-
-for ribbon in ribbon_lst:
-    print(str(ribbon))
-
+# This is a very time-consuming bar graph
 # plt.bar(trange, bins, width=1)
 # plt.title(name)
 # plt.xlabel("Bin")
 # plt.ylabel("Datapoint density")
-#
 # plt.show()
+
+# open LUNA files to mimic a panel object
+location_luna = f'Files/{name}/LUNA/{name}-FTest.txt'
+array_luna, _, _, _ = file_to_array(name, location_luna)
+# ARRAY LUNA GETS PASSED TO FUNCTION
+timestamps_luna = array_luna[:, 0] - array_luna[0, 0]
+
+# Calculate absolute errors
+best_dt = calc_translation_coeff(timestamps_luna, ribbon_lst)
+
+# Final Plot
+# Plot ribbons as horizontal lines
+for ribbon in ribbon_lst:
+    # print(str(ribbon))
+    # print(ribbon.t_start, ribbon.t_end)
+    plt.plot([ribbon.t_start, ribbon.t_end], [1, 1], 'b')
+# Plot LUNA points as red dots
+sample_y_values_LUNA = np.ones((len(timestamps_luna)))
+timestamps_luna = timestamps_luna + best_dt
+plt.scatter(timestamps_luna, sample_y_values_LUNA, c='red', s=4)
+plt.title(name)
+plt.xlabel("Time [s]")
+plt.ylabel("404")
+plt.show()
