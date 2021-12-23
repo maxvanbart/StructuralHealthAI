@@ -7,7 +7,7 @@ from TimeSync.timeSync import sync_time
 
 
 # Name of the panel to test on
-name = 'L1-09'
+name = 'L1-05'
 
 # Load AE dataframe
 location_ae = 'Files/' + name + "/AE/" + name + "-clustered.csv"
@@ -15,7 +15,7 @@ ae_clustered_database = pd.read_csv(location_ae)
 ae_df = ae_clustered_database.sort_values(by=['time'])
 
 # Load LUNA data
-location_luna = f'Files/{name}/LUNA/{name}-FTest.txt'
+location_luna = f'Files/{name}/LUNA/{name}-2.txt'
 array_luna, _, _, _ = file_to_array(name, location_luna)
 print(type(array_luna))
 
