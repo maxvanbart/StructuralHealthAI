@@ -28,6 +28,7 @@ class Panel:
 
         # LUNA
         self.luna_database = None
+        self.luna_database_derivatives = None
         self.luna_database_clustered = None
 
         self.folder_parent = os.path.dirname(__file__)
@@ -81,20 +82,22 @@ class Panel:
     def load_luna(self):
         """A function to load the LUNA data"""
         luna_data_left, luna_data_right = folder_to_array(self.name, self.folder_luna)
+        self.luna_database = [luna_data_left, luna_data_right]
 
         # First entry each row removed as this is the timestamp!
         timestamps_left, timestamps_right = luna_data_left[0], luna_data_right[0]
 
-        luna_data_left_time, luna_data_left_length = gradient_arrays(luna_data_left[:, 1:])
-        luna_data_right_time, luna_data_right_length = gradient_arrays(luna_data_right[:, 1:])
+        luna_data_left_time, luna_data_left_length = gradient_arrays(self.luna_database[0])
+        luna_data_right_time, luna_data_right_length = gradient_arrays(self.luna_database[1])
 
-        self.luna_database = [luna_data_left_time, luna_data_right_time, luna_data_left_length, luna_data_right_length]
+        self.luna_database_derivatives = [luna_data_left_time, luna_data_right_time,
+                                          luna_data_left_length, luna_data_right_length]
 
         print(f"Successfully loaded LUNA data for {self.name}.")
 
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
-        time_left, time_right, length_left, length_right = self.luna_database
+        time_left, time_right, length_left, length_right = self.luna_database_derivatives
 
         self.luna_database_clustered = array_to_cluster(time_left, time_right, length_left, length_right)
 
@@ -102,7 +105,7 @@ class Panel:
 
     def plot_luna(self):
         """Plots the final result for LUNA"""
-        time_left, time_right, length_left, length_right = self.luna_database
+        time_left, time_right, length_left, length_right = self.luna_database_derivatives
         cluster_left, cluster_right = self.luna_database_clustered
 
         image_time_left = array_to_image(time_left)
