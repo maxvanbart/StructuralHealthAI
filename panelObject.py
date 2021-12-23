@@ -1,14 +1,17 @@
 import os
+import pandas as pd
+import numpy as np
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
 from AE.feature_analysis import freq_amp_cluster, all_features_cluster, create_cluster_batches, energy_time_cluster, freq_amp_energy_plot
 from AE.clustering import clustering_time_energy
-import pandas as pd
 
 from LUNA.luna_data_to_array import folder_to_array, gradient_arrays, array_to_image
 from LUNA.luna_array_to_cluster import array_to_cluster, cluster_to_image
 from LUNA.luna_plotting import plot_cluster
+
+from TimeSync.timeSync import sync_time
 
 files_folder = "Files"
 
@@ -74,7 +77,7 @@ class Panel:
         # all_features_cluster(self.ae_clustered_database)
         # freq_amp_time_cluster(self.ae_clustered_database)
         # energy_time_cluster(self.ae_clustered_database)
-        freq_amp_energy_plot(self.ae_database.hits, title="Frequency, amplitude and energy for uncombined randomly sampled emissions in the L1-03 panel")
+        # freq_amp_energy_plot(self.ae_database.hits, title="Frequency, amplitude and energy for uncombined randomly sampled emissions in the L1-03 panel")
 
         print(f"Successfully analysed AE data for {self.name}.")
 
@@ -125,7 +128,7 @@ class Panel:
 
     def time_synchronise(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
-        pass
+        sync_time(self.ae_clustered_database, self.luna_database)
 
     def __repr__(self):
         return f"PanelObject({self.name})"
