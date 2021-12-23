@@ -17,5 +17,6 @@ ae_df = ae_clustered_database.sort_values(by=['time'])
 # Load LUNA data
 location_luna = f'Files/{name}/LUNA/{name}-FTest.txt'
 array_luna, _, _, _ = file_to_array(name, location_luna)
+print(type(array_luna))
 
 sync_time(ae_df, array_luna, name=name)

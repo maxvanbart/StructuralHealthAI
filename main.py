@@ -12,17 +12,19 @@ if __name__ == "__main__":
     panels = Panel.initialize_all()
 
     # shorten the list of panels which should be processed, comment to run through all panels
-    panels = panels[:2]
+    # panels = panels[:2]
 
     # for every panel we perform the following actions
     for panel in tqdm.tqdm(panels, desc='Panel'):
         print('\n'+str(panel))
-        # panel.load_ae()
-        # panel.analyse_ae()
+        panel.load_ae()
+        panel.analyse_ae()
 
         panel.load_luna()
         panel.analyse_luna()
-        panel.plot_luna()
+        # panel.plot_luna()
+
+        panel.time_synchronise()
 
     # end time, it also prints the elapsed time
     t1 = time.time()
