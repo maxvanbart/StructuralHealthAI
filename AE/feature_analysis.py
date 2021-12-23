@@ -54,8 +54,8 @@ def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=Fal
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
     full_data = pd.concat([amp_db, freq], axis=1)
-    data = full_data.sample(100000)
-    init_clusters = sklearn.cluster.DBSCAN(eps=10, min_samples=min_samples).fit(data).labels_
+    data = full_data.sample(50000)
+    init_clusters = sklearn.cluster.DBSCAN(eps=12, min_samples=min_samples).fit(data).labels_
 
     if len(set(init_clusters)) != 2:
         raise Exception(f"Unexpected number of clusters ({set(init_clusters)} detected, try again.")
@@ -69,3 +69,5 @@ def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=Fal
     if plotting:
         plt.scatter(full_data['amplitude'], full_data['frequency'], c=full_data["clusters"], s=4)
         plt.show()
+
+    return clusters
