@@ -101,29 +101,31 @@ def synchronize_databases(array_ae, array_luna, samples=100, margin_start=0, mar
                     cut_start = i
                     break
 
-            return timestamps[cut_start:], cut_start
+            return timestamps[cut_start:], database[cut_start:]
 
         def remove_outliers_middle(length=18):
             intervals = [timestamps[i + 1] - timestamps[i] for i in range(len(timestamps) - 1)]
             intervals.insert(0, 0)
 
-            indices_to_be_removed = []
+            index_to_be_removed = None
 
             for i in range(len(intervals)):
 
                 if i % 2 == 0 and i != 0 and i % length != 0:
                     if intervals[i] < intervals_big - 20 or intervals[i] > intervals_big + 20:
-                        indices_to_be_removed.append(i)
+                        index_to_be_removed = i
+                        break
 
                 elif i % 2 == 1:
                     if intervals[i] < intervals_small - 20 or intervals[i] > intervals_small + 20:
-                        indices_to_be_removed.append(i)
+                        index_to_be_removed = i
+                        break
 
-            if not indices_to_be_removed:
-                return timestamps, True
+            if index_to_be_removed is None:
+                return timestamps, database, True
             else:
-                return np.delete(timestamps, indices_to_be_removed[0]), \
-                       np.delete(database, indices_to_be_removed[0], 0), False
+                return np.delete(timestamps, index_to_be_removed), \
+                       np.delete(database, index_to_be_removed, 0), False
 
         timestamps = array_luna[:, 0] - array_luna[0, 0]
         database = array_luna
