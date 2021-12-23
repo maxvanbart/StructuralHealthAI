@@ -5,13 +5,15 @@ from LUNA.luna_array_to_cluster import agglo, mean_shift, aff_prop
 import matplotlib.pyplot as plt
 
 from sklearn.cluster import DBSCAN
+from sklearn.cluster import AffinityPropagation
+from sklearn.cluster import AgglomerativeClustering
 
 
 def cluster_luna(timestamps):
 
     # clustered_timestamps, types = agglo(timestamps.reshape(-1, 1), scaled=True, n=None)
 
-    clustering = DBSCAN(min_samples=10).fit(timestamps.reshape(-1, 1))
+    clustering = AgglomerativeClustering(n_clusters=None, linkage='single', distance_threshold=3000).fit(timestamps.reshape(-1, 1))
     clustered_timestamps = clustering.labels_
 
     values = np.ones(len(timestamps))
