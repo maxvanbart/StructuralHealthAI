@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-from LUNA.luna_data_to_array import file_to_array
+from LUNA.luna_data_to_array import file_to_array, folder_to_array
 
 
 def package_databases(data_ae_np, data_luna_np, timestamps_AE, timestamps_LUNA):
@@ -200,7 +200,7 @@ def synchronize_databases(array_ae, array_luna, margin_ae=100, margin_luna=20, l
     # 4. sanity check if data is correctly aligned.
     mean_ae, std_ae = np.mean(values_ae_uncut), np.std(values_ae_uncut)
 
-    bar = mean_ae - 1 * std_ae
+    bar = mean_ae - 2 * std_ae
 
     values_ae = np.array([1 if value_ae > bar else 0 for value_ae in values_ae_uncut[cut_ae_start: cut_ae_end]])
 
@@ -246,15 +246,21 @@ def synchronize_databases(array_ae, array_luna, margin_ae=100, margin_luna=20, l
 
 
 # opening the files
-panel = 'L1-09'
-path_luna = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{panel}.txt'
-path_ae = os.path.dirname(__file__) + f'/Files/{panel}/AE/{panel}.csv'
+panel = 'L1-23'
+path_luna = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{panel}-2.txt'
+path_ae = os.path.dirname(__file__) + f'/Files/{panel}/AE/{panel}-clustered.csv'
 
 # to arrays
 data_ae_pd_unsorted = pd.read_csv(path_ae)
 data_ae_np_unsorted = data_ae_pd_unsorted.to_numpy(dtype=float)
 
 data_ae_np = data_ae_np_unsorted[np.argsort(data_ae_np_unsorted[:, 0])]
-data_luna_np, _, _, _ = file_to_array(panel, path_luna)
+# data_luna_np, _, _, _ = file_to_array(panel, path_luna)
+
+# in case 2 files for LUNA
+
+folder_path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/'
+
+data_luna_np, _ = folder_to_array(panel, folder_path)
 
 synchronize_databases(data_ae_np, data_luna_np)
