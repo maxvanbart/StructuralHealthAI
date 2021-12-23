@@ -128,7 +128,7 @@ class Panel:
 
     def time_synchronise(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
-        sync_time(self.ae_clustered_database, self.luna_database)
+        sync_time(self.ae_clustered_database, self.luna_database[0], name=self.name)
 
     def __repr__(self):
         return f"PanelObject({self.name})"
