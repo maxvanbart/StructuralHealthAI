@@ -7,7 +7,74 @@ from LUNA.luna_data_to_array import file_to_array
 
 
 def package_databases():
-    pass
+
+    final_array = [[]]
+    row = 0
+
+    # Getting the intervals from LUNA.
+    intervals_np = [timestamps_LUNA[i + 1] - timestamps_LUNA[i] for i in range(len(timestamps_LUNA) - 1)]
+    intervals_pd = pd.DataFrame(intervals_np, dtype=float)
+    print(intervals_np)
+    intervals_counts = [i[0] for i in intervals_pd.value_counts().index.tolist()]
+    intervals_big = np.max(intervals_counts[:2])
+    intervals_small = np.min(intervals_counts[:2])
+
+    # loop over all LUNA timestamps
+    for i in range(len(timestamps_LUNA) - 1):
+
+        # check if LUNA timestamp is the first one of a big batch with 10 smaller ribbons.
+        if intervals_np[i] < intervals_small + 20 and intervals_np[i] > intervals_small - 20:
+            if i == 0 or intervals_np[i - 1] > 2 * intervals_big:
+                dict = {}
+                dict['LUNA_end'] = data_luna_np[i]
+
+                # collect all corresponding AE data
+                ae_lst = []
+                for j in range(len(timestamps_AE)):
+                    if timestamps_AE[j] < timestamps_LUNA[i] and timestamps_LUNA[i] - timestamps_AE[j] <200:
+                        ae_lst.append(data_ae_np[j])
+
+                dict['AE'] = ae_lst
+
+                # put dictionary in final array
+                final_array[row].append(dict)
+
+        # Check if LUNA timestamp is a 'LUNA start' point
+        elif intervals_np[i] < intervals_big + 20 and intervals_np[i] > intervals_big - 20:
+            dict = {}
+            dict['LUNA_start'] = data_luna_np[i]
+            dict['LUNA_end'] = data_luna_np[i+1]
+
+            # collect all corresponding AE data
+            ae_lst = []
+            for j in range(len(timestamps_AE)):
+                if timestamps_AE[j] < timestamps_LUNA[i+1] and timestamps_AE[j] > timestamps_LUNA[i]:
+                    ae_lst.append(data_ae_np[j])
+
+            dict['AE'] = ae_lst
+
+            # put dictionary in final array
+            final_array[row].append(dict)
+
+        # Check if LUNA timestamp is the last point of a big batch with 10 smaller ribbons.
+        elif intervals_np[i] > 2 * intervals_big:
+            dict = {}
+            dict['LUNA_start'] = data_luna_np[i]
+
+            # collect all corresponding AE data
+            ae_lst = []
+            for j in range(len(timestamps_AE)):
+                if timestamps_AE[j] > timestamps_LUNA[i] and timestamps_AE[j] - timestamps_LUNA[i] < 200:
+                    ae_lst.append(data_ae_np[j])
+
+            dict['AE'] = ae_lst
+
+            # put dictionary in final array
+            final_array[row].append(dict)
+            final_array.append([])
+            row += 1
+
+    return final_array
 
 
 def synchronize_databases(array_ae, array_luna, samples=100, margin_start=0, margin_end=10):
