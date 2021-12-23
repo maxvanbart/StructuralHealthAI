@@ -233,6 +233,8 @@ def synchronize_databases(array_ae, array_luna, margin_ae=100, margin_luna=20, l
     plt.yticks([])
     plt.show()
 
+    timestamps_ae = array_ae[:, 0]
+
     values_ae = array_ae[:, 4]
     values_luna = np.ones(len(timestamps_luna)) * np.mean(values_ae)
 
