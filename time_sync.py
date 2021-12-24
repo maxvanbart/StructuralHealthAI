@@ -309,6 +309,64 @@ def split_luna(timestamps_luna_clustered, database_luna, database_ae, length=12,
     return timestamps_split, database_luna_split, database_ae_split
 
 
+def generate_test_data():
+
+    timestamps_ae = []
+    timestamps_luna = []
+
+    data_ae = []
+    data_luna = []
+
+    small_step = 100
+    big_step = 200
+    small_gap = 1000
+    large_gaps = [10000, 15000, 20000]
+
+    # starting values
+    luna_timestamp = 100
+    ae_timestamp = 5
+
+    for i in range(3):
+        for j in range(5):
+            for z in range(9):
+                for k in range(10):
+                    timestamps_ae.append(ae_timestamp)
+                    data_ae.append(np.random.normal())
+                    ae_timestamp += 20
+
+                luna_timestamp += big_step
+                timestamps_luna.append(luna_timestamp)
+                data_luna.append(np.random.normal())
+
+                ae_timestamp += small_step
+                luna_timestamp += small_step
+                timestamps_luna.append(luna_timestamp)
+                data_luna.append(np.random.normal())
+
+            ae_timestamp += small_gap
+            luna_timestamp += small_gap
+
+        ae_timestamp += large_gaps[i]
+        luna_timestamp += large_gaps[i]
+
+    timestamps_ae = np.array(timestamps_ae).reshape(-1, 1)
+    timestamps_luna = np.array(timestamps_luna).reshape(-1, 1)
+    data_ae = np.array(data_ae).reshape(-1, 1)
+    data_luna = np.array(data_luna).reshape(-1, 1)
+
+    ae_test_data = np.hstack((timestamps_ae, data_ae))
+    luna_test_data = np.hstack((timestamps_luna, data_luna))
+
+    values_luna = np.ones(len(data_luna))
+
+    # plotiing
+    plt.scatter(timestamps_ae, data_ae)
+    plt.scatter(timestamps_luna, values_luna)
+    plt.show()
+
+    return ae_test_data, luna_test_data, values_luna
+
+
 # opening the files
 panel = 'L1-23'
 path_luna = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{panel}.txt'
