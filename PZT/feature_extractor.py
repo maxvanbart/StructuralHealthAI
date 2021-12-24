@@ -49,7 +49,7 @@ def duration_calc(database, threshold, debug_graph=False):
     # We turn the indices of the start and end time into the actual time and calculate the duration
     start_time = np.array([time[x] for x in start_index])
     end_time = np.array([time[x] for x in end_index])
-    return end_time - start_time
+    return relatify(end_time - start_time)
 
 
 def rise_time_calc(data, threshold):
@@ -67,12 +67,17 @@ def rise_time_calc(data, threshold):
     # Extract time for maximum threshold
     max_amp_crossing_index = data.argmax(axis=0)
     max_amp_time = np.array([time_array[x] for x in max_amp_crossing_index])
-    return max_amp_time - first_threshold_crossing_time
+    return relatify(max_amp_time - first_threshold_crossing_time)
 
 
 def energy_calc(data, threshold):
     """energy: area under the squared signal envelope"""
-    pass
+    time_array = data[:, 0]
+    data = data[:, 1:]
+    dt = time_array[1]
+    energy_riemannn = abs(data)*dt
+    energy_column = np.sum(energy_riemannn, axis=0)
+    return relatify(energy_column)
 
 
 def travel_time_calc(data, threshold):
@@ -88,3 +93,8 @@ def travel_time_calc(data, threshold):
     first_threshold_crossing_time = np.array([time_array[x] for x in start_index])
     travel_time = first_threshold_crossing_time - first_threshold_crossing_time[0]
     return travel_time
+
+
+def relatify(column):
+    column = column/column[0]
+    return column

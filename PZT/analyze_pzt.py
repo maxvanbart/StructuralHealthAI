@@ -6,11 +6,15 @@ from matplotlib import pyplot as plt
 from PZT.load_pzt import StatePZT
 
 
-def analyse_pzt(pzt_database, graphing=False):
+def analyse_pzt(pzt_database, graphing=True):
     # for every run we will do a seperate analysis
     count = 0
     for run in pzt_database:
         count += 1
+        # /!\ MIGHT BE BETTER TO BASE THIS ON THE AMOUNT OF STATES IN A RUN /!\
+        if count < 2:
+            # This prevents a division by zero error
+            continue
         # here we extract all the frequencies which are present in the data
         f_list = list()
         for state in pzt_database[run]:
@@ -33,18 +37,15 @@ def analyse_pzt(pzt_database, graphing=False):
         ###########################################
         #  # * # * #   Code of Niels   # * # * #  #
         ###########################################
-        if count < 2:
-            continue
         # should be possible to make this into a neater function
-        all_frequency = [50000, 100000, 125000, 150000, 200000, 250000]
-        all_frequency = [200000]
+        # all_frequency = [50000, 100000, 125000, 150000, 200000, 250000]
+        all_frequency = [150000]
         all_features = ['max_amp', 'min_amp', 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time',
-                        'travel_time']
-        all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
-                        "Actionneur7", "Actionneur8"]
+                        'travel_time', 'energy']
+        # all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
+        #                "Actionneur7", "Actionneur8"]
         all_channels = ["Actionneur1"]
         gradient = False
-        plotting = True
 
         for freq_select in all_frequency:  # loop over all the different frequencies
             for channel_select in all_channels:  # loop over all of the channels
@@ -63,26 +64,30 @@ def analyse_pzt(pzt_database, graphing=False):
                             state_to_plot = feature_output
                         else:  # else go stacking for different states
                             state_to_plot = np.vstack((state_to_plot, feature_output))
+
                     x_counter = counter % 4  # placement
                     y_counter = counter//4  # placement
-                    if gradient is True:
-                        # gradient gives 2 outputs for a 2d array not sure which one to pick
-                        # they both give different results but same kind of interesting points can be observed,
-                        # namely state 10 and between 20 and 25
-                        axs[y_counter, x_counter].plot(np.gradient(state_to_plot)[1])
-                        # so which one do we use?
-                    else:
-                        axs[y_counter, x_counter].plot(state_to_plot)
+
+                    if graphing:
+                        if gradient:
+                            # gradient gives 2 outputs for a 2d array not sure which one to pick
+                            # they both give different results but same kind of interesting points can be observed,
+                            # namely state 10 and between 20 and 25
+                            axs[y_counter, x_counter].plot(np.gradient(state_to_plot)[0])
+                            # so which one do we use?
+                        else:
+                            axs[y_counter, x_counter].plot(state_to_plot)
+
                     axs[y_counter, x_counter].legend(['emitter', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6', 'chan7',
                                                       'chan8'])
                     axs[y_counter, x_counter].set_title(feature_select)
                     counter += 1  # update counter for next subplot
-                if plotting is True:
+                if graphing:
                     plt.show()
 
 
 def get_feature(freq_dict, state, freq_select, channel_select, feature_select):
-    """select a frequency and state, select an channel and a feature
+    """select a frequency and state, select a channel and a feature
         returns the feature as a np.array and also the current state"""
     state_select = state - 1
     features_dict_for_each_channel = freq_dict[freq_select][state_select][1]  # enter dictionary with freq and state
