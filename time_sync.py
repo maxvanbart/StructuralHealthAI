@@ -364,7 +364,7 @@ def generate_test_data():
     plt.scatter(timestamps_luna, values_luna)
     plt.show()
 
-    return ae_test_data, luna_test_data, values_luna
+    return ae_test_data, luna_test_data
 
 
 # opening the files
