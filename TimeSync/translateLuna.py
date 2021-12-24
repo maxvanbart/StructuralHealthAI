@@ -12,18 +12,12 @@ def calc_translation_coeff(luna_data, ribbon_lst):
 
     print("Loaded LUNA data...")
     error_dict = {}
-    shift_range = range(-1000, 1000, 10)
+    shift_range = range(20000, 30000, 10)
     for dt in shift_range:
-        error_dict[dt] = shift_error(np.copy(timestamps_luna), edge_list, dt, penalty='MRE')
+        error_dict[dt] = shift_error(np.copy(timestamps_luna), edge_list, dt, penalty='MAE')
     print("Finished calculating absolute errors...")
 
-    # Small plot to show the errors per time
-    plt.plot(shift_range, error_dict.values())
-    plt.title('Mean error plot')
-    plt.xlabel("Time shift dt")
-    plt.ylabel("Error")
-    plt.show()
-
+    # Extract the best value for dt from the database
     best_dt = None
     min_error = None
     for i in error_dict:
@@ -34,6 +28,13 @@ def calc_translation_coeff(luna_data, ribbon_lst):
             min_error = error_dict[i]
             best_dt = i
     print(f"Found best dt to be {best_dt}")
+
+    # Small plot to show the errors per time
+    plt.plot(shift_range, error_dict.values())
+    plt.title('Mean error plot')
+    plt.xlabel("Time shift dt")
+    plt.ylabel("Error")
+    plt.show()
     return best_dt
 
 

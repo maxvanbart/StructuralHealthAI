@@ -80,8 +80,9 @@ def sync_time(ae_df, array_luna, name='Generic Panel', bin_width=1):
         plt.plot([ribbon.t_start, ribbon.t_end], [1, 1], 'b')
     # Plot LUNA points as red dots
     sample_y_values_LUNA = np.ones((len(timestamps_luna)))
-    timestamps_luna = timestamps_luna + best_dt
-    plt.scatter(timestamps_luna, sample_y_values_LUNA, c='red', s=4)
+    timestamps_luna_shifted = np.copy(timestamps_luna) + best_dt
+    plt.scatter(timestamps_luna_shifted, sample_y_values_LUNA, c='red', s=4)
+    plt.scatter(timestamps_luna, sample_y_values_LUNA, c='green', s=4)
     plt.title(name)
     plt.xlabel("Time [s]")
     plt.ylabel("404")
