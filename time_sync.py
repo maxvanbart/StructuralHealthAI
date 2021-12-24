@@ -8,6 +8,10 @@ from sklearn.cluster import AgglomerativeClustering
 from LUNA.luna_data_to_array import file_to_array, folder_to_array
 
 
+# Test file, complete chaos!
+# Test file, complete chaos!
+
+
 def package_databases(data_ae_np, data_luna_np, timestamps_ae, timestamps_luna):
 
     # get timestamps_luna_clustered
@@ -266,16 +270,18 @@ def cluster_luna(timestamps):
 
     values = np.ones(len(timestamps))
 
-    plt.scatter(timestamps, values, c=clustered_timestamps)
-    plt.show()
+    # plt.scatter(timestamps, values, c=clustered_timestamps)
+    # plt.show()
 
     return clustered_timestamps
 
 
-def split_luna(timestamps_luna_clustered, database_luna, database_ae, length=12, margin_start=5, margin_end=10):
+def split_luna(timestamps_luna, timestamps_luna_clustered, database_luna, database_ae, length=1, margin_start=5, margin_end=10):
     timestamps_split = []
     database_luna_split = []
     database_ae_split = []
+
+    database_luna[:, 0] = database_luna[:, 0] - database_luna[0, 0]
 
     count = 0
     previous_split = 0
@@ -284,12 +290,13 @@ def split_luna(timestamps_luna_clustered, database_luna, database_ae, length=12,
         count += 1
 
         if timestamps_luna_clustered[i + 1] != timestamps_luna_clustered[i] and count >= length:
-            timestamps_split.append(timestamps_luna_clustered[previous_split: i + 1])
+            timestamps_split.append(timestamps[previous_split: i + 1])
             database_luna_split.append(database_luna[previous_split: i + 1, :])
             count = 0
             previous_split = i + 1
 
-    timestamps_split.append(timestamps_luna_clustered[previous_split: -1])
+    database_luna_split.append(database_luna[previous_split: -1, :])
+    timestamps_split.append(timestamps[previous_split: -1])
 
     previous_split = 0
 
@@ -297,16 +304,18 @@ def split_luna(timestamps_luna_clustered, database_luna, database_ae, length=12,
 
     for timestamp in timestamps_split:
         start, end = timestamp[0], timestamp[-1]
+        cut_start, cut_end = 0, 0
+        sub_database = []
 
         for i in range(previous_split, len(timestamps_ae)):
-            if start + margin_start > timestamps_ae[i] > end + margin_end:
-                database_ae_split.append(database_ae[previous_split: i + 1, :])
-                previous_split = i + 1
+            if timestamps_ae[i] < start + margin_start:
+                cut_start = i + 1
+            elif timestamps_ae[i] > end + margin_end:
+                cut_end = i + 1
+                database_ae_split.append(database_ae[cut_start: cut_end, :])
                 break
 
-    print(len(database_luna_split), print(len(database_ae_split)))
-
-    return timestamps_split, database_luna_split, database_ae_split
+    return timestamps_split, np.array(database_luna_split), np.array(database_ae_split)
 
 
 def generate_test_data():
@@ -360,34 +369,42 @@ def generate_test_data():
     values_luna = np.ones(len(data_luna))
 
     # plotiing
-    plt.scatter(timestamps_ae, data_ae)
-    plt.scatter(timestamps_luna, values_luna)
-    plt.show()
+    # plt.scatter(timestamps_ae, data_ae)
+    # plt.scatter(timestamps_luna, values_luna)
+    # plt.show()
 
     return ae_test_data, luna_test_data
 
 
-# opening the files
-panel = 'L1-23'
-path_luna = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{panel}.txt'
-path_ae = os.path.dirname(__file__) + f'/Files/{panel}/AE/{panel}.csv'
+# # opening the files
+# panel = 'L1-23'
+# path_luna = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{panel}.txt'
+# path_ae = os.path.dirname(__file__) + f'/Files/{panel}/AE/{panel}.csv'
+#
+# # to arrays
+# data_ae_pd_unsorted = pd.read_csv(path_ae)
+# data_ae_np_unsorted = data_ae_pd_unsorted.to_numpy(dtype=float)
+#
+# data_ae_np = data_ae_np_unsorted[np.argsort(data_ae_np_unsorted[:, 0])]
+# data_luna_np, _, _, _ = file_to_array(panel, path_luna)
+#
+# # in case 2 files for LUNA
+#
+# folder_path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/'
+#
+# data_luna_np, _ = folder_to_array(panel, folder_path)
+#
+# timestamps = data_luna_np[:, 0] - data_luna_np[0, 0]
 
-# to arrays
-data_ae_pd_unsorted = pd.read_csv(path_ae)
-data_ae_np_unsorted = data_ae_pd_unsorted.to_numpy(dtype=float)
-
-data_ae_np = data_ae_np_unsorted[np.argsort(data_ae_np_unsorted[:, 0])]
-data_luna_np, _, _, _ = file_to_array(panel, path_luna)
-
-# in case 2 files for LUNA
-
-folder_path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/'
-
-data_luna_np, _ = folder_to_array(panel, folder_path)
+data_ae_np, data_luna_np = generate_test_data()
 
 timestamps = data_luna_np[:, 0] - data_luna_np[0, 0]
 
-timestamps = cluster_luna(timestamps)
-timestamps_split = split_luna(timestamps, data_luna_np, data_ae_np)
+timestamps_clustered = cluster_luna(timestamps)
+timestamps_split, database_luna, database_ae = split_luna(timestamps, timestamps_clustered, data_luna_np, data_ae_np)
+
+print(database_luna[0][:5, 0])
+print()
+print(database_ae[0][:20, 0])
 
 # synchronize_databases(data_ae_np, data_luna_np)
