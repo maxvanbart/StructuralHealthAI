@@ -43,7 +43,8 @@ def analyse_pzt(pzt_database, graphing=False):
         all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
                         "Actionneur7", "Actionneur8"]
         all_channels = ["Actionneur1"]
-        gradient = True
+        gradient = False
+        plotting = True
 
         for freq_select in all_frequency:  # loop over all the different frequencies
             for channel_select in all_channels:  # loop over all of the channels
@@ -76,7 +77,8 @@ def analyse_pzt(pzt_database, graphing=False):
                                                       'chan8'])
                     axs[y_counter, x_counter].set_title(feature_select)
                     counter += 1  # update counter for next subplot
-                plt.show()
+                if plotting is True:
+                    plt.show()
 
 
 def get_feature(freq_dict, state, freq_select, channel_select, feature_select):
