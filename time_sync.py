@@ -8,6 +8,12 @@ from LUNA.luna_data_to_array import file_to_array, folder_to_array
 
 def package_databases(data_ae_np, data_luna_np, timestamps_ae, timestamps_luna):
 
+    # get timestamps
+    # timestamps_ae = data_ae_np[:,0]
+    # data_ae_np = data_ae_np[:,1:]
+    # timestamps_luna = data_luna_np[:,0]
+    # data_luna_np = data_luna_np[:,1:]
+
     final_array = [[]]
     row = 0
 
@@ -247,8 +253,6 @@ def synchronize_databases(array_ae, array_luna, margin_ae=100, margin_luna=20, l
     return
 
 def cluster_luna(timestamps):
-
-    # clustered_timestamps, types = agglo(timestamps.reshape(-1, 1), scaled=True, n=None)
 
     clustering = AgglomerativeClustering(n_clusters=None, linkage='single', distance_threshold=3000).fit(timestamps.reshape(-1, 1))
     clustered_timestamps = clustering.labels_
