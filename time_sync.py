@@ -308,7 +308,7 @@ def split_luna(timestamps_luna, timestamps_luna_clustered, database_luna, databa
         sub_database = []
 
         for i in range(previous_split, len(timestamps_ae)):
-            if timestamps_ae[i] < start + margin_start:
+            if timestamps_ae[i] < start - margin_start:
                 cut_start = i + 1
             elif timestamps_ae[i] > end + margin_end:
                 cut_end = i + 1
