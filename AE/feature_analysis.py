@@ -16,7 +16,6 @@ def freq_amp_energy_plot(database, ref_amp=10**(-5), title=None):
 
     plt.figure(figsize=(9, 7))
     plt.ylim(0, 1000)
-    plt.title(title)
     plt.xlabel("Peak amplitude of emission [dB]")
     plt.ylabel("Average frequency of emission [kHz]")
     plt.scatter(data["amplitude"], data["frequency"], c=data["energy"], s=2, norm=colors.LogNorm())
@@ -39,7 +38,6 @@ def energy_time_cluster(database, plotting=False):
 
     if plotting:
         plt.figure(figsize=(9, 7))
-        plt.title(f"Clustering?")
         plt.xlabel("Time [$10^{2}$ s]")
         plt.ylabel("Peak energy of emission [$10^{-14}$ J]")
         plt.scatter(data["time"]/100, data["energy"], c=labels, s=1)
@@ -58,7 +56,7 @@ def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=Fal
     init_clusters = sklearn.cluster.DBSCAN(eps=12, min_samples=min_samples).fit(data).labels_
 
     if len(set(init_clusters)) != 2:
-        raise Exception(f"Unexpected number of clusters ({set(init_clusters)} detected, try again.")
+        raise Exception(f"Unexpected number of clusters ({len(set(init_clusters))}) detected, try again.")
     else:
         knn_classification = sklearn.neighbors.KNeighborsClassifier(n_neighbors=100, weights='distance')
         knn_classification.fit(data, init_clusters)
@@ -68,6 +66,8 @@ def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=Fal
 
     if plotting:
         plt.scatter(full_data['amplitude'], full_data['frequency'], c=full_data["clusters"], s=4)
+        plt.xlabel("Peak amplitude of emission [dB]")
+        plt.ylabel("Average frequency of emission [kHz]")
         plt.show()
 
     return clusters

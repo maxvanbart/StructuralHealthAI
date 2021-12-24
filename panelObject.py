@@ -58,18 +58,18 @@ class Panel:
             self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
 
             # adding extracted features and clusters
+            print(f"Clustering completed for {self.name}, features and clusters being added to database...")
             self.ae_clustered_database["frequency"] = frequency_extraction(self.ae_clustered_database)
             self.ae_clustered_database["energy_outlier"] = energy_time_cluster(self.ae_clustered_database)
-            # self.ae_clustered_database["frequency_outlier"] = batch_fre_amp_clst(self.ae_clustered_database)
+            # self.ae_clustered_database["frequency_outlier"] = freq_amp_cluster(self.ae_clustered_database)
 
             # create new CSV
             pd.DataFrame(self.ae_clustered_database).to_csv(location, index=False)
+            print("Successfully created clustered .csv.")
 
         # self.ae_database.corr_matrix()
-        # freq_amp_cluster(self.ae_clustered_database)
-        # all_features_cluster(self.ae_clustered_database)
-        # freq_amp_time_cluster(self.ae_clustered_database)
-        # energy_time_cluster(self.ae_clustered_database)
+        # freq_amp_cluster(self.ae_clustered_database, plotting=True)
+        # energy_time_cluster(self.ae_clustered_database, plotting=True)
         # batch_fre_amp_clst(self.ae_clustered_database)
 
         print(f"Successfully analysed AE data for {self.name}.")

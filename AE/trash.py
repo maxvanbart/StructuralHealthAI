@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 from sklearn.cluster import AgglomerativeClustering
 import time
-
+import psutil
 
 # old agglomerative function which is not needed anymore
 def agglomerative(X, time_lst, rms, features):
