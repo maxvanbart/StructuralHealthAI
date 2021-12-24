@@ -3,12 +3,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
+from sklearn.cluster import AgglomerativeClustering
+
 from LUNA.luna_data_to_array import file_to_array, folder_to_array
 
 
 def package_databases(data_ae_np, data_luna_np, timestamps_ae, timestamps_luna):
 
-    # get timestamps
+    # get timestamps_luna_clustered
     # timestamps_ae = data_ae_np[:,0]
     # data_ae_np = data_ae_np[:,1:]
     # timestamps_luna = data_luna_np[:,0]
@@ -25,7 +27,7 @@ def package_databases(data_ae_np, data_luna_np, timestamps_ae, timestamps_luna):
     intervals_big = np.max(intervals_counts[:2])
     intervals_small = np.min(intervals_counts[:2])
 
-    # loop over all LUNA timestamps
+    # loop over all LUNA timestamps_luna_clustered
     for i in range(len(timestamps_luna) - 1):
 
         # check if LUNA timestamp is the first one of a big batch with 10 smaller ribbons.
@@ -83,7 +85,10 @@ def package_databases(data_ae_np, data_luna_np, timestamps_ae, timestamps_luna):
     return final_array
 
 
-def synchronize_databases(array_ae, array_luna, margin_ae=100, margin_luna=20, length=18):
+def synchronize_databases(array_ae, array_luna, margin_ae=100, margin_luna=20, length=18, multiple=False):
+
+    def cluster_luna():
+        pass
 
     def remove_outliers_luna():
 
@@ -137,10 +142,10 @@ def synchronize_databases(array_ae, array_luna, margin_ae=100, margin_luna=20, l
         database = array_luna
         timestamps, database = remove_outliers_end()
         timestamps, database = remove_outliers_start()
-        # timestamps, database, completed = remove_outliers_middle()
-        #
-        # while not completed:
-        #     timestamps, database, completed = remove_outliers_middle()
+        timestamps, database, completed = remove_outliers_middle()
+
+        while not completed:
+            timestamps, database, completed = remove_outliers_middle()
 
         return timestamps, database
 
@@ -161,7 +166,7 @@ def synchronize_databases(array_ae, array_luna, margin_ae=100, margin_luna=20, l
         pass
 
     # 0. gathering information.
-    # Getting timestamps from arrays.
+    # Getting timestamps_luna_clustered from arrays.
     timestamps_luna = array_luna[:, 0] - array_luna[0, 0]
     timestamps_ae = array_ae[:, 0]
 
@@ -252,32 +257,69 @@ def synchronize_databases(array_ae, array_luna, margin_ae=100, margin_luna=20, l
 
     return
 
+
 def cluster_luna(timestamps):
 
-    clustering = AgglomerativeClustering(n_clusters=None, linkage='single', distance_threshold=3000).fit(timestamps.reshape(-1, 1))
+    clustering = AgglomerativeClustering(n_clusters=None, linkage='single',
+                                         distance_threshold=3000).fit(timestamps.reshape(-1, 1))
     clustered_timestamps = clustering.labels_
 
     values = np.ones(len(timestamps))
 
-    print(clustered_timestamps)
-    print(values.shape)
-    print(timestamps.shape)
-
     plt.scatter(timestamps, values, c=clustered_timestamps)
     plt.show()
+
+    return clustered_timestamps
+
+
+def split_luna(timestamps_luna_clustered, database_luna, database_ae, length=12, margin_start=5, margin_end=10):
+    timestamps_split = []
+    database_luna_split = []
+    database_ae_split = []
+
+    count = 0
+    previous_split = 0
+
+    for i in range(len(timestamps_luna_clustered) - 1):
+        count += 1
+
+        if timestamps_luna_clustered[i + 1] != timestamps_luna_clustered[i] and count >= length:
+            timestamps_split.append(timestamps_luna_clustered[previous_split: i + 1])
+            database_luna_split.append(database_luna[previous_split: i + 1, :])
+            count = 0
+            previous_split = i + 1
+
+    timestamps_split.append(timestamps_luna_clustered[previous_split: -1])
+
+    previous_split = 0
+
+    timestamps_ae = database_ae[:, 0]
+
+    for timestamp in timestamps_split:
+        start, end = timestamp[0], timestamp[-1]
+
+        for i in range(previous_split, len(timestamps_ae)):
+            if start + margin_start > timestamps_ae[i] > end + margin_end:
+                database_ae_split.append(database_ae[previous_split: i + 1, :])
+                previous_split = i + 1
+                break
+
+    print(len(database_luna_split), print(len(database_ae_split)))
+
+    return timestamps_split, database_luna_split, database_ae_split
 
 
 # opening the files
 panel = 'L1-23'
-path_luna = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{panel}-2.txt'
-path_ae = os.path.dirname(__file__) + f'/Files/{panel}/AE/{panel}-clustered.csv'
+path_luna = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/{panel}.txt'
+path_ae = os.path.dirname(__file__) + f'/Files/{panel}/AE/{panel}.csv'
 
 # to arrays
 data_ae_pd_unsorted = pd.read_csv(path_ae)
 data_ae_np_unsorted = data_ae_pd_unsorted.to_numpy(dtype=float)
 
 data_ae_np = data_ae_np_unsorted[np.argsort(data_ae_np_unsorted[:, 0])]
-# data_luna_np, _, _, _ = file_to_array(panel, path_luna)
+data_luna_np, _, _, _ = file_to_array(panel, path_luna)
 
 # in case 2 files for LUNA
 
@@ -285,4 +327,9 @@ folder_path = os.path.dirname(__file__) + f'/Files/{panel}/LUNA/'
 
 data_luna_np, _ = folder_to_array(panel, folder_path)
 
-synchronize_databases(data_ae_np, data_luna_np)
+timestamps = data_luna_np[:, 0] - data_luna_np[0, 0]
+
+timestamps = cluster_luna(timestamps)
+timestamps_split = split_luna(timestamps, data_luna_np, data_ae_np)
+
+# synchronize_databases(data_ae_np, data_luna_np)
