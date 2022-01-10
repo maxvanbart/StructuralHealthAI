@@ -140,6 +140,12 @@ def cluster_to_image(vector):
 
 
 def do_in_batches(array, batches, function):
+    """
+    :param array: 2d array
+    :param batches: int
+    :param function: clustering algo
+    :return: cluster
+    """
     i = 0
     output = None
     values_output = []
