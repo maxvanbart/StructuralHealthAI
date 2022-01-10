@@ -12,7 +12,7 @@ def calc_translation_coeff(luna_data, ribbon_lst):
 
     print("Loaded LUNA data...")
     error_dict = {}
-    shift_range = range(20000, 30000, 10)
+    shift_range = range(-500, 500, 1)
     for dt in shift_range:
         error_dict[dt] = shift_error(np.copy(timestamps_luna), edge_list, dt, penalty='MAE')
     print("Finished calculating absolute errors...")
