@@ -6,7 +6,8 @@ from matplotlib import pyplot as plt
 from PZT.load_pzt import StatePZT
 
 
-def analyse_pzt(pzt_database, graphing=True):
+def analyse_pzt(pzt_database, panel_name, graphing=False):
+
     # for every run we will do a seperate analysis
     count = 0
     for run in pzt_database:
@@ -39,19 +40,30 @@ def analyse_pzt(pzt_database, graphing=True):
         ###########################################
         # should be possible to make this into a neater function
         # all_frequency = [50000, 100000, 125000, 150000, 200000, 250000]
-        all_frequency = [150000]
-        all_features = ['max_amp', 'min_amp', 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time',
-                        'travel_time', 'energy']
-        # all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
-        #                "Actionneur7", "Actionneur8"]
-        all_channels = ["Actionneur1"]
+        # This list should in the final product only contrain the 'usefull frequencies'
+        all_frequency = [50000, 100000, 125000, 150000, 200000, 250000]
+        # Only usefull features should be contained in this list for the final product
+        # all_features = ['max_amp', 'min_amp', 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time',
+        #                 'travel_time', 'energy']
+        all_features = ['relative_amp', 'duration', 'rise_time', 'travel_time', 'energy']
+        all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
+                        "Actionneur7", "Actionneur8"]
+        # all_channels = ["Actionneur1"]
         gradient = False
 
+        hits = {}
         for freq_select in all_frequency:  # loop over all the different frequencies
+
             for channel_select in all_channels:  # loop over all of the channels
-                fig, axs = plt.subplots(2, 4)  # y, x
-                fig.suptitle(f'different features for emitter {channel_select} and with a frequency {freq_select}',
-                             fontsize=16)
+                if channel_select not in hits:
+                    hits[channel_select] = []
+                outliers_channels = None
+                header_channels = None
+
+                if graphing:
+                    fig, axs = plt.subplots(2, 4)  # y, x
+                    fig.suptitle(f'different features for emitter {channel_select} and with a frequency {freq_select}',
+                                 fontsize=16)
                 counter = 0  # counter to know where to plot the plot
                 for feature_select in all_features:  # loop over features, max of 8 features possible
                     state_to_plot = np.array([])
@@ -65,25 +77,77 @@ def analyse_pzt(pzt_database, graphing=True):
                         else:  # else go stacking for different states
                             state_to_plot = np.vstack((state_to_plot, feature_output))
 
-                    x_counter = counter % 4  # placement
-                    y_counter = counter//4  # placement
+                    # Some information about the data
+                    averages = np.average(state_to_plot, axis=0)
+                    standarddivs = np.std(state_to_plot, axis=0)
+
+                    l1 = averages
+                    l2 = averages + standarddivs
+                    l3 = averages - standarddivs
+
+                    state_filtered = np.copy(state_to_plot)
+                    state_filtered = abs(state_filtered - averages)
+                    state_filtered = state_filtered - standarddivs
+                    outliers = state_filtered > 0
+                    outliers = np.sum(outliers, axis=1)
+
+                    # Pass the outlier data a level downward
+                    if outliers_channels is None:
+                        outliers_channels = outliers
+                        header_channels = [feature_select]
+                    else:
+                        outliers_channels = np.vstack((outliers_channels, outliers))
+                        header_channels.append(feature_select)
 
                     if graphing:
-                        if gradient:
-                            # gradient gives 2 outputs for a 2d array not sure which one to pick
-                            # they both give different results but same kind of interesting points can be observed,
-                            # namely state 10 and between 20 and 25
-                            axs[y_counter, x_counter].plot(np.gradient(state_to_plot)[0])
-                            # so which one do we use?
-                        else:
-                            axs[y_counter, x_counter].plot(state_to_plot)
+                        # Placement code
+                        x_counter = counter % 4
+                        y_counter = counter // 4
 
-                    axs[y_counter, x_counter].legend(['emitter', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6', 'chan7',
-                                                      'chan8'])
-                    axs[y_counter, x_counter].set_title(feature_select)
+                        color_lst = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple']
+                        color_lst += ['tab:brown', 'tab:pink', 'tab:gray']
+
+                        axs[y_counter, x_counter].plot(state_to_plot)
+
+                        line_width = state_to_plot.shape[0]
+
+                        axs[y_counter, x_counter].hlines(l1, 0, line_width, colors=color_lst)
+                        axs[y_counter, x_counter].hlines(l2, 0, line_width, linestyles='dashed', colors=color_lst)
+                        axs[y_counter, x_counter].hlines(l3, 0, line_width, linestyles='dashed', colors=color_lst)
+
+                        # axs[y_counter, x_counter].legend(['emitter', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6', 'chan7',
+                        #                                   'chan8'])
+                        axs[y_counter, x_counter].set_title(feature_select)
                     counter += 1  # update counter for next subplot
+
+                # Here we prepare the generated data matrix for the next level
+                if outliers_channels is not None:
+                    outliers_channels = np.transpose(outliers_channels)
+                    hits[channel_select].append(outliers_channels)
+
                 if graphing:
                     plt.show()
+
+        # Here we combine the dictionary of margin violations to pull conclusions about the timestamps
+        # where changes in the panel properties occur
+        hits_processed = {}
+        for y in hits:
+            hit = sum(hits[y])
+            # hit = np.sum(hit, axis=1)
+            # print(hit)
+            hits_processed[y] = hit
+            hits_df = pd.DataFrame(data=hit, columns=all_features)
+
+            ax = hits_df.plot.bar(rot=1, stacked=True)
+            plt.title(f'Margin violations for different measurements of {y} on panel {panel_name}.')
+            plt.show()
+
+            # for y in
+            # plt.bar(range(hit.shape[0]), hit)
+            # plt.title(f'Margin violations for different measurements of {y}.')
+            # plt.show()
+
+        print(hits_processed)
 
 
 def get_feature(freq_dict, state, freq_select, channel_select, feature_select):

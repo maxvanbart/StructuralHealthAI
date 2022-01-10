@@ -96,5 +96,7 @@ def travel_time_calc(data, threshold):
 
 
 def relatify(column):
-    column = column/column[0]
+    c0 = column[0]
+    column = column/c0
+    # print(c0)
     return column

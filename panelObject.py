@@ -87,7 +87,7 @@ class Panel:
         print(f"Successfully loaded PZT data for {self.name}.")
 
     def analyse_pzt(self):
-        analyse_pzt(self.pzt_database)
+        analyse_pzt(self.pzt_database, self.name)
         print(f"Successfully analysed PZT data for {self.name}.")
 
     def time_synchronise(self):
