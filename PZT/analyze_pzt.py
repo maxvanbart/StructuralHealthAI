@@ -7,7 +7,6 @@ from PZT.load_pzt import StatePZT
 
 
 def analyse_pzt(pzt_database, panel_name, graphing=False):
-
     # for every run we will do a seperate analysis
     count = 0
     for run in pzt_database:
@@ -49,7 +48,6 @@ def analyse_pzt(pzt_database, panel_name, graphing=False):
         all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
                         "Actionneur7", "Actionneur8"]
         # all_channels = ["Actionneur1"]
-        gradient = False
 
         hits = {}
         for freq_select in all_frequency:  # loop over all the different frequencies
@@ -148,6 +146,7 @@ def analyse_pzt(pzt_database, panel_name, graphing=False):
             # plt.show()
 
         print(hits_processed)
+        return hits_processed
 
 
 def get_feature(freq_dict, state, freq_select, channel_select, feature_select):
