@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from PZT.load_pzt import StatePZT
 
 
-def analyse_pzt(pzt_database, panel_name, graphing=False):
+def analyse_pzt(pzt_database, panel_name, graphing=True):
     # for every run we will do a seperate analysis
     count = 0
     for run in pzt_database:
@@ -44,7 +44,7 @@ def analyse_pzt(pzt_database, panel_name, graphing=False):
         # Only usefull features should be contained in this list for the final product
         # all_features = ['max_amp', 'min_amp', 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time',
         #                 'travel_time', 'energy']
-        all_features = ['relative_amp', 'duration', 'rise_time', 'travel_time', 'energy']
+        all_features = ['relative_amp', 'duration', 'rise_time', 'travel_time', 'energy', "avg_freq"]
         all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
                         "Actionneur7", "Actionneur8"]
         # all_channels = ["Actionneur1"]
@@ -138,7 +138,7 @@ def analyse_pzt(pzt_database, panel_name, graphing=False):
 
             ax = hits_df.plot.bar(rot=1, stacked=True)
             plt.title(f'Margin violations for different measurements of {y} on panel {panel_name}.')
-            # plt.show()
+            plt.show()
 
             # for y in
             # plt.bar(range(hit.shape[0]), hit)
