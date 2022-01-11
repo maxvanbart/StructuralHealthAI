@@ -4,9 +4,12 @@ from matplotlib import pyplot as plt
 
 from TimeSync.translateLuna import calc_translation_coeff
 from TimeSync.dataTypeClasses import Ribbon
+from TimeSync.ribbonFinder import sort_ribbons, purge_ribbons
 
 
-def sync_time(ae_df, array_luna, name='Generic Panel', bin_width=1):
+def sync_time(ae_df, array_luna, vector_luna_source, name='Generic Panel', bin_width=1):
+    print(vector_luna_source)
+
     # Convert the AE dataframe to a numpy array
     array = np.array(ae_df)
 
@@ -15,9 +18,9 @@ def sync_time(ae_df, array_luna, name='Generic Panel', bin_width=1):
     final_time = int(np.ceil(np.array(final_time['time'])[0]) + 1)
     print("Final value of t:", final_time)
 
+    # Initialize the bins for the bin based method
     bin_count = int(np.ceil(final_time / bin_width))
     bins = [0] * bin_count
-    trange = range(0, bin_count)
 
     for row in list(array):
         # x is the time (t) at which this point occurs
@@ -27,45 +30,12 @@ def sync_time(ae_df, array_luna, name='Generic Panel', bin_width=1):
         bins[y] += 1
     print("Finished sorting to bins...")
 
-    # Here we sort all the bins into ribbons in order to sort them together
-    ribbon_lst = []
-    found_prev = False
-    not_found_count = 99
-    for i in trange:
-        # If the current bin has any datapoints it will be added to a ribbon
-        if bins[i] > 0:
-            not_found_count = 0
-            if found_prev:
-                # If there was a previous non-empty bin found we will add it to that ribbon
-                ribbon_lst[-1].add_entry(i, bins[i])
-            else:
-                # Otherwise, we start a new ribbon
-                ribbon_lst.append(Ribbon(bin_width))
-                ribbon_lst[-1].add_entry(i, bins[i])
-                found_prev = True
-        else:
-            # We tolerate having one bin with no values before we consider a ribbon finished
-            # /!\ THE CURRENT VALUE OF ZERO SHOULD STILL BE TUNED /!\
-            if not_found_count > 0:
-                found_prev = False
-            else:
-                not_found_count += 1
+    # This function is used to combine all the bins into data ribbons
+    trange = range(0, bin_count)
+    ribbon_lst = sort_ribbons(bins, trange, bin_width)
 
-    # Here we trigger all ribons to update their defining properties using the bins that they are associated with
-    for ribbon in ribbon_lst:
-        ribbon.update()
-    print(f"Generated {len(ribbon_lst)} ribbons...")
-
-    # Here we sort out all ribbons with a width less than 3 as these widths are never associated with actual ribbons
-    ribbon_lst = [x for x in ribbon_lst if x.width > 3]
-
-    # Here we itteratively decrease the standard deviation of the ribbon widths in order to sort out any other
-    # abnormaly thin ribbons
-    ribbon_width_lst = [x.width for x in ribbon_lst]
-    while np.std(ribbon_width_lst) > 15:
-        mean_width = np.mean(ribbon_width_lst)
-        ribbon_lst = [x for x in ribbon_lst if x.width > mean_width]
-        ribbon_width_lst = [x.width for x in ribbon_lst]
+    # remove all ribbons which are abnormally small
+    ribbon_lst = purge_ribbons(ribbon_lst)
 
     # LUNA stuff, all previous AE stuff should still be migrated to its own module
     timestamps_luna = array_luna[:, 0] - array_luna[0, 0]
@@ -79,9 +49,9 @@ def sync_time(ae_df, array_luna, name='Generic Panel', bin_width=1):
         # print(ribbon.t_start, ribbon.t_end)
         plt.plot([ribbon.t_start, ribbon.t_end], [1, 1], 'b')
     # Plot LUNA points as red dots
-    sample_y_values_LUNA = np.ones((len(timestamps_luna)))
+    sample_y_values_luna = np.ones((len(timestamps_luna)))
     timestamps_luna_shifted = np.copy(timestamps_luna) + best_dt
-    plt.scatter(timestamps_luna_shifted, sample_y_values_LUNA, c='red', s=4)
+    plt.scatter(timestamps_luna_shifted, sample_y_values_luna, c='red', s=4)
     # plt.scatter(timestamps_luna, sample_y_values_LUNA, c='green', s=4)
     plt.title(name)
     plt.xlabel("Time [s]")
