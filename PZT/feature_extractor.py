@@ -49,7 +49,7 @@ def duration_calc(database, threshold, debug_graph=False):
     # We turn the indices of the start and end time into the actual time and calculate the duration
     start_time = np.array([time[x] for x in start_index])
     end_time = np.array([time[x] for x in end_index])
-    return relatify(end_time - start_time)
+    return end_time - start_time
 
 
 def rise_time_calc(data, threshold):
@@ -93,6 +93,35 @@ def travel_time_calc(data, threshold):
     first_threshold_crossing_time = np.array([time_array[x] for x in start_index])
     travel_time = first_threshold_crossing_time - first_threshold_crossing_time[0]
     return travel_time
+
+
+def avgfreq_calc(data, threshold, debugging=False):
+    """returns average frequency of waveform that crosses threshold"""
+    duration_array = duration_calc(data, threshold)
+    time_array = data[:, 0]
+    data = data[:, 1:]
+    count_array = np.zeros(duration_array.shape)
+    for row_ndx in range(data.shape[1]):
+        counts, prev = 0, None
+        for current in data[:, row_ndx]:
+            if prev is not None:
+                if prev < threshold[row_ndx] < current or prev > threshold[row_ndx] > current:
+                    counts += 1
+            prev = current
+
+        if debugging:
+            plt.plot(time_array, data[:, row_ndx])
+            plt.plot(time_array, np.full(len(data[:, row_ndx]), threshold[row_ndx]))
+            plt.show()
+
+        count_array[row_ndx] = counts
+
+    avgfreq_array = np.zeros(duration_array.shape)
+
+    for ndx in range(avgfreq_array.shape[0]):
+        avgfreq_array[ndx] = count_array[ndx] / duration_array[ndx]
+
+    return avgfreq_array
 
 
 def relatify(column):

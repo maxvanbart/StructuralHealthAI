@@ -4,7 +4,7 @@ import scipy.io
 import os
 import datetime
 
-from PZT.feature_extractor import relative_amp_calc, duration_calc, rise_time_calc, energy_calc, travel_time_calc, calculate_threshold
+from PZT.feature_extractor import relative_amp_calc, duration_calc, rise_time_calc, energy_calc, travel_time_calc, calculate_threshold, avgfreq_calc
 
 
 class TestPZT:
@@ -57,16 +57,18 @@ class TestPZT:
             energy_column = energy_calc(data, threshold)
             # travel time: time between first threshold crossing of emitter to first threshold crossing of receiver
             travel_time_column = travel_time_calc(data, threshold)
+            # average frequency: the average frequency of the waveform that crosses the threshold.
+            avg_freq_column = avgfreq_calc(data, threshold)
 
             # stack all the features together to compile to pandas dataframe
             index = np.array(range(1, 9))
             z = np.vstack((index, maximum_column, minimum_column, abs_column, relative_amp_column, duration_column,
-                           rise_time_column, travel_time_column, energy_column))
+                           rise_time_column, travel_time_column, energy_column, avg_freq_column))
             z = np.transpose(z)
 
             # put everything in a dataframe for easy storage
             header = ['index', 'max_amp', 'min_amp', 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time',
-                      'travel_time', 'energy']
+                      'travel_time', 'energy', "avg_freq"]
             df = pd.DataFrame(data=z, columns=header)
             self.feature_dict[actionneur] = df
 
