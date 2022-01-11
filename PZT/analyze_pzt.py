@@ -36,9 +36,10 @@ def analyse_pzt(pzt_database, panel_name, graphing=True, plot_violation=False):
                 # per channel
 
                 frequency_array_dict[f].append((state_number, z[f]))
+
             # make the start_time list
             time_list.append(state.start_time)
-        time_list = np.array(time_list)
+        time_list = np.array(time_list) - time_list[0]
         plt.plot(time_list)
         plt.title("check if it is a strait line if not, time sync is wrong")
         plt.show()
