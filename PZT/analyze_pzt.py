@@ -138,7 +138,7 @@ def analyse_pzt(pzt_database, panel_name, graphing=False):
 
             ax = hits_df.plot.bar(rot=1, stacked=True)
             plt.title(f'Margin violations for different measurements of {y} on panel {panel_name}.')
-            plt.show()
+            # plt.show()
 
             # for y in
             # plt.bar(range(hit.shape[0]), hit)
