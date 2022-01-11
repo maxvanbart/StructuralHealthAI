@@ -87,19 +87,16 @@ class Panel:
         luna_data_left, luna_data_right = folder_to_array(self.name, self.folder_luna)
         self.luna_database = [luna_data_left, luna_data_right]
 
-        # First entry each row removed as this is the timestamp!
-        timestamps_left, timestamps_right = luna_data_left[0], luna_data_right[0]
+        print(f"Successfully loaded LUNA data for {self.name}.")
 
+    def analyse_luna(self):
+        """A function to analyse the LUNA data in the folder"""
         luna_data_left_time, luna_data_left_length = gradient_arrays(self.luna_database[0])
         luna_data_right_time, luna_data_right_length = gradient_arrays(self.luna_database[1])
 
         self.luna_database_derivatives = [luna_data_left_time, luna_data_right_time,
                                           luna_data_left_length, luna_data_right_length]
 
-        print(f"Successfully loaded LUNA data for {self.name}.")
-
-    def analyse_luna(self):
-        """A function to analyse the LUNA data in the folder"""
         time_left, time_right, length_left, length_right = self.luna_database_derivatives
 
         self.luna_database_clustered = array_to_cluster(time_left, time_right, length_left, length_right)

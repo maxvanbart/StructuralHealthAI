@@ -21,10 +21,11 @@ if __name__ == "__main__":
         panel.analyse_ae()
 
         panel.load_luna()
-        panel.analyse_luna()
-        # panel.plot_luna()
 
         panel.time_synchronise()
+
+        panel.analyse_luna()
+        # panel.plot_luna()
 
     # end time, it also prints the elapsed time
     t1 = time.time()
