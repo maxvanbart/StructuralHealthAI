@@ -34,6 +34,8 @@ class Panel:
         self.luna_database_derivatives = None
         self.luna_database_clustered = None
 
+        self.luna_file_vector = None
+
         self.folder_parent = os.path.dirname(__file__)
         self.folder_ae = None
         self.folder_luna = self.folder_parent + f'/Files/{self.name}/LUNA/'
@@ -84,7 +86,7 @@ class Panel:
     # All the LUNA related code for the object
     def load_luna(self):
         """A function to load the LUNA data"""
-        luna_data_left, luna_data_right = folder_to_array(self.name, self.folder_luna)
+        luna_data_left, luna_data_right, self.luna_file_vector = folder_to_array(self.name, self.folder_luna)
         self.luna_database = [luna_data_left, luna_data_right]
 
         print(f"Successfully loaded LUNA data for {self.name}.")

@@ -56,7 +56,7 @@ def file_to_array(panel, path):
 
     def convert_array(array):
         """
-        Changes all dates to timestamps, NaN strings to NaN values and remaining strings to floats.
+        Changes all dates to timestamps_luna_clustered, NaN strings to NaN values and remaining strings to floats.
         """
         for i in range(len(array)):
             for j in range(len(array[i])):
@@ -139,13 +139,22 @@ def folder_to_array(panel, path):
     final_left_array = []
     final_right_array = []
 
+    final_file_vector = []
+    count = 0
+
     for file in files_data:
         left_array, right_array, _, _ = file_to_array(panel, file)
 
         if len(final_left_array) == 0:
             final_left_array, final_right_array = left_array, right_array
+            final_file_vector = np.ones((len(left_array), 1)) * count
         else:
             final_left_array = np.vstack((final_left_array, left_array))
             final_right_array = np.vstack((final_right_array, right_array))
 
-    return final_left_array, final_right_array
+            file_vector = np.ones((len(left_array), 1)) * count
+            final_file_vector = np.vstack((final_file_vector, file_vector))
+
+        count += 1
+
+    return final_left_array, final_right_array, final_file_vector
