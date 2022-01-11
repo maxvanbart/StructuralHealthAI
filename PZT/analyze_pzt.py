@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from PZT.load_pzt import StatePZT
 
 
-def analyse_pzt(pzt_database, panel_name, graphing=True):
+def analyse_pzt(pzt_database, panel_name, graphing=True, plot_violation=False):
     # for every run we will do a seperate analysis
     count = 0
     for run in sorted(pzt_database):
@@ -40,6 +40,7 @@ def analyse_pzt(pzt_database, panel_name, graphing=True):
             time_list.append(state.start_time)
         time_list = np.array(time_list)
         plt.plot(time_list)
+        plt.title("check if it is a strait line if not, time sync is wrong")
         plt.show()
 
         ###########################################
@@ -54,9 +55,9 @@ def analyse_pzt(pzt_database, panel_name, graphing=True):
         # all_features = ['max_amp', 'min_amp', 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time',
         #                 'travel_time', 'energy']
         all_features = ['relative_amp', 'duration', 'rise_time', 'travel_time', 'energy', "avg_freq"]
-        # all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
-        #                 "Actionneur7", "Actionneur8"]
-        all_channels = ["Actionneur1"]
+        all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
+                        "Actionneur7", "Actionneur8"]
+        # all_channels = ["Actionneur1"]
 
         hits = {}
 
@@ -120,10 +121,10 @@ def analyse_pzt(pzt_database, panel_name, graphing=True):
                         axs[y_counter, x_counter].plot(state_to_plot)
 
                         line_width = state_to_plot.shape[0]
-
-                        axs[y_counter, x_counter].hlines(l1, 0, line_width, colors=color_lst)
-                        axs[y_counter, x_counter].hlines(l2, 0, line_width, linestyles='dashed', colors=color_lst)
-                        axs[y_counter, x_counter].hlines(l3, 0, line_width, linestyles='dashed', colors=color_lst)
+                        if plot_violation:
+                            axs[y_counter, x_counter].hlines(l1, 0, line_width, colors=color_lst)
+                            axs[y_counter, x_counter].hlines(l2, 0, line_width, linestyles='dashed', colors=color_lst)
+                            axs[y_counter, x_counter].hlines(l3, 0, line_width, linestyles='dashed', colors=color_lst)
 
                         # axs[y_counter, x_counter].legend(['emitter', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6',
                         # 'chan7', 'chan8'])
@@ -157,7 +158,6 @@ def analyse_pzt(pzt_database, panel_name, graphing=True):
             # plt.title(f'Margin violations for different measurements of {y}.')
             # plt.show()
 
-        print(hits_processed)
         return hits_processed
 
 
