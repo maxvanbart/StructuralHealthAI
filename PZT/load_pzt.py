@@ -119,6 +119,11 @@ class StatePZT:
     def __repr__(self):
         return f"StatePZT({self.name})"
 
+    def __lt__(self, other):  # added this for ordering of dictionary keys
+        if self.start_time < other.start_time:
+            return True
+        return False
+
 
 def get_subfolders(location):
     entries = os.scandir(location)
@@ -130,6 +135,7 @@ def get_subfolders(location):
 
 
 def convert_to_datetime(time):
+    # 2019_01_07_14_02
     year, month, day, hour, minute, second = time.split('_')
 
     year, month, day = int(year), int(month), int(day)

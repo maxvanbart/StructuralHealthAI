@@ -9,7 +9,7 @@ from PZT.load_pzt import StatePZT
 def analyse_pzt(pzt_database, panel_name, graphing=True):
     # for every run we will do a seperate analysis
     count = 0
-    for run in pzt_database:
+    for run in sorted(pzt_database):
         count += 1
         # /!\ MIGHT BE BETTER TO BASE THIS ON THE AMOUNT OF STATES IN A RUN /!\
         if count < 2:
@@ -26,32 +26,41 @@ def analyse_pzt(pzt_database, panel_name, graphing=True):
         for f in f_list:
             frequency_array_dict[f] = []
         # here we fill the frequency array dict with the results for the different frequencies
-        for state in tqdm(pzt_database[run], desc='State'):
+        time_list = []
+        pzt_database_run = sorted(pzt_database[run])
+        for state in tqdm(pzt_database_run, desc='State'):
             z, state_number = state.analyse()
-            for f in z:
+            for f in z:  # freq in dict
                 # tuple containing the state number (time value)
                 # and the dictionary of actionneurs which contain dictionaries containing maximum amplitudes
                 # per channel
+
                 frequency_array_dict[f].append((state_number, z[f]))
+            # make the start_time list
+            time_list.append(state.start_time)
+        time_list = np.array(time_list)
+        plt.plot(time_list)
+        plt.show()
 
         ###########################################
         #  # * # * #   Code of Niels   # * # * #  #
         ###########################################
-        # should be possible to make this into a neater function
+        # should be possible to make this into a neater function, like input
         # all_frequency = [50000, 100000, 125000, 150000, 200000, 250000]
-        # This list should in the final product only contrain the 'usefull frequencies'
-        all_frequency = [50000, 100000, 125000, 150000, 200000, 250000]
-        # Only usefull features should be contained in this list for the final product
+        # This list should in the final product only contain the 'useful frequencies'
+        all_frequency = [200000, 250000]
+
+        # Only useful features should be contained in this list for the final product
         # all_features = ['max_amp', 'min_amp', 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time',
         #                 'travel_time', 'energy']
         all_features = ['relative_amp', 'duration', 'rise_time', 'travel_time', 'energy', "avg_freq"]
-        all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
-                        "Actionneur7", "Actionneur8"]
-        # all_channels = ["Actionneur1"]
+        # all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
+        #                 "Actionneur7", "Actionneur8"]
+        all_channels = ["Actionneur1"]
 
         hits = {}
-        for freq_select in all_frequency:  # loop over all the different frequencies
 
+        for freq_select in all_frequency:  # loop over all the different frequencies
             for channel_select in all_channels:  # loop over all of the channels
                 if channel_select not in hits:
                     hits[channel_select] = []
@@ -65,7 +74,10 @@ def analyse_pzt(pzt_database, panel_name, graphing=True):
                 counter = 0  # counter to know where to plot the plot
                 for feature_select in all_features:  # loop over features, max of 8 features possible
                     state_to_plot = np.array([])
-                    for state_select in list(range(1, len(frequency_array_dict[freq_select]) + 1)):
+
+                    state_select_list = list(range(1, len(frequency_array_dict[freq_select]) + 1))
+                    for state_select in state_select_list:
+
                         # loop over all the states, start at state 1 till end
                         feature_output = get_feature(frequency_array_dict, state_select, freq_select, channel_select,
                                                      feature_select)
@@ -113,8 +125,8 @@ def analyse_pzt(pzt_database, panel_name, graphing=True):
                         axs[y_counter, x_counter].hlines(l2, 0, line_width, linestyles='dashed', colors=color_lst)
                         axs[y_counter, x_counter].hlines(l3, 0, line_width, linestyles='dashed', colors=color_lst)
 
-                        # axs[y_counter, x_counter].legend(['emitter', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6', 'chan7',
-                        #                                   'chan8'])
+                        # axs[y_counter, x_counter].legend(['emitter', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6',
+                        # 'chan7', 'chan8'])
                         axs[y_counter, x_counter].set_title(feature_select)
                     counter += 1  # update counter for next subplot
 

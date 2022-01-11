@@ -74,9 +74,9 @@ def energy_calc(data, threshold):
     """energy: area under the squared signal envelope"""
     time_array = data[:, 0]
     data = data[:, 1:]
-    dt = time_array[1]
-    energy_riemannn = abs(data)*dt
-    energy_column = np.sum(energy_riemannn, axis=0)
+    dt = time_array[1]  # seconds
+    energy_riemann = abs(data)*dt
+    energy_column = np.sum(energy_riemann, axis=0)
     return relatify(energy_column)
 
 
@@ -122,6 +122,10 @@ def avgfreq_calc(data, threshold, debugging=False):
         avgfreq_array[ndx] = count_array[ndx] / duration_array[ndx]
 
     return avgfreq_array
+
+
+def relative_freq_calc(data, threshold):
+    return
 
 
 def relatify(column):
