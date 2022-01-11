@@ -2,14 +2,12 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from TimeSync.translateLuna import calc_translation_coeff
+from TimeSync.translateLuna import calc_translation_coeffs
 from TimeSync.dataTypeClasses import Ribbon
 from TimeSync.ribbonFinder import sort_ribbons, purge_ribbons
 
 
 def sync_time(ae_df, array_luna, vector_luna_source, name='Generic Panel', bin_width=1):
-    print(vector_luna_source)
-
     # Convert the AE dataframe to a numpy array
     array = np.array(ae_df)
 
@@ -39,9 +37,17 @@ def sync_time(ae_df, array_luna, vector_luna_source, name='Generic Panel', bin_w
 
     # LUNA stuff, all previous AE stuff should still be migrated to its own module
     timestamps_luna = array_luna[:, 0] - array_luna[0, 0]
-    best_dt = calc_translation_coeff(timestamps_luna, ribbon_lst)
+    best_dts = calc_translation_coeffs(timestamps_luna, ribbon_lst, vector_luna_source)
 
-    # Final Plot
+    vector_groups = [x[0] for x in list(np.copy(vector_luna_source))]
+    vector_shifts = np.array([best_dts[x] for x in vector_groups])
+    vector_groups = [int(x) for x in vector_groups]
+
+    timestamps_luna_shifted = (np.copy(timestamps_luna) + vector_shifts)
+
+    ##############
+    # Final Plot #
+    ##############
     # This plot shows how accurate the results are
     # Plot ribbons as horizontal lines
     for ribbon in ribbon_lst:
@@ -50,8 +56,10 @@ def sync_time(ae_df, array_luna, vector_luna_source, name='Generic Panel', bin_w
         plt.plot([ribbon.t_start, ribbon.t_end], [1, 1], 'b')
     # Plot LUNA points as red dots
     sample_y_values_luna = np.ones((len(timestamps_luna)))
-    timestamps_luna_shifted = np.copy(timestamps_luna) + best_dt
-    plt.scatter(timestamps_luna_shifted, sample_y_values_luna, c='red', s=4)
+
+    plt.scatter(timestamps_luna_shifted, sample_y_values_luna, c=vector_groups, s=4)
+    # for i, label in enumerate(vector_groups):
+    #     plt.annotate(vector_groups, (timestamps_luna_shifted[i], sample_y_values_luna[i]))
     # plt.scatter(timestamps_luna, sample_y_values_LUNA, c='green', s=4)
     plt.title(name)
     plt.xlabel("Time [s]")
