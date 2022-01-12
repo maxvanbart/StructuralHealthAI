@@ -55,14 +55,15 @@ class Panel:
             print(f"Successfully loaded clustered data for {self.name}.")
         except FileNotFoundError:
             print('Clustered file not found, clustering data...')
-            self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
 
+            self.ae_clustered_database = self.ae_database.hits
+            self.ae_clustered_database["energy_outlier"] = energy_time_cluster(self.ae_clustered_database)
+            self.ae_clustered_database = self.ae_clustered_database[self.ae_clustered_database["energy_outlier"] == 1]
+            self.ae_clustered_database = init_clustering(self.ae_clustered_database, debug=self.debug)
+            self.ae_clustered_database["frequency"] = frequency_extraction(self.ae_clustered_database)
+            self.ae_clustered_database["frequency_outlier"] = freq_amp_cluster(self.ae_clustered_database)
             # adding extracted features and clusters
             print(f"Clustering completed for {self.name}, features and clusters being added to database...")
-            self.ae_clustered_database["frequency"] = frequency_extraction(self.ae_clustered_database)
-            self.ae_clustered_database["energy_outlier"] = energy_time_cluster(self.ae_clustered_database)
-            # self.ae_clustered_database["frequency_outlier"] = freq_amp_cluster(self.ae_clustered_database)
-
             # create new CSV
             pd.DataFrame(self.ae_clustered_database).to_csv(location, index=False)
             print("Successfully created clustered .csv.")
