@@ -1,9 +1,10 @@
 import numpy as np
 from matplotlib import pyplot as plt
 import pandas as pd
+import math
 
 
-def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector):
+def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector, final_time):
     """A function which calculates the best time shift based on the luna timestamps and the ribbon list"""
     timestamps_luna = np.copy(luna_data)
     # Here we collect a list of all the timestamps for the edges of the ribbons
@@ -33,7 +34,7 @@ def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector):
         t0 = group_data[0]
         print(t0)
 
-        error_dict, best_dt = explore(error_dict, group_data, edge_list)
+        error_dict, best_dt = explore(error_dict, group_data, edge_list, final_time)
         print("Finished calculating absolute errors...")
         error_dicts[group] = error_dict
         best_dts[group] = best_dt
@@ -53,15 +54,22 @@ def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector):
     return best_dts
 
 
-def explore(error_dict, group_data, edge_list):
+def explore(error_dict, group_data, edge_list, final_time):
+    magnitude = int(math.log(final_time, 10)-2)
+    print(final_time, magnitude, int(magnitude))
+    ddt = int(10**magnitude)
+    best_dt = 0
+    # We loop the explore_range function a number of times in order to refine the areas of interest
+    while ddt >= 1:
+        error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -ddt*100+best_dt, ddt*100+best_dt, ddt)
+        ddt = int(ddt/10)
+    # error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -10000, 10000, 100)
+    # # First we explore a large region to get a rough estimate of the best value for dt
+    # error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -1000+best_dt, 1000+best_dt, 10)
+    # # Explore around the best dt to refine the result
+    # error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -10+best_dt, 10+best_dt, 1)
 
-    error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -10000, 10000, 100)
-    # First we explore a large region to get a rough estimate of the best value for dt
-    error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -1000+best_dt, 1000+best_dt, 10)
-    # Explore around the best dt to refine the result
-    error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -10+best_dt, 10+best_dt, 1)
-
-    print(f"Found best dt to be {best_dt}")
+    print(f"Found best dt to be {best_dt} with an error of {error_dict[best_dt]}.")
     return error_dict, best_dt
 
 
@@ -111,5 +119,7 @@ def minimum_dif(y, edge_list, penalty='MAE'):
         dif_list = [abs(x - y)**2 for x in edge_list]
     elif penalty == 'MRE':
         dif_list = [abs(x - y) ** 0.5 for x in edge_list]
+    else:
+        raise ValueError
     # This place could benefit from a custom minimum function as the dif_list should be sorted
     return min(dif_list)

@@ -37,7 +37,7 @@ def sync_time(ae_df, array_luna, vector_luna_source, name='Generic Panel', bin_w
 
     # LUNA stuff, all previous AE stuff should still be migrated to its own module
     timestamps_luna = array_luna[:, 0] - array_luna[0, 0]
-    best_dts = calc_translation_coeffs(timestamps_luna, ribbon_lst, vector_luna_source)
+    best_dts = calc_translation_coeffs(timestamps_luna, ribbon_lst, vector_luna_source, final_time)
 
     vector_groups = [x[0] for x in list(np.copy(vector_luna_source))]
     vector_shifts = np.array([best_dts[x] for x in vector_groups])
@@ -65,3 +65,5 @@ def sync_time(ae_df, array_luna, vector_luna_source, name='Generic Panel', bin_w
     plt.xlabel("Time [s]")
     plt.ylabel("404")
     plt.show()
+
+    return vector_shifts

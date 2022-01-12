@@ -35,6 +35,7 @@ class Panel:
         self.luna_database_clustered = None
 
         self.luna_file_vector = None
+        self.luna_shift_errors = None
 
         self.folder_parent = os.path.dirname(__file__)
         self.folder_ae = None
@@ -127,7 +128,8 @@ class Panel:
 
     def time_synchronise(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
-        sync_time(self.ae_clustered_database, self.luna_database[0], self.luna_file_vector, name=self.name)
+        sv, e = sync_time(self.ae_clustered_database, self.luna_database[0], self.luna_file_vector, name=self.name)
+        shift_vector = sv
 
     def __repr__(self):
         return f"PanelObject({self.name})"
