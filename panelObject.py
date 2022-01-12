@@ -88,8 +88,10 @@ class Panel:
     def load_luna(self):
         """A function to load the LUNA data"""
         luna_data_left, luna_data_right, self.luna_file_vector = folder_to_array(self.name, self.folder_luna)
-        luna_data_left = preprocess_array(luna_data_left)
-        luna_data_right = preprocess_array(luna_data_right)
+        luna_data_left = preprocess_array(np.hstack((luna_data_left, self.luna_file_vector)))
+        luna_data_right = preprocess_array(np.hstack((luna_data_right, self.luna_file_vector)))
+
+        self.luna_file_vector = luna_data_left[:, -1]
 
         self.luna_database = [luna_data_left, luna_data_right]
 
