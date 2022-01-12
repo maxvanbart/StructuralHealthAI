@@ -53,6 +53,7 @@ class Panel:
                 raise FileNotFoundError
             self.ae_clustered_database = pd.read_csv(location)
             print(f"Successfully loaded clustered data for {self.name}.")
+
         except FileNotFoundError:
             print('Clustered file not found, clustering data...')
             # creation of clustered database
@@ -74,7 +75,7 @@ class Panel:
             print("Successfully created clustered .csv.")
 
         # self.ae_database.corr_matrix()
-        # freq_amp_cluster(self.ae_clustered_database, plotting=True)
+        freq_amp_cluster(self.ae_clustered_database, plotting=True)
         # energy_time_cluster(self.ae_clustered_database, plotting=True)
         # batch_fre_amp_clst(self.ae_clustered_database)
 

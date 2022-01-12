@@ -29,7 +29,7 @@ def energy_time_cluster(database, plotting=False):
     energy, time = features["energy"], features["time"]
     data = pd.concat([energy, time], axis=1)
     labels = []
-    percent = np.percentile(energy, 99)
+    percent = np.percentile(energy, 95)
     for i in energy:
         if i > percent:
             labels.append(1)
@@ -52,22 +52,25 @@ def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=Tru
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
     amp_db = 20 * np.log10(amp / ref_amp)
     full_data = pd.concat([amp_db, freq], axis=1)
-    # data = full_data.sample(50000)
-    init_clusters = sklearn.cluster.DBSCAN(eps=12, min_samples=min_samples).fit(full_data).labels_
+    data = full_data.sample(10000)
+    init_clusters = sklearn.cluster.DBSCAN(eps=12, min_samples=min_samples).fit(data).labels_
+
     # old scaling method not required
-    '''if len(set(init_clusters)) != 2:
-        raise Exception(f"Unexpected number of clusters ({len(set(init_clusters))}) detected, try again.")
+    if len(set(init_clusters)) != 2:
+        raise Exception(f"Unexpected number of clusters ({len(set(init_clusters))}​​​​​​) detected, try again.")
     else:
         knn_classification = sklearn.neighbors.KNeighborsClassifier(n_neighbors=100, weights='distance')
         knn_classification.fit(data, init_clusters)
         clusters = knn_classification.predict(full_data)
-
-    full_data["clusters"] = clusters'''
+    full_data["clusters"] = clusters
 
     if plotting:
-        plt.scatter(full_data['amplitude'], full_data['frequency'], c=init_clusters, s=4)
+        plt.scatter(full_data['amplitude'], full_data['frequency'], c=full_data["clusters"], s=4)
         plt.xlabel("Peak amplitude of emission [dB]")
         plt.ylabel("Average frequency of emission [kHz]")
         plt.show()
 
     return init_clusters
+
+
+
