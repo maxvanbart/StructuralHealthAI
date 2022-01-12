@@ -7,7 +7,7 @@ from PZT.load_pzt import StatePZT
 
 
 def analyse_pzt(pzt_database, panel_name, graphing=True, plot_violation=False):
-    # for every run we will do a seperate analysis
+    # for every run we will do a separate analysis
     count = 0
     for run in sorted(pzt_database):
         count += 1
@@ -122,6 +122,7 @@ def analyse_pzt(pzt_database, panel_name, graphing=True, plot_violation=False):
                         axs[y_counter, x_counter].plot(state_to_plot)
 
                         line_width = state_to_plot.shape[0]
+
                         if plot_violation:
                             axs[y_counter, x_counter].hlines(l1, 0, line_width, colors=color_lst)
                             axs[y_counter, x_counter].hlines(l2, 0, line_width, linestyles='dashed', colors=color_lst)
