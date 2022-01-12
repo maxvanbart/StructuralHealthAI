@@ -94,8 +94,6 @@ class Panel:
 
         self.luna_file_vector = luna_data_left[:, -1]
 
-        # commit
-
         self.luna_database = [luna_data_left, luna_data_right]
 
         print(f"Successfully loaded LUNA data for {self.name}...")
