@@ -11,6 +11,9 @@ def sync_time(ae_df, array_luna, vector_luna_source, name='Generic Panel', bin_w
     # Convert the AE dataframe to a numpy array
     array = np.array(ae_df)
 
+    # Convert luna vector to vector
+    vector_luna_source = np.transpose(np.array([vector_luna_source]))
+
     # Determine the highest value of t and use it to create the bins which will be used
     final_time = ae_df[ae_df['time'] == ae_df['time'].max()]
     final_time = int(np.ceil(np.array(final_time['time'])[0]) + 1)

@@ -3,12 +3,11 @@ import numpy as np
 from TimeSync.dataTypeClasses import Ribbon
 
 
-def sort_ribbons(bins, trange, bin_width):
+def sort_ribbons(bins, trange, bin_width, max_gap=0):
     # Here we sort all the bins into ribbons in order to sort them together
     ribbon_lst = []
     found_prev = False
     not_found_count = 99
-    max_gap = 3
     for i in trange:
         # If the current bin has any datapoints it will be added to a ribbon
         if bins[i] > 0:

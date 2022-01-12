@@ -136,11 +136,15 @@ class Panel:
 
     def time_synchronise(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
-        sv, e = sync_time(self.ae_clustered_database, self.luna_database[0], self.luna_file_vector, name=self.name)
+        sv, e = sync_time(self.ae_database.hits, self.luna_database[0], self.luna_file_vector, name=self.name)
         self.luna_shift_vector = sv
         self.luna_shift_errors = e
         print(self.luna_shift_errors)
         print(f"Successfully synchronized time for {self.name}...")
+
+    def save_result(self):
+        """Function to save all relevant data to file"""
+        pass
 
     def __repr__(self):
         return f"PanelObject({self.name})"

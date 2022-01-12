@@ -7,6 +7,7 @@ import math
 def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector, final_time, graphing=False):
     """A function which calculates the best time shift based on the luna timestamps and the ribbon list"""
     timestamps_luna = np.copy(luna_data)
+
     # Here we collect a list of all the timestamps for the edges of the ribbons
     edge_list = []
     for ribbon in ribbon_lst:
