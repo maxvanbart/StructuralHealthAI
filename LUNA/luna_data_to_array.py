@@ -286,7 +286,7 @@ def filter_array(array, margin_start=20, margin_small=0.5, margin_medium=0.5, ma
     return array_filtered
 
 
-def preprocess_array(array, margin_start=20, margin_small=0.5, margin_medium=0.5, margin_big=0.1, length=18, plot=True):
+def preprocess_array(array, margin_start=20, margin_small=0.5, margin_medium=0.5, margin_big=0.1, length=18, plot=False):
 
     timestamps = array[:, 0] - array[0, 0]
     timestamps_clustered = cluster_array(timestamps, plot)
