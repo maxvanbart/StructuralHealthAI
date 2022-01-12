@@ -7,7 +7,7 @@ from AE.hit_combination import init_clustering
 from AE.feature_analysis import freq_amp_cluster, all_features_cluster, create_cluster_batches, energy_time_cluster, freq_amp_energy_plot
 from AE.clustering import clustering_time_energy
 
-from LUNA.luna_data_to_array import folder_to_array, gradient_arrays, array_to_image
+from LUNA.luna_data_to_array import folder_to_array, gradient_arrays, array_to_image, preprocess_array
 from LUNA.luna_array_to_cluster import array_to_cluster, cluster_to_image
 from LUNA.luna_plotting import plot_cluster
 
@@ -88,6 +88,9 @@ class Panel:
     def load_luna(self):
         """A function to load the LUNA data"""
         luna_data_left, luna_data_right, self.luna_file_vector = folder_to_array(self.name, self.folder_luna)
+        luna_data_left = preprocess_array(luna_data_left)
+        luna_data_right = preprocess_array(luna_data_right)
+
         self.luna_database = [luna_data_left, luna_data_right]
 
         print(f"Successfully loaded LUNA data for {self.name}.")

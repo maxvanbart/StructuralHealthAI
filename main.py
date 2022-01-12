@@ -17,14 +17,14 @@ if __name__ == "__main__":
     # for every panel we perform the following actions
     for panel in tqdm.tqdm(panels, desc='Panel'):
         print('\n'+str(panel))
-        panel.load_ae()
-        panel.analyse_ae()
+        # panel.load_ae()
+        # panel.analyse_ae()
 
         panel.load_luna()
-
-        panel.time_synchronise()
-
-        panel.analyse_luna()
+        #
+        # panel.time_synchronise()
+        #
+        # panel.analyse_luna()
         # panel.plot_luna()
 
     # end time, it also prints the elapsed time
