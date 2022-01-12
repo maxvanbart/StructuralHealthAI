@@ -36,6 +36,7 @@ class Panel:
 
         self.luna_file_vector = None
         self.luna_shift_errors = None
+        self.luna_shift_vector = None
 
         self.folder_parent = os.path.dirname(__file__)
         self.folder_ae = None
@@ -58,7 +59,7 @@ class Panel:
         self.ae_database = Pridb(self.name)
         self.ae_database.load_csv()
         # print(self.ae_database.hits)
-        print(f"Successfully loaded AE data for {self.name}.")
+        print(f"Successfully loaded AE data for {self.name}...")
 
     def analyse_ae(self, force_clustering=False):
         """Function to analyse the AE data in the folder"""
@@ -82,7 +83,7 @@ class Panel:
         # energy_time_cluster(self.ae_clustered_database)
         # freq_amp_energy_plot(self.ae_database.hits, title="Frequency, amplitude and energy for uncombined randomly sampled emissions in the L1-03 panel")
 
-        print(f"Successfully analysed AE data for {self.name}.")
+        print(f"Successfully analysed AE data for {self.name}...")
 
     # All the LUNA related code for the object
     def load_luna(self):
@@ -93,7 +94,7 @@ class Panel:
 
         self.luna_database = [luna_data_left, luna_data_right]
 
-        print(f"Successfully loaded LUNA data for {self.name}.")
+        print(f"Successfully loaded LUNA data for {self.name}...")
 
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
@@ -107,7 +108,7 @@ class Panel:
 
         self.luna_database_clustered = array_to_cluster(time_left, time_right, length_left, length_right)
 
-        print(f"Successfully analysed LUNA data for {self.name}.")
+        print(f"Successfully analysed LUNA data for {self.name}...")
 
     def plot_luna(self):
         """Plots the final result for LUNA"""
@@ -132,7 +133,10 @@ class Panel:
     def time_synchronise(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
         sv, e = sync_time(self.ae_clustered_database, self.luna_database[0], self.luna_file_vector, name=self.name)
-        shift_vector = sv
+        self.luna_shift_vector = sv
+        self.luna_shift_errors = e
+        print(self.luna_shift_errors)
+        print(f"Successfully synchronized time for {self.name}...")
 
     def __repr__(self):
         return f"PanelObject({self.name})"
