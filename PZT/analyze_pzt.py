@@ -14,7 +14,7 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
     for run in sorted(pzt_database):
         count += 1
         # /!\ MIGHT BE BETTER TO BASE THIS ON THE AMOUNT OF STATES IN A RUN /!\
-        if count < 2:
+        if count < 3:
             # This prevents a division by zero error
             continue
         # here we extract all the frequencies which are present in the data
@@ -186,41 +186,86 @@ def make_clusters(freq_dict):
     all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
                     "Actionneur7", "Actionneur8"]  # select emitter
     # all_channels = ["Actionneur1"]
-    state_select_list = list(range(1, len(freq_dict[frequency]) + 1))
+
+    state_select_list = list((range(1, len(freq_dict[frequency]) + 1)))
 
     # looping over all of the stuff
     cluster_list_data = []
     for state in state_select_list:
+        channel_list_data = []
         for channel in all_channels:
+
             for feature in features:
 
-                # shape is list of length 8
+                # output shape is list of length 8
                 feature_data = get_feature(freq_dict, state, frequency, channel, feature)
-                cluster_list_data.append(list(feature_data))
-# create the array for the clustering
-    print(len(features), len(all_channels), len(state_select_list), len(cluster_list_data))
+                channel_list_data.append(list(feature_data))
+                # 3
+        help_list = [item for sublist in channel_list_data for item in sublist]
+        cluster_list_data.append(help_list)
+        # 8
+    # 32
 
+# (32, 192)
+    # create the array for the clustering
     cluster_list_data = np.array(cluster_list_data)
 
-    print(cluster_list_data.shape)
-    cluster_list_data.reshape(len(features) * len(all_channels) * 8, len(state_select_list))
-    print(cluster_list_data.shape)
-    # print(f'hey, here is data!!! {cluster_list_data}')
-
+    all_cluster_labels = []
     # do the clustering itself
+    kmean_cluster = cls.KMeans(n_clusters=7, random_state=42)
+    kmean_cluster.fit(cluster_list_data)
+    kmean_labels = kmean_cluster.labels_
+    # print(f'labels of kmeans are {kmean_labels}')
+    all_cluster_labels.append(kmean_labels)
+    plt.plot(kmean_labels, label="kmeans n=7")
+
     kmean_cluster = cls.KMeans(n_clusters=5, random_state=42)
     kmean_cluster.fit(cluster_list_data)
     kmean_labels = kmean_cluster.labels_
     # print(f'labels of kmeans are {kmean_labels}')
-    print(len(kmean_labels))
-    plt.plot(kmean_labels, label="kmeans")
+    all_cluster_labels.append(kmean_labels)
+    plt.plot(kmean_labels, label="kmeans n=5")
+
+    kmean_cluster = cls.KMeans(n_clusters=10, random_state=42)
+    kmean_cluster.fit(cluster_list_data)
+    kmean_labels = kmean_cluster.labels_
+    # print(f'labels of kmeans are {kmean_labels}')
+    all_cluster_labels.append(kmean_labels)
+    plt.plot(kmean_labels, label="kmeans n=10")
 
     aff_prop_cluster = cls.AffinityPropagation(random_state=42)
     aff_prop_cluster.fit(cluster_list_data)
     aff_prop_labels = aff_prop_cluster.labels_
     # print(f'labels of affinity propagation are {aff_prop_labels}')
+    all_cluster_labels.append(aff_prop_labels)
     plt.plot(aff_prop_labels, label="aff_prop")
 
+    # mean_shift_cluster = cls.MeanShift()
+    # mean_shift_cluster.fit(cluster_list_data)
+    # mean_shift_labels = mean_shift_cluster.labels_
+    # plt.plot(mean_shift_labels, label="mean_shift")
+
+    optics_cluster = cls.OPTICS()
+    optics_cluster.fit(cluster_list_data)
+    optics_labels = optics_cluster.labels_
+    all_cluster_labels.append(optics_labels)
+    plt.plot(optics_labels, label="OPTICS")
     plt.legend()
     plt.show()
+
+    from itertools import tee, islice, chain, izip
+
+    def previous_and_next(some_iterable):
+        prevs, items, nexts = tee(some_iterable, 3)
+        prevs = chain([None], prevs)
+        nexts = chain(islice(nexts, 1, None), [None])
+        return izip(prevs, items, nexts)
+
+    for cluster_list in all_cluster_labels:
+        lst = previous_and_next(cluster_list)
+        print(lst)
+
+        # lst = [0,0,0,1,0,0,1,1,0,0]
+
+
 
