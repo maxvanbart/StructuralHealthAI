@@ -4,7 +4,8 @@ import scipy.io
 import os
 import datetime
 
-from PZT.feature_extractor import relative_amp_calc, duration_calc, rise_time_calc, energy_calc, travel_time_calc, calculate_threshold, avgfreq_calc
+from PZT.feature_extractor import relative_amp_calc, duration_calc, rise_time_calc, energy_calc, travel_time_calc, \
+    calculate_threshold, avgfreq_calc
 
 
 class TestPZT:
@@ -120,7 +121,7 @@ class StatePZT:
         return f"StatePZT({self.name})"
 
     def __lt__(self, other):  # added this for ordering of dictionary keys
-        if self.start_time < other.start_time:
+        if self.start_time < other.start_time:  # select on date
             return True
         return False
 
