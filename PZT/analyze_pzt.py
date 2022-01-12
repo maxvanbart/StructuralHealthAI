@@ -8,7 +8,7 @@ from PZT.load_pzt import StatePZT
 
 
 # this function only works if multiple states are present in the files. Set the count value correctly
-def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, time_check=False, clustering=True):
+def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, time_check=True, clustering=True):
     # for every run we will do a seperate analysis
     count = 0
     for run in sorted(pzt_database):
@@ -261,7 +261,7 @@ def make_clusters(freq_dict):
         nexts = chain(islice(nexts, 1, None), [None])
         return zip(prevs, items, nexts)
 
-
+    # get the interesting points of the clusters
     changelst = []
     for cluster_list in all_cluster_labels:
         changes = []
