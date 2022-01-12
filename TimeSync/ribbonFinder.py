@@ -8,6 +8,7 @@ def sort_ribbons(bins, trange, bin_width):
     ribbon_lst = []
     found_prev = False
     not_found_count = 99
+    max_gap = 3
     for i in trange:
         # If the current bin has any datapoints it will be added to a ribbon
         if bins[i] > 0:
@@ -22,8 +23,8 @@ def sort_ribbons(bins, trange, bin_width):
                 found_prev = True
         else:
             # We tolerate having one bin with no values before we consider a ribbon finished
-            # /!\ THE CURRENT VALUE OF ZERO SHOULD STILL BE TUNED /!\
-            if not_found_count > 0:
+            # /!\ THE CURRENT VALUE OF MAX_GAP SHOULD STILL BE TUNED /!\
+            if not_found_count > max_gap:
                 found_prev = False
             else:
                 not_found_count += 1
@@ -37,6 +38,7 @@ def sort_ribbons(bins, trange, bin_width):
 
 
 def purge_ribbons(ribbon_lst):
+    l0 = len(ribbon_lst)
     # Here we sort out all ribbons with a width less than 3 as these widths are never associated with actual ribbons
     ribbon_lst = [x for x in ribbon_lst if x.width > 3]
 
@@ -47,4 +49,6 @@ def purge_ribbons(ribbon_lst):
         mean_width = np.mean(ribbon_width_lst)
         ribbon_lst = [x for x in ribbon_lst if x.width > mean_width]
         ribbon_width_lst = [x.width for x in ribbon_lst]
+    l1 = len(ribbon_lst)
+    print(f"Purged {round(100*(abs(l0-l1)/l0), 3)}% of ribbons...")
     return ribbon_lst

@@ -4,7 +4,7 @@ import pandas as pd
 import math
 
 
-def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector, final_time, graphing=True):
+def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector, final_time, graphing=False):
     """A function which calculates the best time shift based on the luna timestamps and the ribbon list"""
     timestamps_luna = np.copy(luna_data)
     # Here we collect a list of all the timestamps for the edges of the ribbons
@@ -28,15 +28,17 @@ def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector, final_time, grap
 
     best_dts = {}
     error_dicts = {}
+    best_errors = {}
     for group in groups:
         group_data = groups[group]
         error_dict = {}
         # t0 = group_data[0]
 
-        error_dict, best_dt = explore(error_dict, group_data, edge_list, final_time)
+        error_dict, best_dt, best_error = explore(error_dict, group_data, edge_list, final_time)
         print("Finished calculating absolute errors...")
         error_dicts[group] = error_dict
         best_dts[group] = best_dt
+        best_errors[group] = best_error
 
         # Small plot to show the errors per time
         if graphing:
@@ -51,7 +53,7 @@ def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector, final_time, grap
             plt.xlabel("Time shift dt [s]")
             plt.ylabel("Error [-]")
             plt.show()
-    return best_dts
+    return best_dts, best_errors
 
 
 def explore(error_dict, group_data, edge_list, final_time):
@@ -69,7 +71,7 @@ def explore(error_dict, group_data, edge_list, final_time):
     # error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -10+best_dt, 10+best_dt, 1)
 
     print(f"Found best dt to be {best_dt} with an error of {error_dict[best_dt]}.")
-    return error_dict, best_dt
+    return error_dict, best_dt, error_dict[best_dt]
 
 
 def explore_range(error_dict, group_data, edge_list, dt_start, dt_end, ddt):
