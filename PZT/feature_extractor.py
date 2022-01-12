@@ -105,13 +105,13 @@ def avgfreq_calc(data, threshold, debugging=False):
         counts, prev = 0, None
         for current in data[:, row_ndx]:
             if prev is not None:
-                if prev < threshold[row_ndx] < current or prev > threshold[row_ndx] > current:
+                if prev < 0 < current or prev > 0 > current:
                     counts += 1
             prev = current
 
         if debugging:
             plt.plot(time_array, data[:, row_ndx])
-            plt.plot(time_array, np.full(len(data[:, row_ndx]), threshold[row_ndx]))
+            # plt.plot(time_array, np.full(len(data[:, row_ndx]), threshold[row_ndx]))
             plt.show()
 
         count_array[row_ndx] = counts
@@ -119,7 +119,7 @@ def avgfreq_calc(data, threshold, debugging=False):
     avgfreq_array = np.zeros(duration_array.shape)
 
     for ndx in range(avgfreq_array.shape[0]):
-        avgfreq_array[ndx] = count_array[ndx] / duration_array[ndx]
+        avgfreq_array[ndx] = count_array[ndx] / time_array[-1]
 
     return avgfreq_array
 

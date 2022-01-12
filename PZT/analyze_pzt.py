@@ -78,7 +78,6 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
                     fig.suptitle(f'different features for emitter {channel_select} and with a frequency {freq_select}',
                                  fontsize=16)
                 counter = 0  # counter to know where to plot the plot
-                cluster_array_data = np.array([])
                 for feature_select in all_features:  # loop over features, max of 8 features possible
                     state_to_plot = np.array([])
 
@@ -127,6 +126,7 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
                         axs[y_counter, x_counter].plot(state_to_plot)
 
                         line_width = state_to_plot.shape[0]
+
                         if plot_violation:
                             axs[y_counter, x_counter].hlines(l1, 0, line_width, colors=color_lst)
                             axs[y_counter, x_counter].hlines(l2, 0, line_width, linestyles='dashed', colors=color_lst)
