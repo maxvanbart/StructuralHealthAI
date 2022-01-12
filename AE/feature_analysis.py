@@ -46,7 +46,7 @@ def energy_time_cluster(database, plotting=False):
     return labels
 
 
-def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=False):
+def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=True):
     """DBSCAN clustering"""
     features = database
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
@@ -65,7 +65,7 @@ def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=Fal
     full_data["clusters"] = clusters'''
 
     if plotting:
-        plt.scatter(full_data['amplitude'], full_data['frequency'], c=full_data["clusters"], s=4)
+        plt.scatter(full_data['amplitude'], full_data['frequency'], c=init_clusters, s=4)
         plt.xlabel("Peak amplitude of emission [dB]")
         plt.ylabel("Average frequency of emission [kHz]")
         plt.show()
