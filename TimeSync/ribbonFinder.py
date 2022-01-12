@@ -22,7 +22,6 @@ def sort_ribbons(bins, trange, bin_width, max_gap=0):
                 found_prev = True
         else:
             # We tolerate having one bin with no values before we consider a ribbon finished
-            # /!\ THE CURRENT VALUE OF MAX_GAP SHOULD STILL BE TUNED /!\
             if not_found_count > max_gap:
                 found_prev = False
             else:

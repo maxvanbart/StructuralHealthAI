@@ -65,11 +65,6 @@ def explore(error_dict, group_data, edge_list, final_time):
     while ddt >= 1:
         error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -ddt*100+best_dt, ddt*100+best_dt, ddt)
         ddt = int(ddt/10)
-    # error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -10000, 10000, 100)
-    # # First we explore a large region to get a rough estimate of the best value for dt
-    # error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -1000+best_dt, 1000+best_dt, 10)
-    # # Explore around the best dt to refine the result
-    # error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -10+best_dt, 10+best_dt, 1)
 
     print(f"Found best dt to be {best_dt} with an error of {error_dict[best_dt]}.")
     return error_dict, best_dt, error_dict[best_dt]
