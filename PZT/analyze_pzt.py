@@ -14,7 +14,7 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
     for run in sorted(pzt_database):
         count += 1
         # /!\ MIGHT BE BETTER TO BASE THIS ON THE AMOUNT OF STATES IN A RUN /!\
-        if count < 3:
+        if count < 2:
             # This prevents a division by zero error
             continue
         # here we extract all the frequencies which are present in the data
@@ -233,7 +233,7 @@ def make_clusters(freq_dict):
     all_cluster_labels.append(kmean_labels)
     plt.plot(kmean_labels, label="kmeans n=10")
 
-    aff_prop_cluster = cls.AffinityPropagation(random_state=42)
+    aff_prop_cluster = cls.AffinityPropagation()
     aff_prop_cluster.fit(cluster_list_data)
     aff_prop_labels = aff_prop_cluster.labels_
     # print(f'labels of affinity propagation are {aff_prop_labels}')
@@ -253,19 +253,32 @@ def make_clusters(freq_dict):
     plt.legend()
     plt.show()
 
-    from itertools import tee, islice, chain, izip
+    from itertools import tee, islice, chain
 
     def previous_and_next(some_iterable):
         prevs, items, nexts = tee(some_iterable, 3)
         prevs = chain([None], prevs)
         nexts = chain(islice(nexts, 1, None), [None])
-        return izip(prevs, items, nexts)
+        return zip(prevs, items, nexts)
 
+
+    changelst = []
     for cluster_list in all_cluster_labels:
-        lst = previous_and_next(cluster_list)
-        print(lst)
+        changes = []
 
-        # lst = [0,0,0,1,0,0,1,1,0,0]
+        for prev, item, nxt in previous_and_next(cluster_list):
+            change = 0
+            if prev is None:
+                if nxt != item:
+                    change = 1
+            elif nxt is None:
+                if prev != item:
+                    change = 1
+            else:
+                if nxt != item or prev != item:
+                    change = 1
+            changes.append(change)
 
+        changelst.append(changes)
 
 

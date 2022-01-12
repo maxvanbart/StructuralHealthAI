@@ -3,8 +3,8 @@ import os
 from LUNA.luna_main import demo
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import freq_amp_energy_cluster, freq_amp_time_cluster
-
+from AE.feature_analysis import freq_amp_cluster, energy_time_cluster
+from AE.feature_extraction import frequency_extraction
 from PZT.analyze_pzt import analyse_pzt
 from PZT.load_pzt import StatePZT
 
