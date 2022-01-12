@@ -35,7 +35,9 @@ def sync_time(ae_df, array_luna, vector_luna_source, name='Generic Panel', bin_w
     # remove all ribbons which are abnormally small
     ribbon_lst = purge_ribbons(ribbon_lst)
 
-    # LUNA stuff, all previous AE stuff should still be migrated to its own module
+    ##############
+    # LUNA stuff #
+    ##############
     timestamps_luna = array_luna[:, 0] - array_luna[0, 0]
     best_dts = calc_translation_coeffs(timestamps_luna, ribbon_lst, vector_luna_source, final_time)
 
@@ -57,7 +59,8 @@ def sync_time(ae_df, array_luna, vector_luna_source, name='Generic Panel', bin_w
     # Plot LUNA points as red dots
     sample_y_values_luna = np.ones((len(timestamps_luna)))
 
-    plt.scatter(timestamps_luna_shifted, sample_y_values_luna, c=vector_groups, s=4)
+    plt.scatter(timestamps_luna_shifted, sample_y_values_luna, c='r', s=4)
+    # plt.scatter(timestamps_luna_shifted, sample_y_values_luna, c=vector_groups, s=4)
     # for i, label in enumerate(vector_groups):
     #     plt.annotate(vector_groups, (timestamps_luna_shifted[i], sample_y_values_luna[i]))
     # plt.scatter(timestamps_luna, sample_y_values_LUNA, c='green', s=4)
@@ -66,4 +69,4 @@ def sync_time(ae_df, array_luna, vector_luna_source, name='Generic Panel', bin_w
     plt.ylabel("404")
     plt.show()
 
-    return vector_shifts
+    return vector_shifts, None

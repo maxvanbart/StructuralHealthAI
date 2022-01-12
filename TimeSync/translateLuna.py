@@ -4,7 +4,7 @@ import pandas as pd
 import math
 
 
-def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector, final_time):
+def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector, final_time, graphing=True):
     """A function which calculates the best time shift based on the luna timestamps and the ribbon list"""
     timestamps_luna = np.copy(luna_data)
     # Here we collect a list of all the timestamps for the edges of the ribbons
@@ -31,8 +31,7 @@ def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector, final_time):
     for group in groups:
         group_data = groups[group]
         error_dict = {}
-        t0 = group_data[0]
-        print(t0)
+        # t0 = group_data[0]
 
         error_dict, best_dt = explore(error_dict, group_data, edge_list, final_time)
         print("Finished calculating absolute errors...")
@@ -40,23 +39,23 @@ def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector, final_time):
         best_dts[group] = best_dt
 
         # Small plot to show the errors per time
-        x = np.transpose(np.array([list(error_dict.keys())]))
-        y = np.transpose(np.array([list(error_dict.values())]))
-        z = np.hstack((x, y))
-        z = z[z[:, 0].argsort()]
+        if graphing:
+            x = np.transpose(np.array([list(error_dict.keys())]))
+            y = np.transpose(np.array([list(error_dict.values())]))
+            z = np.hstack((x, y))
+            z = z[z[:, 0].argsort()]
 
-        plt.plot(z[:, 0], z[:, 1])
-        plt.scatter(z[:, 0], z[:, 1], s=4)
-        plt.title(f'Mean error plot for group {int(group)}')
-        plt.xlabel("Time shift dt [s]")
-        plt.ylabel("Error [-]")
-        plt.show()
+            plt.plot(z[:, 0], z[:, 1])
+            plt.scatter(z[:, 0], z[:, 1], s=4)
+            plt.title(f'Mean error plot for group {int(group)}')
+            plt.xlabel("Time shift dt [s]")
+            plt.ylabel("Error [-]")
+            plt.show()
     return best_dts
 
 
 def explore(error_dict, group_data, edge_list, final_time):
     magnitude = int(math.log(final_time, 10)-2)
-    print(final_time, magnitude, int(magnitude))
     ddt = int(10**magnitude)
     best_dt = 0
     # We loop the explore_range function a number of times in order to refine the areas of interest
@@ -106,7 +105,7 @@ def shift_error(t_luna, edge_list, dt, penalty='MAE'):
     elif penalty == 'MRE':
         average_error = average_error**2
 
-    print(dt, average_error)
+    # print(dt, average_error)
     return average_error
 
 
