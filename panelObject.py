@@ -10,6 +10,7 @@ from AE.clustering import clustering_time_energy
 from LUNA.luna_data_to_array import folder_to_array, gradient_arrays, array_to_image, preprocess_array
 from LUNA.luna_array_to_cluster import array_to_cluster, cluster_to_image
 from LUNA.luna_plotting import plot_cluster
+from LUNA.luna_visualize import visualize_luna
 
 from TimeSync.timeSync import sync_time
 
