@@ -112,7 +112,7 @@ class Panel:
 
         print(f"Successfully analysed LUNA data for {self.name}...")
 
-    def plot_luna(self):
+    def visualize_luna(self):
         """Plots the final result for LUNA"""
         time_left, time_right, length_left, length_right = self.luna_database_derivatives
         cluster_left, cluster_right = self.luna_database_clustered
@@ -132,7 +132,7 @@ class Panel:
         plot_cluster(image_time_left, image_time_right, image_length_left, image_length_right,
                      image_cluster_left, image_cluster_right, delta_length_left, delta_length_right, time, self.name)
 
-    def time_synchronise(self):
+    def synchronise_luna(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
         sv, e = sync_time(self.ae_database.hits, self.luna_database[0], self.luna_file_vector, name=self.name)
         self.luna_shift_vector = sv
