@@ -111,14 +111,19 @@ def shift_error(t_luna, edge_list, dt, penalty='MAE'):
 
 def minimum_dif(y, edge_list, penalty='MAE'):
     """This function calculates the minimum difference of x and the entries of the edge list"""
-    # /!\ THIS FUNCTION IS AS INEFFICIENT AS IT CAN BE /!\
+    min_dif = abs(edge_list[0] - y)
+    x = 1
+    while x < len(edge_list) and abs(edge_list[x] - y) < min_dif:
+        min_dif = abs(edge_list[x] - y)
+        x += 1
+
     if penalty == 'MAE':
-        dif_list = [abs(x-y) for x in edge_list]
+        min_dif = min_dif
     elif penalty == 'RMS':
-        dif_list = [abs(x - y)**2 for x in edge_list]
+        min_dif = min_dif**2
     elif penalty == 'MRE':
-        dif_list = [abs(x - y) ** 0.5 for x in edge_list]
+        min_dif = min_dif**0.5
     else:
         raise ValueError
     # This place could benefit from a custom minimum function as the dif_list should be sorted
-    return min(dif_list)
+    return min_dif
