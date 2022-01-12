@@ -304,3 +304,5 @@ def preprocess_array(array, margin_start=20, margin_small=0.5, margin_medium=0.5
 
         plt.scatter(timestamps, values)
         plt.show()
+
+    return array_split_completed
