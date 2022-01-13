@@ -232,7 +232,7 @@ def make_clusters(freq_dict):
     all_cluster_labels.append(kmean_labels)
     plt.plot(kmean_labels, label="kmeans n=10")
 
-    aff_prop_cluster = cls.AffinityPropagation()
+    aff_prop_cluster = cls.AffinityPropagation(random_state=None)
     aff_prop_cluster.fit(cluster_list_data)
     aff_prop_labels = aff_prop_cluster.labels_
     # print(f'labels of affinity propagation are {aff_prop_labels}')
