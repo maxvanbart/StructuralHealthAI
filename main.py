@@ -1,6 +1,5 @@
 import time
-import tqdm
-
+from tqdm import tqdm
 from panelObject import Panel
 
 # this line is needed in case we decide to implement multithreading
@@ -15,7 +14,7 @@ if __name__ == "__main__":
     # panels = panels[:1]
 
     # for every panel we perform the following actions
-    for panel in tqdm.tqdm(panels, desc='Panel'):
+    for panel in tqdm(panels, desc='Panel'):
         print('\n'+str(panel))
         # panel.load_ae()
         # panel.analyse_ae()

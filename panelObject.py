@@ -1,15 +1,15 @@
 import os
+import pandas as pd
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import freq_amp_cluster, all_features_cluster, create_cluster_batches, energy_time_cluster, freq_amp_energy_plot
+from AE.feature_analysis import energy_time_cluster, freq_amp_cluster
+from AE.feature_extraction import frequency_extraction
 from AE.clustering import clustering_time_energy
 from AE.feature_analysis import freq_amp_cluster, energy_time_cluster
 from AE.feature_extraction import frequency_extraction
 from PZT.analyze_pzt import analyse_pzt
 from PZT.load_pzt import StatePZT
-
-import pandas as pd
 
 from LUNA.luna_data_to_array import folder_to_array, gradient_arrays, array_to_image
 from LUNA.luna_array_to_cluster import array_to_cluster, cluster_to_image
@@ -73,28 +73,28 @@ class Panel:
             self.ae_clustered_database = pd.read_csv(location)
             print(f"Successfully loaded clustered AE data for {self.name}.")
         except FileNotFoundError:
-            print('Clustered AE file not found, clustering data...')
-            self.ae_clustered_database = init_clustering(self.ae_database, debug=self.debug)
-
-            # adding extracted features and clusters
-            print(f"AE clustering completed for {self.name}, features and clusters being added to database...")
-            self.ae_clustered_database["frequency"] = frequency_extraction(self.ae_clustered_database)
+            print('Clustered file not found, clustering data...')
+            # creation of clustered database
+            self.ae_clustered_database = self.ae_database.hits
+            # detection of energy outliers
             self.ae_clustered_database["energy_outlier"] = energy_time_cluster(self.ae_clustered_database)
+            # removal of the energy outlier
+            self.ae_clustered_database = self.ae_clustered_database[self.ae_clustered_database["energy_outlier"] == 1]
+            # hits combination
+            self.ae_clustered_database = init_clustering(self.ae_clustered_database, debug=self.debug)
+            # adding frequency to the database
+            self.ae_clustered_database["frequency"] = frequency_extraction(self.ae_clustered_database)
+            # frequency outlier detection
             self.ae_clustered_database["frequency_outlier"] = freq_amp_cluster(self.ae_clustered_database)
-
+            # adding extracted features and clusters
+            print(f"Clustering completed for {self.name}, features and clusters being added to database...")
             # create new CSV
             pd.DataFrame(self.ae_clustered_database).to_csv(location, index=False)
 
             print("Successfully created AE clustered .csv.")
 
         # self.ae_database.corr_matrix()
-        # freq_amp_cluster(self.ae_clustered_database)
-        # all_features_cluster(self.ae_clustered_database)
-        # freq_amp_time_cluster(self.ae_clustered_database)
-        # energy_time_cluster(self.ae_clustered_database)
-        freq_amp_energy_plot(self.ae_database.hits, title="Frequency, amplitude and energy for uncombined randomly sampled emissions in the L1-03 panel")
-
-        # freq_amp_cluster(self.ae_clustered_database, plotting=True)
+        freq_amp_cluster(self.ae_clustered_database, plotting=True)
         # energy_time_cluster(self.ae_clustered_database, plotting=True)
         # batch_fre_amp_clst(self.ae_clustered_database)
 

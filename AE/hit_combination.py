@@ -10,7 +10,7 @@ import psutil
 def init_clustering(database, delta=100, debug=False, debug_graph=False):
     # select the features for the clustering
     cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts', 'channel', 'abs_time']
-    features = database.hits[cols]
+    features = database[cols]
     features = features[features["counts"] >= 2]
 
     # Extract the header and the channels as important variables
@@ -85,7 +85,7 @@ def batch_split(df, delta, dynamic_splitting=True, debug=False, max_size=20000):
             batches.append([row])
         # after inserting the first row we use the delta to decide if we put it in the latest batch
         # or if we should start a new batch
-        if abs(row[0] - batches[-1][-1][0]) > delta:
+        elif abs(row[0] - batches[-1][-1][0]) > delta:
             batches.append([row])
         else:
             batches[-1].append(row)
