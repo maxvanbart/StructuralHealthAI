@@ -7,7 +7,7 @@ from TimeSync.dataTypeClasses import Ribbon
 from TimeSync.ribbonFinder import sort_ribbons, purge_ribbons
 
 
-def sync_time(ae_df, array_luna, vector_luna_source, timestamps_luna, name='Generic Panel', bin_width=1):
+def sync_time(ae_df, vector_luna_source, timestamps_luna, name='Generic Panel', bin_width=1):
     # Convert the AE dataframe to a numpy array
     array = np.array(ae_df)
 

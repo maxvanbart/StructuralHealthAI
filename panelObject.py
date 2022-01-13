@@ -113,7 +113,7 @@ class Panel:
 
     def synchronise_luna(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
-        sv, e = sync_time(self.ae_database.hits, self.luna_database[0], self.luna_file_vector, self.luna_time_labels, name=self.name)
+        sv, e = sync_time(self.ae_database.hits, self.luna_file_vector, self.luna_time_labels, name=self.name)
         self.luna_time_shift_vector = sv
         self.luna_time_shift_errors = e
 
