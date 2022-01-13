@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
@@ -12,8 +14,12 @@ from PZT.analyze_pzt import analyse_pzt
 from PZT.load_pzt import StatePZT
 
 from LUNA.luna_data_to_array import folder_to_array, gradient_arrays, array_to_image
-from LUNA.luna_array_to_cluster import array_to_cluster, cluster_to_image
-from LUNA.luna_plotting import plot_cluster
+from LUNA.luna_array_to_cluster import array_to_cluster
+from LUNA.luna_plotting import plot_cluster, plot_clusters
+from LUNA.luna_preprocessing import preprocess_array
+from LUNA.luna_postprocessing import filter_array
+
+from TimeSync.timeSync import sync_time
 
 files_folder = "Files"
 
@@ -33,7 +39,17 @@ class Panel:
 
         # LUNA
         self.luna_database = None
+        self.luna_database_derivatives = None
         self.luna_database_clustered = None
+        self.luna_database_filtered = None
+
+        self.luna_file_vector = None
+
+        self.luna_time_labels = None
+        self.luna_length_labels = None
+
+        self.luna_time_shift_errors = None
+        self.luna_time_shift_vector = None
 
         self.folder_parent = os.path.dirname(__file__)
         self.folder_ae = None
@@ -90,11 +106,11 @@ class Panel:
             print(f"Clustering completed for {self.name}, features and clusters being added to database...")
             # create new CSV
             pd.DataFrame(self.ae_clustered_database).to_csv(location, index=False)
+        self.ae_clustered_database = self.ae_clustered_database.sort_values(by=['time'])
 
             print("Successfully created AE clustered .csv.")
 
         # self.ae_database.corr_matrix()
-        freq_amp_cluster(self.ae_clustered_database, plotting=True)
         # energy_time_cluster(self.ae_clustered_database, plotting=True)
         # batch_fre_amp_clst(self.ae_clustered_database)
 
@@ -103,43 +119,61 @@ class Panel:
     # All the LUNA related code for the object
     def load_luna(self):
         """A function to load the LUNA data"""
-        luna_data_left, luna_data_right = folder_to_array(self.name, self.folder_luna)
+        luna_data_left, luna_data_right, self.luna_file_vector, labels_left, labels_right = \
+            folder_to_array(self.name, self.folder_luna)
+        luna_data_left = preprocess_array(np.hstack((luna_data_left, self.luna_file_vector)))
+        luna_data_right = preprocess_array(np.hstack((luna_data_right, self.luna_file_vector)))
 
-        # First entry each row removed as this is the timestamp!
-        luna_data_left_time, luna_data_left_length = gradient_arrays(luna_data_left[:, 1:])
-        luna_data_right_time, luna_data_right_length = gradient_arrays(luna_data_right[:, 1:])
+        self.luna_file_vector = luna_data_left[:, -1]
 
-        self.luna_database = [luna_data_left_time, luna_data_right_time, luna_data_left_length, luna_data_right_length]
+        self.luna_database = [luna_data_left[:, 1: -1], luna_data_right[:, 1: -1]]
 
-        print(f"Successfully loaded LUNA data for {self.name}.")
+        self.luna_time_labels = luna_data_left[:, 0]
+        self.luna_length_labels = [labels_left, labels_right]
+
+        print(f"Successfully loaded LUNA data for {self.name}...")
+
+    def synchronise_luna(self):
+        """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
+        sv, e = sync_time(self.ae_database.hits, self.luna_database[0], self.luna_file_vector, name=self.name)
+        self.luna_time_shift_vector = sv
+        self.luna_time_shift_errors = e
+        self.luna_time_labels = self.luna_time_labels + self.luna_time_shift_vector
+
+        print(self.luna_time_shift_errors)
+        print(f"Successfully synchronized time for {self.name}...")
 
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
-        time_left, time_right, length_left, length_right = self.luna_database
 
-        self.luna_database_clustered = array_to_cluster(time_left, time_right, length_left, length_right)
+        # 1. get time and length derivatives.
+        left_time, left_length = gradient_arrays(self.luna_database[0])
+        right_time, right_length = gradient_arrays(self.luna_database[1])
 
-        print(f"Successfully analysed LUNA data for {self.name}.")
+        # 2. get clustered database.
+        self.luna_database_derivatives = [left_time, right_time, left_length, right_length]
+        self.luna_database_clustered = array_to_cluster(left_time, right_time, left_length, right_length)
 
-    def plot_luna(self):
-        """Plots the final result for LUNA"""
-        time_left, time_right, length_left, length_right = self.luna_database
-        cluster_left, cluster_right = self.luna_database_clustered
+        # 3. filter original database with clustered database.
+        left_filtered = filter_array(self.luna_database[0], self.luna_database_clustered[0], self.luna_time_labels, self.luna_length_labels[0])
+        right_filtered = filter_array(self.luna_database[1], self.luna_database_clustered[1], self.luna_time_labels, self.luna_length_labels[1])
 
-        image_time_left = array_to_image(time_left)
-        image_time_right = array_to_image(time_right)
+        self.luna_database_filtered = [left_filtered, right_filtered]
 
-        image_length_left = array_to_image(length_left)
-        image_length_right = array_to_image(length_right)
+        print(f"Successfully analysed LUNA data for {self.name}...")
 
-        image_cluster_left = cluster_to_image(cluster_left)
-        image_cluster_right = cluster_to_image(cluster_right)
+    def visualize_luna(self):
+        image_left_time = array_to_image(self.luna_database_derivatives[0])
+        image_right_time = array_to_image(self.luna_database_derivatives[1])
 
-        time, delta_length_left = time_left.shape
-        time, delta_length_right = time_right.shape
+        image_left_length = array_to_image(self.luna_database_derivatives[2])
+        image_right_length = array_to_image(self.luna_database_derivatives[3])
 
-        plot_cluster(image_time_left, image_time_right, image_length_left, image_length_right,
-                     image_cluster_left, image_cluster_right, delta_length_left, delta_length_right, time, self.name)
+        image_left = (image_left_time + image_left_length) / 2
+        image_right = (image_right_time + image_right_length) / 2
+
+        plot_clusters(image_left, image_right, len(self.luna_length_labels[0]), len(self.luna_length_labels[1]),
+                      len(self.luna_time_labels), self.luna_time_labels, self.name)
 
     def load_pzt(self):
         self.pzt_database = StatePZT.initialize_pzt(self.name)

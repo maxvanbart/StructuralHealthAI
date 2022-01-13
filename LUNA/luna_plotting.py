@@ -91,3 +91,39 @@ def plot_example_cluster(image_time, cluster_array, cluster_name, cluster_values
     plt.title(f'{cluster_name} clustering')
 
     plt.show()
+
+
+def plot_clusters(image_left, image_right, length_left, length_right, time, time_labels, panel, division=20):
+
+    labels = []
+
+    for i in range(len(time_labels)):
+        if i % division == 0 and i == 0:
+            labels.append(0)
+
+        elif i % division == 0:
+            labels.append(int(float(time_labels[i])))
+
+    figure = plt.figure(constrained_layout=True)
+    # figure.supxlabel('Length measurements [-]')
+    # figure.supylabel('Time measurements [-]')
+    figure.suptitle(f'Panel {panel}')
+
+    sub_figures = figure.subfigures(2, 1)
+    sub_figures[0].suptitle('LUNA clusters')
+    sub_figures[1].suptitle('AE clusters')
+
+    axs0 = sub_figures[0].subplots(2, 1, sharex=True)
+    axs0[0].imshow(image_left, extent=[0, time, 0, length_left], aspect='auto')
+    axs0[0].set_title('Left')
+
+    axs0[0].set_xticks(np.arange(len(labels)) * division)
+    axs0[0].set_xticklabels(labels)
+    axs0[0].set_ylabel('length [mm]')
+
+    axs0[1].imshow(image_right, extent=[0, time, 0, length_right], aspect='auto')
+    axs0[1].set_title('Right')
+    axs0[1].set_xlabel('time [s]')
+    axs0[1].set_ylabel('length [mm]')
+
+    plt.show()

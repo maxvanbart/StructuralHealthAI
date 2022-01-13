@@ -16,13 +16,16 @@ if __name__ == "__main__":
     # for every panel we perform the following actions
     for panel in tqdm(panels, desc='Panel'):
         print('\n'+str(panel))
-        # panel.load_ae()
-        # panel.analyse_ae()
+        # Do AE stuff
+        panel.load_ae()
+        panel.analyse_ae()
 
+        # Do LUNA stuff
         panel.load_luna()
+        panel.synchronise_luna()
         panel.analyse_luna()
-        panel.plot_luna()
-        # panel.analyse_luna()
+        panel.visualize_luna()
+
         panel.load_pzt()
         panel.analyse_pzt()
 
