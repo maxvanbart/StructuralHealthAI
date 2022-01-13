@@ -8,7 +8,7 @@ from PZT.load_pzt import StatePZT
 
 
 # this function only works if multiple states are present in the files. Set the count value correctly
-def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, time_check=False, clustering=True):
+def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, time_check=False):
     # for every run we will do a seperate analysis
     count = 0
     for run in sorted(pzt_database):
@@ -47,8 +47,6 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
             plt.title("check if it is a strait line if not, time sync is wrong")
             plt.show()
 
-        if clustering:
-            make_clusters(frequency_array_dict)
         ###########################################
         #  # * # * #   Code of Niels   # * # * #  #
         ###########################################
@@ -136,7 +134,7 @@ def get_feature(freq_dict, state, freq_select, channel_select, feature_select):
     return np.array(feature_output)  # convert to numpy array
 
 
-def make_clusters(freq_dict, graphing = False):
+def make_clusters(freq_dict, graphing=False):
     frequency = 200000
     features = ['relative_amp', 'duration', "avg_freq"]
     # features = ['duration']
@@ -145,6 +143,9 @@ def make_clusters(freq_dict, graphing = False):
     # all_channels = ["Actionneur1"]
 
     state_select_list = list((range(1, len(freq_dict[frequency]) + 1)))
+
+
+    # select "time" column, turn into set, and check length
 
     # looping over all of the stuff
     cluster_list_data = []
@@ -239,5 +240,3 @@ def make_clusters(freq_dict, graphing = False):
             changes.append(change)
 
         changelst.append(changes)
-
-

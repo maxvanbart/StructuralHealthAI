@@ -104,17 +104,18 @@ class Panel:
         self.pzt_start_times = time_list
         print(f"Successfully loaded PZT data for {self.name}.")
 
-    def analyse_pzt(self):
+    def analyse_pzt(self, force_clustering=False):
         location = 'Files/' + self.name + "/PZT/" + self.name + "_PZT-clustered.csv"
 
         try:
+            if force_clustering:
+                raise FileNotFoundError
             print(f"Successfully loaded clustered PZT data for {self.name}.")
             self.pzt_clustered_database = pd.read_csv(location)
         except FileNotFoundError:
             print('Clustered PZT file not found, clustering data...')
             # The part where all the data is analyzed
             analyse_pzt(self.pzt_database, self.name)
-
             # The part where all the data boils up
             lst = []
             for folder in self.pzt_database:
@@ -139,6 +140,7 @@ class Panel:
             pd.DataFrame(self.pzt_clustered_database).to_csv(location, index=False)
             print("Successfully created PZT clustered .csv.")
 
+        # call plotting function
         print(f"Successfully analysed PZT data for {self.name}.")
 
     def time_synchronise(self):
