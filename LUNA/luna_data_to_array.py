@@ -98,33 +98,6 @@ def gradient_arrays(array):
     return time_derivative_array, length_derivative_array
 
 
-def array_to_image(array):
-    """
-    Generates a new vector with each value in the original vector converted to an RGB color.
-    """
-    min_value, max_value = np.nanmin(array) / 4, np.nanmax(array) / 4
-
-    image = []
-
-    for i in range(len(array)):
-        image_row = []
-
-        for j in range(len(array[i])):
-
-            if array[i, j] <= 0:
-                image_column = [max(1 - (array[i, j] / min_value), 0), max(1 - (array[i, j] / min_value), 0), 1]
-            elif array[i, j] > 0:
-                image_column = [1, max(1 - (array[i, j] / max_value), 0), max(1 - (array[i, j] / max_value), 0)]
-            else:
-                image_column = [0, 0, 0]
-
-            image_row.append(image_column)
-
-        image.append(image_row)
-
-    return np.flip(np.transpose(image, (1, 0, 2)), axis=0)
-
-
 def folder_to_array(panel, path):
     """
     Reads all files of a panel and converts them to left foot and right foot numpy arrays.

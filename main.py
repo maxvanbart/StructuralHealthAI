@@ -22,7 +22,8 @@ if __name__ == "__main__":
         panel.load_luna()
         # panel.synchronise_luna()
         panel.analyse_luna()
-        panel.visualize_luna()
+        panel.visualize_all()
+        panel.save_all()
 
     # end time, it also prints the elapsed time
     t1 = time.time()

@@ -93,16 +93,20 @@ def plot_example_cluster(image_time, cluster_array, cluster_name, cluster_values
     plt.show()
 
 
-def plot_clusters(image_left, image_right, length_left, length_right, time, time_labels, panel, division=20):
+def plot_clusters(image_left, image_right, length_left_labels, length_right_labels, time_labels, panel, division=20):
 
-    labels = []
+    labels_time = []
+    labels_length_left = [int(float(length_left_labels[0])), int(float(length_left_labels[len(length_left_labels) // 2])), int(float(length_left_labels[-1]))]
+    labels_length_right = [int(float(length_right_labels[0])),
+                           int(float(length_right_labels[len(length_left_labels) // 2])),
+                           int(float(length_right_labels[-1]))]
 
     for i in range(len(time_labels)):
         if i % division == 0 and i == 0:
-            labels.append(0)
+            labels_time.append(0)
 
         elif i % division == 0:
-            labels.append(int(float(time_labels[i])))
+            labels_time.append(int(float(time_labels[i])))
 
     figure = plt.figure(constrained_layout=True)
     # figure.supxlabel('Length measurements [-]')
@@ -114,16 +118,23 @@ def plot_clusters(image_left, image_right, length_left, length_right, time, time
     sub_figures[1].suptitle('AE clusters')
 
     axs0 = sub_figures[0].subplots(2, 1, sharex=True)
-    axs0[0].imshow(image_left, extent=[0, time, 0, length_left], aspect='auto')
-    axs0[0].set_title('Left')
+    axs0[0].imshow(image_left, extent=[0, len(time_labels), 0, len(length_left_labels)], aspect='auto')
+    # axs0[0].set_title('Left')
 
-    axs0[0].set_xticks(np.arange(len(labels)) * division)
-    axs0[0].set_xticklabels(labels)
+    axs0[0].set_xticks(np.arange(len(labels_time)) * division)
+    axs0[0].set_xticklabels(labels_time)
+
+    axs0[0].set_yticks([0, 0.5 * len(length_left_labels), len(length_left_labels)])
+    axs0[0].set_yticklabels(labels_length_left)
     axs0[0].set_ylabel('length [mm]')
 
-    axs0[1].imshow(image_right, extent=[0, time, 0, length_right], aspect='auto')
-    axs0[1].set_title('Right')
+    axs0[1].imshow(image_right, extent=[0, len(time_labels), 0, len(length_right_labels)], aspect='auto')
+    # axs0[1].set_title('Right')
     axs0[1].set_xlabel('time [s]')
+
+    axs0[1].set_yticks([0, 0.5 * len(length_right_labels), len(length_right_labels)])
+    axs0[1].set_yticklabels(labels_length_right)
+    axs0[1].set_ylabel('length [mm]')
     axs0[1].set_ylabel('length [mm]')
 
     plt.show()

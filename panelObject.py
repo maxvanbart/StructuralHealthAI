@@ -9,9 +9,8 @@ from AE.hit_combination import init_clustering
 from AE.feature_analysis import freq_amp_cluster, all_features_cluster, create_cluster_batches, energy_time_cluster, freq_amp_energy_plot
 from AE.clustering import clustering_time_energy
 
-from LUNA.luna_data_to_array import folder_to_array, gradient_arrays, array_to_image
+from LUNA.luna_data_to_array import folder_to_array, gradient_arrays
 from LUNA.luna_array_to_cluster import array_to_cluster
-from LUNA.luna_plotting import plot_cluster, plot_clusters
 from LUNA.luna_preprocessing import preprocess_array
 from LUNA.luna_postprocessing import filter_array
 
@@ -141,22 +140,49 @@ class Panel:
 
         print(f"Successfully analysed LUNA data for {self.name}...")
 
-    def visualize_luna(self):
-        image_left_time = array_to_image(self.luna_database_derivatives[0])
-        image_right_time = array_to_image(self.luna_database_derivatives[1])
+    def visualize_all(self):
+        figure = plt.figure(tight_layout=True)
+        figure.suptitle(f'Panel {self.name}')
 
-        image_left_length = array_to_image(self.luna_database_derivatives[2])
-        image_right_length = array_to_image(self.luna_database_derivatives[3])
+        sub_figures = figure.subfigures(1, 1)
 
-        image_left = (image_left_time + image_left_length) / 2
-        image_right = (image_right_time + image_right_length) / 2
+        # LUNA left foot.
+        axs0 = sub_figures.subplots(3, 1, sharex=True)
+        axs0[0].scatter(self.luna_database_filtered[0][:, 0], self.luna_database_filtered[0][:, 1],
+                        c=self.luna_database_filtered[0][:, 2], cmap='bwr')
+        axs0[0].set_ylabel('length [mm]')
+        axs0[0].set_title('LUNA left foot cluster')
 
-        plot_clusters(image_left, image_right, self.luna_length_labels[0], self.luna_length_labels[1],
-                      self.luna_time_labels, self.name)
+        # LUNA right foot.
+        axs0[1].scatter(self.luna_database_filtered[1][:, 0], self.luna_database_filtered[1][:, 1],
+                        c=self.luna_database_filtered[1][:, 2], cmap='bwr')
+        axs0[1].set_ylabel('length [mm]')
+        axs0[1].set_title('LUNA right foot cluster')
 
-    def save_result(self):
+        # TODO: add correct AE cluster.
+        axs0[2].scatter(self.luna_database_filtered[1][:, 0], self.luna_database_filtered[1][:, 1],
+                        c=self.luna_database_filtered[1][:, 2], cmap='bwr')
+        axs0[2].set_xlabel('time [s]')
+        axs0[2].set_ylabel('Energy [j]')
+        axs0[2].set_title('AE cluster')
+
+        plt.show()
+
+    def save_all(self):
         """Function to save all relevant data to file"""
-        pass
+        directory = f'{self.folder_parent}/Files/{self.name}/Clusters'
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        LUNA_data_to_save = np.vstack((self.luna_database_filtered[0], self.luna_database_filtered[1]))
+
+        # TODO: add AE data to save.
+
+        with open(f'{directory}/LUNA.csv', 'w') as file:
+            np.savetxt(file, LUNA_data_to_save, delimiter=',', fmt='%1.3f')
+
+        # TODO: save AE data.
 
     def __repr__(self):
         return f"PanelObject({self.name})"
