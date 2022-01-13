@@ -46,7 +46,7 @@ def analyse_pzt(pzt_database, graphing=False, time_check=False):
             plt.plot(time_list)
             plt.title("check if it is a strait line if not, time sync is wrong")
             plt.show()
-        make_clusters(frequency_array_dict)
+        cluster_array, cluster_names = make_clusters(frequency_array_dict)
         ###########################################
         #  # * # * #   Code of Niels   # * # * #  #
         ###########################################
@@ -133,13 +133,19 @@ def get_feature(freq_dict, state, freq_select, channel_select, feature_select):
     return np.array(feature_output)  # convert to numpy array
 
 
-def make_clusters(freq_dict, all_clusters_graph=True, barplot=True):
-    frequency = 250000
+def make_clusters(freq_dict, all_clusters_graph=False, barplot=True):
+    """
+    input: database
+    working: clusters all of the data on the selection below. If one emitter is not usefull remove from the list.
+             if all_clusters_graph is True, shows a graph of all clusters, so it is visible what states belong together
+             if barplot is True, shows the bar plot with interesting data and states
+    returns: all of the interesting points of the clusters and the name of each cluster used.
+    """
+
+    frequency = 250000  # select only one
     features = ['relative_amp', 'duration', "avg_freq"]
-    # features = ['duration']
     all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
                     "Actionneur7", "Actionneur8"]  # select emitter
-    # all_channels = ["Actionneur1"]
 
     state_select_list = list((range(1, len(freq_dict[frequency]) + 1)))
 
@@ -249,6 +255,8 @@ def make_clusters(freq_dict, all_clusters_graph=True, barplot=True):
         plt.ylabel("Amount of clusters")
         plt.plot(change_array_sum, c="tab:brown")
         plt.show()
+    return change_array, names
+
 
 # ---------------------------------
 # output pzt----
