@@ -104,13 +104,29 @@ class Panel:
         print(f"Successfully loaded PZT data for {self.name}.")
 
     def analyse_pzt(self):
+        # The part where all the data is analyzed
         analyse_pzt(self.pzt_database, self.name)
 
+        # The part where all the data boils up
         lst = []
         for folder in self.pzt_database:
             for state in self.pzt_database[folder]:
                 lst.append(state.flatten_db())
-        print(lst)
+
+        # find the first dataframe in the list
+        for i in range(len(lst)):
+            if lst[i] is not None:
+                big_df = lst[i]
+                final_i = i
+                break
+
+        # delete the dataframe from the list as to prevent a copy from showing up
+        del lst[final_i]
+
+        for item in lst:
+            if item is not None:
+                big_df = big_df.append(item, ignore_index=True)
+        print(big_df)
         print(f"Successfully analysed PZT data for {self.name}.")
 
     def time_synchronise(self):
