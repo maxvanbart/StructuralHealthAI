@@ -3,7 +3,7 @@ import os
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import energy_time_cluster, freq_amp_cluster
+from AE.feature_analysis import energy_time_cluster, freq_amp_cluster, freq_amp_energy_plot
 from AE.feature_extraction import frequency_extraction
 import pandas as pd
 
@@ -75,7 +75,7 @@ class Panel:
             print("Successfully created clustered .csv.")
 
         # self.ae_database.corr_matrix()
-        freq_amp_cluster(self.ae_clustered_database, plotting=True)
+        #freq_amp_cluster(self.ae_clustered_database, plotting=True)
         # energy_time_cluster(self.ae_clustered_database, plotting=True)
         # batch_fre_amp_clst(self.ae_clustered_database)
 

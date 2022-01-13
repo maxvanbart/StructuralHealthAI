@@ -46,7 +46,7 @@ def energy_time_cluster(database, plotting=False):
     return labels
 
 
-def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=True):
+def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=False):
     """DBSCAN clustering"""
     features = database
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
@@ -57,7 +57,7 @@ def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=Tru
 
     # old scaling method not required
     if len(set(init_clusters)) != 2:
-        raise Exception(f"Unexpected number of clusters ({len(set(init_clusters))}​​​​​​) detected, try again.")
+        raise Exception(f"Unexpected number of clusters ({len(set(init_clusters))}) detected, try again.")
     else:
         knn_classification = sklearn.neighbors.KNeighborsClassifier(n_neighbors=100, weights='distance')
         knn_classification.fit(data, init_clusters)
@@ -70,7 +70,7 @@ def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=Tru
         plt.ylabel("Average frequency of emission [kHz]")
         plt.show()
 
-    return init_clusters
+    return clusters
 
 
 
