@@ -5,9 +5,10 @@ from matplotlib import pyplot as plt
 from TimeSync.translateLuna import calc_translation_coeffs
 from TimeSync.dataTypeClasses import Ribbon
 from TimeSync.ribbonFinder import sort_ribbons, purge_ribbons
+from TimeSync.translatePZT import calc_translation_coeff
 
 
-def sync_time(ae_df, vector_luna_source, timestamps_luna, name='Generic Panel', bin_width=1):
+def sync_luna(ae_df, vector_luna_source, timestamps_luna, name='Generic Panel', bin_width=1, graphing=False):
     # Convert the AE dataframe to a numpy array
     array = np.array(ae_df)
 
@@ -53,26 +54,45 @@ def sync_time(ae_df, vector_luna_source, timestamps_luna, name='Generic Panel', 
     # Final Plot #
     ##############
     # This plot shows how accurate the results are
-    # Plot ribbons as horizontal lines
-    height_value = -10
+    if graphing:
+        height_value = -10
 
-    for ribbon in ribbon_lst:
-        # print(str(ribbon))
-        # print(ribbon.t_start, ribbon.t_end)
-        plt.plot([ribbon.t_start, ribbon.t_end], [height_value, height_value], 'b')
-    # Plot LUNA points as red dots
-    sample_y_values_luna = height_value * np.ones((len(timestamps_luna)))
+        # Plot ribbons as horizontal lines
+        for ribbon in ribbon_lst:
+            plt.plot([ribbon.t_start, ribbon.t_end], [height_value, height_value], 'b')
 
-    plt.scatter(timestamps_luna_shifted, sample_y_values_luna, c='r', s=4)
+        # Plot LUNA points as red dots
+        sample_y_values_luna = height_value * np.ones((len(timestamps_luna)))
+        plt.scatter(timestamps_luna_shifted, sample_y_values_luna, c='r', s=4)
 
-    plt.plot(range(len(bins)), bins, c='g')
-    # plt.scatter(timestamps_luna_shifted, sample_y_values_luna, c=vector_groups, s=4)
-    # for i, label in enumerate(vector_groups):
-    #     plt.annotate(vector_groups, (timestamps_luna_shifted[i], sample_y_values_luna[i]))
-    # plt.scatter(timestamps_luna, sample_y_values_LUNA, c='green', s=4)
+        plt.plot(range(len(bins)), bins, c='g')
+        plt.title(name)
+        plt.xlabel("Time [s]")
+        plt.ylabel("404")
+        plt.show()
+
+    return vector_shifts, best_errors, ribbon_lst
+
+
+def sync_pzt(pzt_time, luna_time, ae_ribbons, pzt_file_count, name='Generic Panel'):
+    pzt_time = np.array(pzt_time) - pzt_time[0]
+
+    ####################
+    # DATA EXPLORATION #
+    ####################
+    # There always seem to be n shitty nodes, these can be disregarded during file syncing
+    pzt_time = pzt_time[pzt_file_count:]
+
+    best_dt, best_error = calc_translation_coeff(pzt_time, luna_time)
+
+    pzt_time = pzt_time + best_dt
     plt.title(name)
     plt.xlabel("Time [s]")
     plt.ylabel("404")
-    plt.show()
+    for ribbon in ae_ribbons:
+        plt.plot([ribbon.t_start, ribbon.t_end], [0, 0], 'b')
 
-    return vector_shifts, best_errors
+    plt.scatter(pzt_time, [0]*len(pzt_time), c='g', s=4)
+    plt.scatter(luna_time, [0]*len(luna_time), c='r', s=4)
+    plt.show()
+    return best_dt, best_error

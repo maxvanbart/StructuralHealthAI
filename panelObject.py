@@ -18,7 +18,7 @@ from LUNA.luna_plotting import plot_cluster, plot_clusters
 from LUNA.luna_preprocessing import preprocess_array
 from LUNA.luna_postprocessing import filter_array
 
-from TimeSync.timeSync import sync_time
+from TimeSync.timeSync import sync_luna, sync_pzt
 
 files_folder = "Files"
 
@@ -35,6 +35,7 @@ class Panel:
         self.ae_start_time = None
         self.ae_database = None
         self.ae_clustered_database = None
+        self.ae_ribbons = None
 
         # LUNA
         self.luna_database = None
@@ -132,11 +133,12 @@ class Panel:
 
     def synchronise_luna(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
-        sv, e = sync_time(self.ae_database.hits, self.luna_file_vector, self.luna_time_labels, name=self.name)
+        sv, e, rb = sync_luna(self.ae_database.hits, self.luna_file_vector, self.luna_time_labels, name=self.name)
         self.luna_time_shift_vector = sv
         self.luna_time_shift_errors = e
 
         self.luna_time_labels = self.luna_time_labels + self.luna_time_shift_vector
+        self.ae_ribbons = rb
 
         print(self.luna_time_shift_errors)
         print(f"Successfully synchronized time for {self.name}...")
@@ -173,6 +175,7 @@ class Panel:
         plot_clusters(image_left, image_right, self.luna_length_labels[0], self.luna_length_labels[1],
                       self.luna_time_labels, self.name)
 
+    # All PZT related code for the object
     def load_pzt(self):
         self.pzt_database = StatePZT.initialize_pzt(self.name)
         time_list = []
@@ -181,6 +184,14 @@ class Panel:
         time_list.sort()
         self.pzt_start_times = time_list
         print(f"Successfully loaded PZT data for {self.name}.")
+
+    def synchronise_pzt(self):
+        pzt_time = self.pzt_start_times
+        luna_time = self.luna_time_labels
+        filecount = len(self.pzt_database)
+        pzt_dt, best_error = sync_pzt(pzt_time, luna_time, self.ae_ribbons, filecount, name=self.name)
+        print(f"PZT data should be shifted by {pzt_dt} seconds in order to achieve the best synchronization.")
+        print(f"This synchronization gives an error of {best_error}.")
 
     def analyse_pzt(self, force_clustering=False):
         location = 'Files/' + self.name + "/PZT/" + self.name + "_PZT-clustered.csv"

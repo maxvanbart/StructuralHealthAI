@@ -28,6 +28,7 @@ if __name__ == "__main__":
 
         # Do PZT stuff
         panel.load_pzt()
+        panel.synchronise_pzt()
         panel.analyse_pzt()
 
     # end time, it also prints the elapsed time
