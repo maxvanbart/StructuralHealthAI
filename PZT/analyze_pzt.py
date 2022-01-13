@@ -8,7 +8,7 @@ from PZT.load_pzt import StatePZT
 
 
 # this function only works if multiple states are present in the files. Set the count value correctly
-def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, time_check=True, clustering=True):
+def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, time_check=False, clustering=True):
     # for every run we will do a seperate analysis
     count = 0
     for run in sorted(pzt_database):
@@ -136,7 +136,7 @@ def get_feature(freq_dict, state, freq_select, channel_select, feature_select):
     return np.array(feature_output)  # convert to numpy array
 
 
-def make_clusters(freq_dict):
+def make_clusters(freq_dict, graphing = False):
     frequency = 200000
     features = ['relative_amp', 'duration', "avg_freq"]
     # features = ['duration']
@@ -190,7 +190,7 @@ def make_clusters(freq_dict):
     all_cluster_labels.append(kmean_labels)
     plt.plot(kmean_labels, label="kmeans n=10")
 
-    aff_prop_cluster = cls.AffinityPropagation(random_state=None)
+    aff_prop_cluster = cls.AffinityPropagation()
     aff_prop_cluster.fit(cluster_list_data)
     aff_prop_labels = aff_prop_cluster.labels_
     # print(f'labels of affinity propagation are {aff_prop_labels}')
@@ -207,8 +207,10 @@ def make_clusters(freq_dict):
     optics_labels = optics_cluster.labels_
     all_cluster_labels.append(optics_labels)
     plt.plot(optics_labels, label="OPTICS")
-    plt.legend()
-    plt.show()
+
+    if graphing:
+        plt.legend()
+        plt.show()
 
     from itertools import tee, islice, chain
 

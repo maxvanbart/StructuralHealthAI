@@ -42,6 +42,7 @@ class TestPZT:
             #######################################################
 
             data = np.array(self.matlab_array[actionneur])
+
             # get the maximum amplitudes
             maximum_column = np.max(data, axis=0)[1:]
             minimum_column = np.min(data, axis=0)[1:]

@@ -22,7 +22,6 @@ if __name__ == "__main__":
         # panel.analyse_luna()
         panel.load_pzt()
         panel.analyse_pzt()
-        panel.save_pzt()
 
     # end time, it also prints the elapsed time
     t1 = time.time()
