@@ -104,7 +104,7 @@ class Panel:
         self.pzt_start_times = time_list
         print(f"Successfully loaded PZT data for {self.name}.")
 
-    def analyse_pzt(self, force_clustering=False):
+    def analyse_pzt(self, force_clustering=True):
         location = 'Files/' + self.name + "/PZT/" + self.name + "_PZT-clustered.csv"
 
         try:

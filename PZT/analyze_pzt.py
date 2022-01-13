@@ -8,7 +8,7 @@ from PZT.load_pzt import StatePZT
 
 
 # this function only works if multiple states are present in the files. Set the count value correctly
-def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, time_check=False):
+def analyse_pzt(pzt_database, graphing=False, time_check=False):
     # for every run we will do a seperate analysis
     count = 0
     for run in sorted(pzt_database):
@@ -46,7 +46,7 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
             plt.plot(time_list)
             plt.title("check if it is a strait line if not, time sync is wrong")
             plt.show()
-
+        make_clusters(frequency_array_dict)
         ###########################################
         #  # * # * #   Code of Niels   # * # * #  #
         ###########################################
@@ -69,7 +69,6 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
                 if channel_select not in hits:
                     hits[channel_select] = []
                 outliers_channels = None
-                header_channels = None
 
                 if graphing:
                     fig, axs = plt.subplots(2, 4)  # y, x
@@ -161,53 +160,52 @@ def make_clusters(freq_dict, graphing=False):
                 # 3
         help_list = [item for sublist in channel_list_data for item in sublist]
         cluster_list_data.append(help_list)
-        # 8
-    # 32
-
-# (32, 192)
+    # (32, 192)
     # create the array for the clustering
     cluster_list_data = np.array(cluster_list_data)
+    names = []
 
     all_cluster_labels = []
     # do the clustering itself
-    kmean_cluster = cls.KMeans(n_clusters=7, random_state=42)
+    kmean_cluster = cls.KMeans(n_clusters=int(len(state_select_list)*0.1), random_state=42)
     kmean_cluster.fit(cluster_list_data)
     kmean_labels = kmean_cluster.labels_
-    # print(f'labels of kmeans are {kmean_labels}')
     all_cluster_labels.append(kmean_labels)
-    plt.plot(kmean_labels, label="kmeans n=7")
+    name = f'kmeans n={int(len(state_select_list)*0.1)}'
+    names.append(name)
+    # plt.plot(kmean_labels, label=name)
 
-    kmean_cluster = cls.KMeans(n_clusters=5, random_state=42)
+    kmean_cluster = cls.KMeans(n_clusters=int(len(state_select_list)*0.2), random_state=42)
     kmean_cluster.fit(cluster_list_data)
     kmean_labels = kmean_cluster.labels_
-    # print(f'labels of kmeans are {kmean_labels}')
     all_cluster_labels.append(kmean_labels)
-    plt.plot(kmean_labels, label="kmeans n=5")
+    name = f'kmeans n={int(len(state_select_list)*0.2)}'
+    names.append(name)
+    # plt.plot(kmean_labels, label=name)
 
-    kmean_cluster = cls.KMeans(n_clusters=10, random_state=42)
+    kmean_cluster = cls.KMeans(n_clusters=int(len(state_select_list)*0.3), random_state=42)
     kmean_cluster.fit(cluster_list_data)
     kmean_labels = kmean_cluster.labels_
-    # print(f'labels of kmeans are {kmean_labels}')
     all_cluster_labels.append(kmean_labels)
-    plt.plot(kmean_labels, label="kmeans n=10")
+    name = f'kmeans n={int(len(state_select_list)*0.3)}'
+    names.append(name)
+    # plt.plot(kmean_labels, label=name)
 
     aff_prop_cluster = cls.AffinityPropagation()
     aff_prop_cluster.fit(cluster_list_data)
     aff_prop_labels = aff_prop_cluster.labels_
-    # print(f'labels of affinity propagation are {aff_prop_labels}')
     all_cluster_labels.append(aff_prop_labels)
-    plt.plot(aff_prop_labels, label="aff_prop")
-
-    # mean_shift_cluster = cls.MeanShift()
-    # mean_shift_cluster.fit(cluster_list_data)
-    # mean_shift_labels = mean_shift_cluster.labels_
-    # plt.plot(mean_shift_labels, label="mean_shift")
+    name = "aff_prop"
+    names.append(name)
+    # plt.plot(aff_prop_labels, label=name)
 
     optics_cluster = cls.OPTICS()
     optics_cluster.fit(cluster_list_data)
     optics_labels = optics_cluster.labels_
     all_cluster_labels.append(optics_labels)
-    plt.plot(optics_labels, label="OPTICS")
+    name = "OPTICS"
+    names.append(name)
+    # plt.plot(optics_labels, label=name)
 
     if graphing:
         plt.legend()
@@ -240,3 +238,14 @@ def make_clusters(freq_dict, graphing=False):
             changes.append(change)
 
         changelst.append(changes)
+
+    change_array = np.array(changelst)
+    change_array_sum = np.sum(change_array, axis=0)
+
+    change_df = pd.DataFrame(data=change_array.T, columns=names)
+
+    ax = change_df.plot.bar(rot=1, stacked=True)
+    plt.title("interesting stuff")
+    plt.plot(change_array_sum, c="tab:brown")
+    plt.show()
+
