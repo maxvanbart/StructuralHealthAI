@@ -31,7 +31,7 @@ def raw_to_array_complete(folder_path, file_name):
 
     def convert_array(array):
         """
-        Changes all dates to timestamps, NaN strings to NaN values and remaining strings to floats.
+        Changes all dates to timestamps_clustered, NaN strings to NaN values and remaining strings to floats.
         """
         for i in range(len(array)):
             for j in range(len(array[i])):

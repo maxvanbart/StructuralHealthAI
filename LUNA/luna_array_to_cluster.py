@@ -58,7 +58,7 @@ def agglo(array, n=5, scaled=True):
         array = scaling(array)
 
     # clustering
-    model = cl.AgglomerativeClustering(n_clusters=n)
+    model = cl.AgglomerativeClustering(n_clusters=n, distance_threshold=1)
     cluster = model.fit_predict(array)
 
     cluster_values = np.unique(cluster)
