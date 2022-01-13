@@ -14,14 +14,16 @@ if __name__ == "__main__":
     # for every panel we perform the following actions
     for panel in tqdm.tqdm(panels, desc='Panel'):
         print('\n'+str(panel))
-        # Do AE stuff
-        # panel.load_ae()
-        # panel.analyse_ae()
+        # Prepare AE.
+        panel.load_ae()
+        panel.analyse_ae()
 
-        # Do LUNA stuff
+        # Prepare LUNA.
         panel.load_luna()
-        # panel.synchronise_luna()
+        panel.synchronise_luna()
         panel.analyse_luna()
+
+        # Plot and save all the clusters.
         panel.visualize_all()
         panel.save_all()
 
