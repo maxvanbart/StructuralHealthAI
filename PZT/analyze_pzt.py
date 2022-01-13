@@ -153,6 +153,8 @@ def make_clusters(freq_dict, all_clusters_graph=False, barplot=True):
     # merge into output list
     selected_data = freq_filtered[col_list]
 
+
+    pass
     # create the array for the clustering
     cluster_list_data = np.array(cluster_list_data)
     names = []  # ["kmeans n=4", "kmeans n=7", ...]
