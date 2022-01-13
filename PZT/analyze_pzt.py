@@ -163,7 +163,7 @@ def make_clusters(freq_dict, graphing=False):
     # (32, 192)
     # create the array for the clustering
     cluster_list_data = np.array(cluster_list_data)
-    names = []
+    names = []  # ["kmeans n=4", "kmeans n=7", ...]
 
     all_cluster_labels = []
     # do the clustering itself
