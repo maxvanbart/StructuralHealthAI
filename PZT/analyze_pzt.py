@@ -133,7 +133,7 @@ def get_feature(freq_dict, state, freq_select, channel_select, feature_select):
     return np.array(feature_output)  # convert to numpy array
 
 
-def make_clusters(freq_dict, all_clusters_graph=False, barplot=True):
+def make_clusters(database, all_clusters_graph=False, barplot=True):
     """
     input: database
     working: clusters all of the data on the selection below. If one emitter is not usefull remove from the list.
