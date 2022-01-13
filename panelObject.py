@@ -5,7 +5,7 @@ from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
 from AE.feature_analysis import freq_amp_cluster, energy_time_cluster
 from AE.feature_extraction import frequency_extraction
-from PZT.analyze_pzt import analyse_pzt
+from PZT.analyze_pzt import analyse_pzt, make_clusters
 from PZT.load_pzt import StatePZT
 
 import pandas as pd
@@ -136,11 +136,20 @@ class Panel:
                 if item is not None:
                     big_df = big_df.append(item, ignore_index=True)
 
-            self.pzt_clustered_database = big_df
+            # add state number
+            time_list, state_list = set(big_df["time"]), list(range(1, len(set(big_df["time"])) + 1))
+            state_column = big_df["time"].rename({'time': 'state'}, axis=1).replace(time_list, state_list)
+            big_df["state"] = state_column
+
+            # reorder and sort big_df on time
+            self.pzt_clustered_database = big_df[['time', 'state', 'frequency', 'actionneur', 'max_amp', 'min_amp',
+                                                 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time', 'travel_time',
+                                                 'energy', 'avg_freq']].sort_values(by=['time'])
             pd.DataFrame(self.pzt_clustered_database).to_csv(location, index=False)
             print("Successfully created PZT clustered .csv.")
 
         # call plotting function
+        make_clusters(self.pzt_clustered_database)
         print(f"Successfully analysed PZT data for {self.name}.")
 
     def time_synchronise(self):

@@ -134,21 +134,20 @@ def get_feature(freq_dict, state, freq_select, channel_select, feature_select):
     return np.array(feature_output)  # convert to numpy array
 
 
-def make_clusters(freq_dict, graphing=False):
-    frequency = 200000
-    features = ['relative_amp', 'duration', "avg_freq"]
-    # features = ['duration']
-    all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
-                    "Actionneur7", "Actionneur8"]  # select emitter
-    # all_channels = ["Actionneur1"]
+def make_clusters(database, graphing=False):
+    selected_frequency = 250000
+    selected_features = ['relative_amp', 'duration', "avg_freq"]
 
-    state_select_list = list((range(1, len(freq_dict[frequency]) + 1)))
+    # column list for selection in database
+    col_list = ["state", "frequency"] + selected_features
 
+    # only select frequency
+    freq_filtered = database.loc[database['frequency'] == selected_frequency]
 
-    # select "time" column, turn into set, and check length
+    # merge into output list
+    selected_data = freq_filtered[col_list]
 
-    # looping over all of the stuff
-    cluster_list_data = []
+    print(selected_data)
     for state in state_select_list:
         channel_list_data = []
         for channel in all_channels:
