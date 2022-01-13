@@ -8,7 +8,7 @@ from PZT.load_pzt import StatePZT
 
 
 # this function only works if multiple states are present in the files. Set the count value correctly
-def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, time_check=False):
+def analyse_pzt(pzt_database, graphing=False, time_check=False):
     # for every run we will do a seperate analysis
     count = 0
     for run in sorted(pzt_database):
@@ -69,7 +69,6 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
                 if channel_select not in hits:
                     hits[channel_select] = []
                 outliers_channels = None
-                header_channels = None
 
                 if graphing:
                     fig, axs = plt.subplots(2, 4)  # y, x
@@ -134,7 +133,14 @@ def get_feature(freq_dict, state, freq_select, channel_select, feature_select):
     return np.array(feature_output)  # convert to numpy array
 
 
-def make_clusters(database, graphing=False):
+def make_clusters(freq_dict, all_clusters_graph=False, barplot=True):
+    """
+    input: database
+    working: clusters all of the data on the selection below. If one emitter is not usefull remove from the list.
+             if all_clusters_graph is True, shows a graph of all clusters, so it is visible what states belong together
+             if barplot is True, shows the bar plot with interesting data and states
+    returns: all of the interesting points of the clusters and the name of each cluster used.
+    """
     selected_frequency = 250000
     selected_features = ['relative_amp', 'duration', "avg_freq"]
 
@@ -147,68 +153,53 @@ def make_clusters(database, graphing=False):
     # merge into output list
     selected_data = freq_filtered[col_list]
 
-    print(selected_data)
-    for state in state_select_list:
-        channel_list_data = []
-        for channel in all_channels:
-
-            for feature in features:
-
-                # output shape is list of length 8
-                feature_data = get_feature(freq_dict, state, frequency, channel, feature)
-                channel_list_data.append(list(feature_data))
-                # 3
-        help_list = [item for sublist in channel_list_data for item in sublist]
-        cluster_list_data.append(help_list)
-        # 8
-    # 32
-
-# (32, 192)
     # create the array for the clustering
     cluster_list_data = np.array(cluster_list_data)
+    names = []  # ["kmeans n=4", "kmeans n=7", ...]
 
     all_cluster_labels = []
     # do the clustering itself
-    kmean_cluster = cls.KMeans(n_clusters=7, random_state=42)
+    kmean_cluster = cls.KMeans(n_clusters=int(len(state_select_list)*0.1), random_state=42)
     kmean_cluster.fit(cluster_list_data)
-    kmean_labels = kmean_cluster.labels_
-    # print(f'labels of kmeans are {kmean_labels}')
-    all_cluster_labels.append(kmean_labels)
-    plt.plot(kmean_labels, label="kmeans n=7")
+    kmean_labels1 = kmean_cluster.labels_
+    all_cluster_labels.append(kmean_labels1)
+    name = f'kmeans n={int(len(state_select_list)*0.1)}'
+    names.append(name)
 
-    kmean_cluster = cls.KMeans(n_clusters=5, random_state=42)
+    kmean_cluster = cls.KMeans(n_clusters=int(len(state_select_list)*0.2), random_state=42)
     kmean_cluster.fit(cluster_list_data)
-    kmean_labels = kmean_cluster.labels_
-    # print(f'labels of kmeans are {kmean_labels}')
-    all_cluster_labels.append(kmean_labels)
-    plt.plot(kmean_labels, label="kmeans n=5")
+    kmean_labels2 = kmean_cluster.labels_
+    all_cluster_labels.append(kmean_labels2)
+    name = f'kmeans n={int(len(state_select_list)*0.2)}'
+    names.append(name)
 
-    kmean_cluster = cls.KMeans(n_clusters=10, random_state=42)
+    kmean_cluster = cls.KMeans(n_clusters=int(len(state_select_list)*0.3), random_state=42)
     kmean_cluster.fit(cluster_list_data)
-    kmean_labels = kmean_cluster.labels_
-    # print(f'labels of kmeans are {kmean_labels}')
-    all_cluster_labels.append(kmean_labels)
-    plt.plot(kmean_labels, label="kmeans n=10")
+    kmean_labels3 = kmean_cluster.labels_
+    all_cluster_labels.append(kmean_labels3)
+    name = f'kmeans n={int(len(state_select_list)*0.3)}'
+    names.append(name)
 
     aff_prop_cluster = cls.AffinityPropagation()
     aff_prop_cluster.fit(cluster_list_data)
     aff_prop_labels = aff_prop_cluster.labels_
-    # print(f'labels of affinity propagation are {aff_prop_labels}')
     all_cluster_labels.append(aff_prop_labels)
-    plt.plot(aff_prop_labels, label="aff_prop")
-
-    # mean_shift_cluster = cls.MeanShift()
-    # mean_shift_cluster.fit(cluster_list_data)
-    # mean_shift_labels = mean_shift_cluster.labels_
-    # plt.plot(mean_shift_labels, label="mean_shift")
+    name = "aff_prop"
+    names.append(name)
 
     optics_cluster = cls.OPTICS()
     optics_cluster.fit(cluster_list_data)
     optics_labels = optics_cluster.labels_
     all_cluster_labels.append(optics_labels)
-    plt.plot(optics_labels, label="OPTICS")
+    name = "OPTICS"
+    names.append(name)
 
-    if graphing:
+    if all_clusters_graph:
+        for i in range(len(names)):
+            plt.plot(all_cluster_labels[i], label=names[i])
+        plt.xlabel("State no.")
+        plt.ylabel("label no.")
+        plt.title("All groups clusters, if change of label no. \n that means a change of data, so interesting point")
         plt.legend()
         plt.show()
 
@@ -239,3 +230,25 @@ def make_clusters(database, graphing=False):
             changes.append(change)
 
         changelst.append(changes)
+
+    change_array = np.array(changelst)
+    change_array_sum = np.sum(change_array, axis=0)
+
+    change_df = pd.DataFrame(data=change_array.T, columns=names, index=range(1, len(state_select_list)+1))
+    if barplot:
+        ax = change_df.plot.bar(rot=1, stacked=True)
+        plt.title("State vs amount of cluster hits")
+        plt.xlabel("State.no")
+        plt.ylabel("Amount of clusters")
+        plt.plot(change_array_sum, c="tab:brown")
+        plt.show()
+    return change_array, names
+
+
+# ---------------------------------
+# output pzt----
+# --------------------------------
+# type 1: state(s) -> 3, 4, 5, 9, 10 -- total 5
+# type 2: state(s) -> 1, 2, 7, 8 -- total of 4
+# type 3: state(s) -> 11, 12, 13, 14 -- total of 4
+# -----------------------------------------------
