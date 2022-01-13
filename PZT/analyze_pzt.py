@@ -55,7 +55,7 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
         # should be possible to make this into a neater function, like input
         # all_frequency = [50000, 100000, 125000, 150000, 200000, 250000]
         # This list should in the final product only contain the 'useful frequencies'
-        all_frequency = [200000, 250000]
+        all_frequency = [250000]
 
         # Only useful features should be contained in this list for the final product
         # all_features = ['max_amp', 'min_amp', 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time',
@@ -145,27 +145,26 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
                 if graphing:
                     plt.show()
 
-        continue
-        # Here we combine the dictionary of margin violations to pull conclusions about the timestamps
-        # where changes in the panel properties occur
-        hits_processed = {}
-        for y in hits:
-            hit = sum(hits[y])
-            # hit = np.sum(hit, axis=1)
-            # print(hit)
-            hits_processed[y] = hit
-            hits_df = pd.DataFrame(data=hit, columns=all_features)
+        # # Here we combine the dictionary of margin violations to pull conclusions about the timestamps
+        # # where changes in the panel properties occur
+        # hits_processed = {}
+        # for y in hits:
+        #     hit = sum(hits[y])
+        #     # hit = np.sum(hit, axis=1)
+        #     # print(hit)
+        #     hits_processed[y] = hit
+        #     hits_df = pd.DataFrame(data=hit, columns=all_features)
+        #
+        #     ax = hits_df.plot.bar(rot=1, stacked=True)
+        #     plt.title(f'Margin violations for different measurements of {y} on panel {panel_name}.')
+        #     plt.show()
+        #
+        #     # for y in
+        #     # plt.bar(range(hit.shape[0]), hit)
+        #     # plt.title(f'Margin violations for different measurements of {y}.')
+        #     # plt.show()
 
-            ax = hits_df.plot.bar(rot=1, stacked=True)
-            plt.title(f'Margin violations for different measurements of {y} on panel {panel_name}.')
-            plt.show()
-
-            # for y in
-            # plt.bar(range(hit.shape[0]), hit)
-            # plt.title(f'Margin violations for different measurements of {y}.')
-            # plt.show()
-
-        return hits_processed
+        # return hits_processed
 
 
 def get_feature(freq_dict, state, freq_select, channel_select, feature_select):

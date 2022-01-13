@@ -30,6 +30,7 @@ class Panel:
 
         # PZT
         self.pzt_database = None
+        self.pzt_start_times = None
 
     @staticmethod
     def initialize_all(debug=False, debug_graph=False):
@@ -95,6 +96,14 @@ class Panel:
 
     def load_pzt(self):
         self.pzt_database = StatePZT.initialize_pzt(self.name)
+        time_list = []
+        for identifier in self.pzt_database:
+            time_list += [x.start_time for x in self.pzt_database[identifier]]
+        print(time_list)
+        raise SpongebobError
+
+        self.pzt_start_times = time_list
+        print(self.pzt_start_times)
         print(f"Successfully loaded PZT data for {self.name}.")
 
     def analyse_pzt(self):
