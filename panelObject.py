@@ -8,8 +8,7 @@ from AE.hit_combination import init_clustering
 from AE.feature_analysis import energy_time_cluster, freq_amp_cluster
 from AE.feature_extraction import frequency_extraction
 from AE.clustering import clustering_time_energy
-from AE.feature_analysis import freq_amp_cluster, energy_time_cluster
-from AE.feature_extraction import frequency_extraction
+
 from PZT.analyze_pzt import analyse_pzt
 from PZT.load_pzt import StatePZT
 
@@ -108,8 +107,6 @@ class Panel:
             pd.DataFrame(self.ae_clustered_database).to_csv(location, index=False)
         self.ae_clustered_database = self.ae_clustered_database.sort_values(by=['time'])
 
-            print("Successfully created AE clustered .csv.")
-
         # self.ae_database.corr_matrix()
         # energy_time_cluster(self.ae_clustered_database, plotting=True)
         # batch_fre_amp_clst(self.ae_clustered_database)
@@ -203,14 +200,23 @@ class Panel:
                     lst.append(state.flatten_db())
 
             # find the first dataframe in the list
+            final_i = None
+            big_df = None
+
             for i in range(len(lst)):
                 if lst[i] is not None:
                     big_df = lst[i]
                     final_i = i
                     break
 
+            if big_df is None:
+                raise ValueError
+
             # delete the dataframe from the list as to prevent a copy from showing up
-            del lst[final_i]
+            if final_i is not None:
+                del lst[final_i]
+            else:
+                raise ValueError
 
             for item in lst:
                 if item is not None:

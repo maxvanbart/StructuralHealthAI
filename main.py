@@ -26,6 +26,7 @@ if __name__ == "__main__":
         panel.analyse_luna()
         panel.visualize_luna()
 
+        # Do PZT stuff
         panel.load_pzt()
         panel.analyse_pzt()
 
