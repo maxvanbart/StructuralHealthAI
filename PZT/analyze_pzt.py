@@ -133,8 +133,8 @@ def get_feature(freq_dict, state, freq_select, channel_select, feature_select):
     return np.array(feature_output)  # convert to numpy array
 
 
-def make_clusters(freq_dict, graphing=False):
-    frequency = 200000
+def make_clusters(freq_dict, all_clusters_graph=True, barplot=True):
+    frequency = 250000
     features = ['relative_amp', 'duration', "avg_freq"]
     # features = ['duration']
     all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
@@ -142,7 +142,6 @@ def make_clusters(freq_dict, graphing=False):
     # all_channels = ["Actionneur1"]
 
     state_select_list = list((range(1, len(freq_dict[frequency]) + 1)))
-
 
     # select "time" column, turn into set, and check length
 
@@ -169,27 +168,24 @@ def make_clusters(freq_dict, graphing=False):
     # do the clustering itself
     kmean_cluster = cls.KMeans(n_clusters=int(len(state_select_list)*0.1), random_state=42)
     kmean_cluster.fit(cluster_list_data)
-    kmean_labels = kmean_cluster.labels_
-    all_cluster_labels.append(kmean_labels)
+    kmean_labels1 = kmean_cluster.labels_
+    all_cluster_labels.append(kmean_labels1)
     name = f'kmeans n={int(len(state_select_list)*0.1)}'
     names.append(name)
-    # plt.plot(kmean_labels, label=name)
 
     kmean_cluster = cls.KMeans(n_clusters=int(len(state_select_list)*0.2), random_state=42)
     kmean_cluster.fit(cluster_list_data)
-    kmean_labels = kmean_cluster.labels_
-    all_cluster_labels.append(kmean_labels)
+    kmean_labels2 = kmean_cluster.labels_
+    all_cluster_labels.append(kmean_labels2)
     name = f'kmeans n={int(len(state_select_list)*0.2)}'
     names.append(name)
-    # plt.plot(kmean_labels, label=name)
 
     kmean_cluster = cls.KMeans(n_clusters=int(len(state_select_list)*0.3), random_state=42)
     kmean_cluster.fit(cluster_list_data)
-    kmean_labels = kmean_cluster.labels_
-    all_cluster_labels.append(kmean_labels)
+    kmean_labels3 = kmean_cluster.labels_
+    all_cluster_labels.append(kmean_labels3)
     name = f'kmeans n={int(len(state_select_list)*0.3)}'
     names.append(name)
-    # plt.plot(kmean_labels, label=name)
 
     aff_prop_cluster = cls.AffinityPropagation()
     aff_prop_cluster.fit(cluster_list_data)
@@ -197,7 +193,6 @@ def make_clusters(freq_dict, graphing=False):
     all_cluster_labels.append(aff_prop_labels)
     name = "aff_prop"
     names.append(name)
-    # plt.plot(aff_prop_labels, label=name)
 
     optics_cluster = cls.OPTICS()
     optics_cluster.fit(cluster_list_data)
@@ -205,9 +200,13 @@ def make_clusters(freq_dict, graphing=False):
     all_cluster_labels.append(optics_labels)
     name = "OPTICS"
     names.append(name)
-    # plt.plot(optics_labels, label=name)
 
-    if graphing:
+    if all_clusters_graph:
+        for i in range(len(names)):
+            plt.plot(all_cluster_labels[i], label=names[i])
+        plt.xlabel("State no.")
+        plt.ylabel("label no.")
+        plt.title("All groups clusters, if change of label no. \n that means a change of data, so interesting point")
         plt.legend()
         plt.show()
 
@@ -242,10 +241,19 @@ def make_clusters(freq_dict, graphing=False):
     change_array = np.array(changelst)
     change_array_sum = np.sum(change_array, axis=0)
 
-    change_df = pd.DataFrame(data=change_array.T, columns=names)
+    change_df = pd.DataFrame(data=change_array.T, columns=names, index=range(1, len(state_select_list)+1))
+    if barplot:
+        ax = change_df.plot.bar(rot=1, stacked=True)
+        plt.title("State vs amount of cluster hits")
+        plt.xlabel("State.no")
+        plt.ylabel("Amount of clusters")
+        plt.plot(change_array_sum, c="tab:brown")
+        plt.show()
 
-    ax = change_df.plot.bar(rot=1, stacked=True)
-    plt.title("interesting stuff")
-    plt.plot(change_array_sum, c="tab:brown")
-    plt.show()
-
+# ---------------------------------
+# output pzt----
+# --------------------------------
+# type 1: state(s) -> 3, 4, 5, 9, 10 -- total 5
+# type 2: state(s) -> 1, 2, 7, 8 -- total of 4
+# type 3: state(s) -> 11, 12, 13, 14 -- total of 4
+# -----------------------------------------------
