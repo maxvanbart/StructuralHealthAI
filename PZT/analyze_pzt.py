@@ -14,7 +14,7 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
     for run in sorted(pzt_database):
         count += 1
         # /!\ MIGHT BE BETTER TO BASE THIS ON THE AMOUNT OF STATES IN A RUN /!\
-        if count < 2:
+        if count < len(pzt_database):
             # This prevents a division by zero error
             continue
         # here we extract all the frequencies which are present in the data
@@ -93,48 +93,6 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
                         else:  # else go stacking for different states
                             state_to_plot = np.vstack((state_to_plot, feature_output))
 
-                    # Some information about the data
-                    averages = np.average(state_to_plot, axis=0)
-                    standarddivs = np.std(state_to_plot, axis=0)
-
-                    l1 = averages
-                    l2 = averages + standarddivs
-                    l3 = averages - standarddivs
-
-                    state_filtered = np.copy(state_to_plot)
-                    state_filtered = abs(state_filtered - averages)
-                    state_filtered = state_filtered - standarddivs
-                    outliers = state_filtered > 0
-                    outliers = np.sum(outliers, axis=1)
-
-                    # Pass the outlier data a level downward
-                    if outliers_channels is None:
-                        outliers_channels = outliers
-                        header_channels = [feature_select]
-                    else:
-                        outliers_channels = np.vstack((outliers_channels, outliers))
-                        header_channels.append(feature_select)
-
-                    if graphing:
-                        # Placement code
-                        x_counter = counter % 4
-                        y_counter = counter // 4
-
-                        color_lst = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple']
-                        color_lst += ['tab:brown', 'tab:pink', 'tab:gray']
-
-                        axs[y_counter, x_counter].plot(state_to_plot)
-
-                        line_width = state_to_plot.shape[0]
-
-                        if plot_violation:
-                            axs[y_counter, x_counter].hlines(l1, 0, line_width, colors=color_lst)
-                            axs[y_counter, x_counter].hlines(l2, 0, line_width, linestyles='dashed', colors=color_lst)
-                            axs[y_counter, x_counter].hlines(l3, 0, line_width, linestyles='dashed', colors=color_lst)
-
-                        # axs[y_counter, x_counter].legend(['emitter', 'chan2', 'chan3', 'chan4', 'chan5', 'chan6',
-                        # 'chan7', 'chan8'])
-                        axs[y_counter, x_counter].set_title(feature_select)
                     counter += 1  # update counter for next subplot
 
                 # Here we prepare the generated data matrix for the next level
