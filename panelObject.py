@@ -105,6 +105,12 @@ class Panel:
 
     def analyse_pzt(self):
         analyse_pzt(self.pzt_database, self.name)
+
+        lst = []
+        for folder in self.pzt_database:
+            for state in self.pzt_database[folder]:
+                lst.append(state.flatten_db())
+        print(lst)
         print(f"Successfully analysed PZT data for {self.name}.")
 
     def time_synchronise(self):

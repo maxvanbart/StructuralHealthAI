@@ -96,24 +96,40 @@ class StatePZT:
         folders = get_subfolders(location)
         subfolder_dict = dict()
         for folder in folders:
-            # print(folder[-19:])
             subfolders = get_subfolders(location + folder)
             subfolders = [StatePZT(x, location + folder) for x in subfolders]
             subfolder_dict[folder] = subfolders
         return subfolder_dict
 
     def analyse(self):
-        # print(self.name, self.state_number)
         for test in self.test_lst:
             test.load()
             test.analyse()
 
         for test in self.test_lst:
-            # ['amplitude']
-            # /!\ THIS USED TO RETURN THE MAX AMP DICT BUT THAT IS GONE FOR OBVIOUS REASONS /!\
             self.frequency_dict[test.frequency] = test.feature_dict
 
         return self.frequency_dict, self.state_number
+
+    def flatten_db(self):
+        print('Flattening')
+        dict2 = self.frequency_dict
+        if dict2 != {}:
+            dict1 = {x: flatten_act(dict2[x]) for x in dict2}
+            lst = []
+            for f in dict1:
+                n = int(f)
+                df = dict1[f]
+                df['frequency'] = n
+                lst.append(df)
+            big_df = lst[0]
+            lst = lst[1:]
+            for item in lst:
+                big_df = big_df.append(item, ignore_index=True)
+            big_df['time'] = self.start_time
+            return big_df
+        else:
+            return None
 
     def get_matlab_array(self):
         return self.test_lst
@@ -145,3 +161,17 @@ def convert_to_datetime(time):
 
     date_obj = datetime.datetime(year, month, day, hour, minute, second)
     return datetime.datetime.timestamp(date_obj)
+
+
+def flatten_act(dictionary):
+    lst = []
+    for actionneur in dictionary:
+        n = int(actionneur.strip('Actionneur'))
+        df = dictionary[actionneur]
+        df['actionneur'] = n
+        lst.append(df)
+    big_df = lst[0]
+    lst = lst[1:]
+    for item in lst:
+        big_df = big_df.append(item, ignore_index=True)
+    return big_df
