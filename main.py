@@ -11,8 +11,8 @@ if __name__ == "__main__":
     # initialize all the panels from the folders
     panels = Panel.initialize_all()
 
-    # shorten the list of panels which should be processed, comment to run through all panels
-    panels = panels[:1]
+    # shorten the list of panels which should be processed, comment to run through all panels.
+    # panels = panels[:1]
 
     # for every panel we perform the following actions
     for panel in tqdm.tqdm(panels, desc='Panel'):
@@ -23,6 +23,9 @@ if __name__ == "__main__":
         panel.load_luna()
         panel.analyse_luna()
         panel.plot_luna()
+        # panel.analyse_luna()
+        panel.load_pzt()
+        panel.analyse_pzt()
 
     # end time, it also prints the elapsed time
     t1 = time.time()

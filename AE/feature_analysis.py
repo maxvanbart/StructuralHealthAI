@@ -6,6 +6,8 @@ import psutil
 import pandas as pd
 from AE.hit_combination import batch_split
 import sklearn.cluster
+import pandas as pd
+import sklearn.cluster
 
 
 def freq_amp_energy_plot(database, ref_amp=10**(-5), title=None):
@@ -26,6 +28,27 @@ def freq_amp_energy_plot(database, ref_amp=10**(-5), title=None):
     cbar.set_label('Energy [$10^{-14}$ J]')
     plt.show()
 
+
+def energy_time_cluster(database, plotting=False):
+    features = database
+    energy, time = features["energy"], features["time"]
+    data = pd.concat([energy, time], axis=1)
+    labels = []
+    percent = np.percentile(energy, 95)
+    for i in energy:
+        if i > percent:
+            labels.append(1)
+        else:
+            labels.append(0)
+
+    if plotting:
+        plt.figure(figsize=(9, 7))
+        plt.xlabel("Time [$10^{2}$ s]")
+        plt.ylabel("Peak energy of emission [$10^{-14}$ J]")
+        plt.scatter(data["time"]/100, data["energy"], c=labels, s=1)
+        plt.show()
+
+    return labels
 
 def create_cluster_batches(df, delta=100, debug=False, debug_graph=False):
     print("Beginning feature clustering...")
