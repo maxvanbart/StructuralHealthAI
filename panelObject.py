@@ -100,6 +100,7 @@ class Panel:
         time_list = []
         for identifier in self.pzt_database:
             time_list += [x.start_time for x in self.pzt_database[identifier]]
+        time_list.sort()
         self.pzt_start_times = time_list
         print(self.pzt_start_times)
         print(f"Successfully loaded PZT data for {self.name}.")
