@@ -112,7 +112,6 @@ class StatePZT:
         return self.frequency_dict, self.state_number
 
     def flatten_db(self):
-        print('Flattening')
         dict2 = self.frequency_dict
         if dict2 != {}:
             dict1 = {x: flatten_act(dict2[x]) for x in dict2}

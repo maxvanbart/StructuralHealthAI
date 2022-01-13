@@ -130,6 +130,10 @@ class Panel:
         self.pzt_final_result = big_df
         print(f"Successfully analysed PZT data for {self.name}.")
 
+    def save_pzt(self):
+        location = 'Files/' + self.name + "/result-" + self.name + "-pzt.csv"
+        pd.DataFrame(self.pzt_final_result).to_csv(location, index=False)
+
     def time_synchronise(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
         pass
