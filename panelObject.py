@@ -31,6 +31,7 @@ class Panel:
         # PZT
         self.pzt_database = None
         self.pzt_start_times = None
+        self.pzt_final_result = None
 
     @staticmethod
     def initialize_all(debug=False, debug_graph=False):
@@ -126,7 +127,7 @@ class Panel:
         for item in lst:
             if item is not None:
                 big_df = big_df.append(item, ignore_index=True)
-        print(big_df)
+        self.pzt_final_result = big_df
         print(f"Successfully analysed PZT data for {self.name}.")
 
     def time_synchronise(self):
