@@ -125,16 +125,17 @@ class Panel:
 
         self.luna_database = [luna_data_left[:, 1: -1], luna_data_right[:, 1: -1]]
 
-        self.luna_time_labels = luna_data_left[:, 0]
+        self.luna_time_labels = luna_data_left[:, 0] - luna_data_left[0, 0]
         self.luna_length_labels = [labels_left, labels_right]
 
         print(f"Successfully loaded LUNA data for {self.name}...")
 
     def synchronise_luna(self):
         """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
-        sv, e = sync_time(self.ae_database.hits, self.luna_database[0], self.luna_file_vector, name=self.name)
+        sv, e = sync_time(self.ae_database.hits, self.luna_file_vector, self.luna_time_labels, name=self.name)
         self.luna_time_shift_vector = sv
         self.luna_time_shift_errors = e
+
         self.luna_time_labels = self.luna_time_labels + self.luna_time_shift_vector
 
         print(self.luna_time_shift_errors)
@@ -169,8 +170,8 @@ class Panel:
         image_left = (image_left_time + image_left_length) / 2
         image_right = (image_right_time + image_right_length) / 2
 
-        plot_clusters(image_left, image_right, len(self.luna_length_labels[0]), len(self.luna_length_labels[1]),
-                      len(self.luna_time_labels), self.luna_time_labels, self.name)
+        plot_clusters(image_left, image_right, self.luna_length_labels[0], self.luna_length_labels[1],
+                      self.luna_time_labels, self.name)
 
     def load_pzt(self):
         self.pzt_database = StatePZT.initialize_pzt(self.name)
