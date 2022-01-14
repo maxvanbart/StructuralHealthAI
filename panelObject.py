@@ -163,33 +163,6 @@ class Panel:
 
         print(f"Successfully analysed LUNA data for {self.name}...")
 
-    def visualize_all(self):
-        figure = plt.figure(tight_layout=True)
-        figure.suptitle(f'Panel {self.name}')
-
-        sub_figures = figure.subfigures(1, 1)
-
-        # LUNA left foot.
-        axs0 = sub_figures.subplots(3, 1, sharex=True, gridspec_kw={'height_ratios': [1, 1, 5]})
-        axs0[0].scatter(self.luna_database_filtered[0][:, 0], self.luna_database_filtered[0][:, 1],
-                        c=self.luna_database_filtered[0][:, 2], cmap='bwr')
-        axs0[0].set_ylabel('length [mm]')
-        axs0[0].set_title('LUNA left foot cluster')
-
-        # LUNA right foot.
-        axs0[1].scatter(self.luna_database_filtered[1][:, 0], self.luna_database_filtered[1][:, 1],
-                        c=self.luna_database_filtered[1][:, 2], cmap='bwr')
-        axs0[1].set_ylabel('length [mm]')
-        axs0[1].set_title('LUNA right foot cluster')
-
-        axs0[2].scatter(self.ae_clustered_database['time'], self.ae_clustered_database['energy'],
-                        c=self.ae_clustered_database['frequency_outlier'], cmap='bwr', s=4)
-        axs0[2].set_xlabel('time [s]')
-        axs0[2].set_ylabel('Energy [J]')
-        axs0[2].set_title('AE cluster')
-
-        plt.show()
-
     # All PZT related code for the object
     def load_pzt(self):
         self.pzt_database = StatePZT.initialize_pzt(self.name)
@@ -270,6 +243,33 @@ class Panel:
 
         print(f"Successfully analysed PZT data for {self.name}.")
 
+    def visualize_all(self):
+        figure = plt.figure(tight_layout=True)
+        figure.suptitle(f'Panel {self.name}')
+
+        sub_figures = figure.subfigures(1, 1)
+
+        # LUNA left foot.
+        axs0 = sub_figures.subplots(3, 1, sharex=True, gridspec_kw={'height_ratios': [1, 1, 5]})
+        axs0[0].scatter(self.luna_database_filtered[0][:, 0], self.luna_database_filtered[0][:, 1],
+                        c=self.luna_database_filtered[0][:, 2], cmap='bwr')
+        axs0[0].set_ylabel('length [mm]')
+        axs0[0].set_title('LUNA left foot cluster')
+
+        # LUNA right foot.
+        axs0[1].scatter(self.luna_database_filtered[1][:, 0], self.luna_database_filtered[1][:, 1],
+                        c=self.luna_database_filtered[1][:, 2], cmap='bwr')
+        axs0[1].set_ylabel('length [mm]')
+        axs0[1].set_title('LUNA right foot cluster')
+
+        axs0[2].scatter(self.ae_clustered_database['time'], self.ae_clustered_database['energy'],
+                        c=self.ae_clustered_database['frequency_outlier'], cmap='bwr', s=4)
+        axs0[2].set_xlabel('time [s]')
+        axs0[2].set_ylabel('Energy [J]')
+        axs0[2].set_title('AE cluster')
+
+        plt.show()
+
     def save_all(self):
         """Function to save all relevant data to file"""
         directory = f'{self.folder_parent}/Files/{self.name}/Clusters'
@@ -278,11 +278,13 @@ class Panel:
             os.makedirs(directory)
 
         LUNA_data_to_save = np.vstack((self.luna_database_filtered[0], self.luna_database_filtered[1]))
+        AE_data_to_save = pd.DataFrame(self.ae_clustered_database)
 
         with open(f'{directory}/LUNA.csv', 'w') as file:
             np.savetxt(file, LUNA_data_to_save, delimiter=',', fmt='%1.3f')
 
-        pd.DataFrame(self.ae_clustered_database).to_csv(f'{directory}/AE.csv', index=False)
+        with open(f'{directory}/AE.csv', 'w') as file:
+            AE_data_to_save.to_csv(file, index=False)
 
     def __repr__(self):
         return f"PanelObject({self.name})"
