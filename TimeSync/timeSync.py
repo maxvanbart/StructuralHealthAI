@@ -74,7 +74,7 @@ def sync_luna(ae_df, vector_luna_source, timestamps_luna, name='Generic Panel', 
     return vector_shifts, best_errors, ribbon_lst
 
 
-def sync_pzt(pzt_time, luna_time, ae_ribbons, pzt_file_count, name='Generic Panel'):
+def sync_pzt(pzt_time, luna_time, ae_ribbons, pzt_file_count, name='Generic Panel', graphing=False):
     pzt_time = np.array(pzt_time) - pzt_time[0]
 
     ####################
@@ -85,20 +85,18 @@ def sync_pzt(pzt_time, luna_time, ae_ribbons, pzt_file_count, name='Generic Pane
     pzt_time = pzt_time[pzt_file_count:]
 
     best_dt, best_error = calc_translation_coeff(pzt_time, luna_time, pzt_start_points)
-    # plt.scatter(pzt_start_points, [1] * len(pzt_start_points), c='g', s=4)
-    # plt.scatter(pzt_time, [1] * len(pzt_time), c='g', s=4)
 
+    if graphing:
+        pzt_time = pzt_time + best_dt
+        pzt_start_points = pzt_start_points + best_dt
+        plt.title(f"Time sync plot for panel {name}")
+        plt.xlabel("Time [s]")
+        plt.ylabel("404")
+        for ribbon in ae_ribbons:
+            plt.plot([ribbon.t_start, ribbon.t_end], [0, 0], 'b')
 
-    pzt_time = pzt_time + best_dt
-    pzt_start_points = pzt_start_points + best_dt
-    plt.title(f"Time sync plot for panel {name}")
-    plt.xlabel("Time [s]")
-    plt.ylabel("404")
-    for ribbon in ae_ribbons:
-        plt.plot([ribbon.t_start, ribbon.t_end], [0, 0], 'b')
-
-    plt.scatter(pzt_start_points, [0]*len(pzt_start_points), c='g', s=4)
-    plt.scatter(pzt_time, [0]*len(pzt_time), c='g', s=4)
-    plt.scatter(luna_time, [0]*len(luna_time), c='r', s=4)
-    plt.show()
+        plt.scatter(pzt_start_points, [0]*len(pzt_start_points), c='g', s=4)
+        plt.scatter(pzt_time, [0]*len(pzt_time), c='g', s=4)
+        plt.scatter(luna_time, [0]*len(luna_time), c='r', s=4)
+        plt.show()
     return best_dt, best_error
