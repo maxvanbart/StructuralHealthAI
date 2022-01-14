@@ -6,9 +6,12 @@ import os
 
 def file_to_array(panel, path):
     """
-    Opens file in default LUNA data format and converts this into left and right foot numpy arrays.
+    Opens file in default LUNA data format and converts this into left and right foot arrays.
     """
     def read_sensor_file():
+        """
+        Reads the sensor file and returns the relevant data for the specified panel.
+        """
         sensor_file = '/LUNA_sensor.txt'
         sensor_data = {}
 
@@ -22,9 +25,8 @@ def file_to_array(panel, path):
 
     def read_data_file():
         """
-        Creates the unconverted vector and feature label list to be used later.
+        Creates the unconverted array and feature label list to be used later.
         """
-
         with open(path) as file:
             lines = file.readlines()
             feature_labels_all = lines[0].strip().split('\t')
@@ -56,7 +58,7 @@ def file_to_array(panel, path):
 
     def convert_array(array):
         """
-        Changes all dates to timestamps_clustered, NaN strings to NaN values and remaining strings to floats.
+        Changes all dates to timestamps, NaN strings to NaN values and remaining strings to floats.
         """
         for i in range(len(array)):
             for j in range(len(array[i])):
@@ -84,7 +86,7 @@ def file_to_array(panel, path):
 
 def gradient_arrays(array):
     """
-    Returns the time derivative and the length derivative arrays of the data.
+    Returns tuple, first entry time derivative array, second entry the length derivative array.
     """
     time_derivative_array, length_derivative_array = np.gradient(array)
 
@@ -98,36 +100,9 @@ def gradient_arrays(array):
     return time_derivative_array, length_derivative_array
 
 
-def array_to_image(array):
-    """
-    Generates a new vector with each value in the original vector converted to an RGB color.
-    """
-    min_value, max_value = np.nanmin(array) / 4, np.nanmax(array) / 4
-
-    image = []
-
-    for i in range(len(array)):
-        image_row = []
-
-        for j in range(len(array[i])):
-
-            if array[i, j] <= 0:
-                image_column = [max(1 - (array[i, j] / min_value), 0), max(1 - (array[i, j] / min_value), 0), 1]
-            elif array[i, j] > 0:
-                image_column = [1, max(1 - (array[i, j] / max_value), 0), max(1 - (array[i, j] / max_value), 0)]
-            else:
-                image_column = [0, 0, 0]
-
-            image_row.append(image_column)
-
-        image.append(image_row)
-
-    return np.flip(np.transpose(image, (1, 0, 2)), axis=0)
-
-
 def folder_to_array(panel, path):
     """
-    Reads all files of a panel and converts the data to left foot and right foot numpy arrays.
+    Reads all files of a panel and converts them to left foot and right foot arrays.
     """
     files_all = os.listdir(path)
     files_data = []

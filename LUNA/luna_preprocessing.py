@@ -6,8 +6,13 @@ from sklearn.cluster import AgglomerativeClustering
 
 
 def cluster_array(timestamps, plot=False):
-
+    """
+    Clusters input array using the agglomerative clustering algorithm from Sklearn.
+    """
     def plot_cluster():
+        """
+        Plots cluster if required as a check.
+        """
         values = np.ones(len(timestamps))
 
         plt.scatter(timestamps, values, c=timestamps_clustered)
@@ -24,8 +29,13 @@ def cluster_array(timestamps, plot=False):
 
 
 def split_array(timestamps, timestamps_clustered, array, length=18, plot=False):
-
+    """
+    Splits the original array into smaller arrays based on their cluster and filters outliers.
+    """
     def plot_databases():
+        """
+        Plots each smaller array if required as a check.
+        """
         for n in range(len(array_split)):
             first_database_luna = array_split[n]
 
@@ -63,8 +73,14 @@ def split_array(timestamps, timestamps_clustered, array, length=18, plot=False):
 
 
 def filter_array(array, margin_start=20, margin_small=0.5, margin_medium=0.5, margin_big=0.1, length=18):
-
+    """
+    Each input array is filtered based on a predetermined pattern with margins. If the experimental data deviates from
+    its standard pattern this part should be checked thoroughly!
+    """
     def remove_outliers_start():
+        """
+        Random outliers at the start are removed to prevent misalignment later with the other data.
+        """
         cut_start = 0
 
         for i in range(len(timestamps)):
@@ -75,6 +91,9 @@ def filter_array(array, margin_start=20, margin_small=0.5, margin_medium=0.5, ma
         return timestamps[cut_start:], array[cut_start:]
 
     def remove_outliers_middle():
+        """
+        Removes outliers between all the data points that deviate from the standard pattern. Prone to error!
+        """
         intervals = [timestamps_filtered[i + 1] - timestamps_filtered[i] for i in range(len(timestamps_filtered) - 1)]
         intervals.insert(0, 0)
 
@@ -105,10 +124,10 @@ def filter_array(array, margin_start=20, margin_small=0.5, margin_medium=0.5, ma
             return np.delete(timestamps_filtered, index_to_be_removed), \
                    np.delete(array_filtered, index_to_be_removed, 0), False
 
-    # Getting timestamps from arrays.
+    # 1. getting timestamps from arrays.
     timestamps = array[:, 0]
 
-    # Getting the intervals from timestamps.
+    # 2. getting the intervals from timestamps (margins are predefined by input / default setting).
     intervals_np = [timestamps[i + 1] - timestamps[i] for i in range(len(timestamps) - 1)]
     intervals_pd = pd.DataFrame(intervals_np, dtype=float)
 
@@ -117,7 +136,7 @@ def filter_array(array, margin_start=20, margin_small=0.5, margin_medium=0.5, ma
     intervals_small = np.min(intervals_counts[:2])
     intervals_big = np.mean([i for i in intervals_counts if i > 2 * intervals_medium])
 
-    # Removing all outliers from database.
+    # 3. removing all outliers from database.
     timestamps_filtered, array_filtered = remove_outliers_start()
     timestamps_filtered, array_filtered, completed = remove_outliers_middle()
 
@@ -128,7 +147,10 @@ def filter_array(array, margin_start=20, margin_small=0.5, margin_medium=0.5, ma
 
 
 def preprocess_array(array, margin_start=20, margin_small=0.5, margin_medium=0.5, margin_big=0.1, length=18, plot=False):
-
+    """
+    This function calls the above functions to preprocess the input array into its correct filtered format ready
+    for time synchronisation.
+    """
     timestamps = array[:, 0] - array[0, 0]
     timestamps_clustered = cluster_array(timestamps, plot)
 

@@ -10,21 +10,21 @@ if __name__ == "__main__":
     # initialize all the panels from the folders
     panels = Panel.initialize_all()
 
-    # shorten the list of panels which should be processed, comment to run through all panels.
-    # panels = panels[4:]
-
     # for every panel we perform the following actions
     for panel in tqdm(panels, desc='Panel'):
         print('\n'+str(panel))
-        # Do AE stuff
+        # Prepare AE.
         panel.load_ae()
         panel.analyse_ae()
 
-        # Do LUNA stuff
+        # Prepare LUNA.
         panel.load_luna()
         panel.synchronise_luna()
         panel.analyse_luna()
-        # panel.visualize_luna()
+
+        # Plot and save all the clusters.
+        panel.visualize_all()
+        panel.save_all()
 
         # Do PZT stuff
         panel.load_pzt()
