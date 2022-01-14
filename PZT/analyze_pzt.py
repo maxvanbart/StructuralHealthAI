@@ -89,21 +89,21 @@ def make_clusters(database, all_clusters_graph=False, barplot=True):
         kmean_cluster.fit(act_lst)
         kmean_labels1 = kmean_cluster.labels_
         all_cluster_labels.append(kmean_labels1)
-        name = f'kmeans n={int(len(act_lst)*0.15)}'
+        name = f'kmeans n={int(len(act_lst)*0.1)}'
         names.append(name)
 
         kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.2), random_state=42)
         kmean_cluster.fit(act_lst)
         kmean_labels2 = kmean_cluster.labels_
         all_cluster_labels.append(kmean_labels2)
-        name = f'kmeans n={int(len(act_lst)*0.25)}'
+        name = f'kmeans n={int(len(act_lst)*0.2)}'
         names.append(name)
 
         kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.3), random_state=42)
         kmean_cluster.fit(act_lst)
         kmean_labels3 = kmean_cluster.labels_
         all_cluster_labels.append(kmean_labels3)
-        name = f'kmeans n={int(len(act_lst)*0.35)}'
+        name = f'kmeans n={int(len(act_lst)*0.3)}'
         names.append(name)
 
         aff_prop_cluster = cls.AffinityPropagation()
@@ -180,13 +180,7 @@ def make_clusters(database, all_clusters_graph=False, barplot=True):
         plt.plot(output_sum, ":", c="tab:brown")
         plt.show()
 
-    string_to_file = ""
-    string_to_file += "---------------------------------\n"
-    string_to_file += ("cluster labels output pzt\n")
-    string_to_file += ("---------------------------------\n")
-    string_to_file += f"Type 1: state(s) -> {[output_sum.index(item) for item in output_sum if item>0.75*max(output_sum)]}"
 
-    print(string_to_file)
 # ---------------------------------
 # output pzt----
 # --------------------------------
