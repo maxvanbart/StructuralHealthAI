@@ -59,6 +59,7 @@ class Panel:
         self.pzt_database = None
         self.pzt_clustered_database = None
         self.pzt_start_times = None
+        self.pzt_dt = None
 
     @staticmethod
     def initialize_all(debug=False, debug_graph=False, force_clustering=False):
@@ -263,7 +264,7 @@ class Panel:
             print("Successfully created PZT clustered .csv.")
 
         # call plotting function
-        make_clusters(self.pzt_clustered_database)
+        make_clusters(self.pzt_clustered_database, self.name)
 
         print(f"Successfully analysed PZT data for {self.name}.")
 
