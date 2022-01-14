@@ -179,13 +179,17 @@ def make_clusters(database, all_clusters_graph=False, barplot=True):
         plt.plot(output_sum, ":", c="tab:brown")
         plt.show()
 
+    string_to_file = ""
+    string_to_file += "---------------------------------\n"
+    string_to_file += ("cluster labels output pzt\n")
+    string_to_file += ("---------------------------------\n")
+    string_to_file += f"Type 1: state(s) -> {[output_sum.index(item) for item in output_sum if item>0.75*max(output_sum)]}"
 
-
-
+    print(string_to_file)
 # ---------------------------------
 # output pzt----
 # --------------------------------
-# type 1: state(s) -> 3, 4, 5, 9, 10 -- total 5
+# type 1: state(s) -> [3, 4, 5, 9, 10] -- total 5
 # type 2: state(s) -> 1, 2, 7, 8 -- total of 4
 # type 3: state(s) -> 11, 12, 13, 14 -- total of 4
 # -----------------------------------------------
