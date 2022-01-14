@@ -10,13 +10,13 @@ if __name__ == "__main__":
 
     # initialize all the panels from the folders
     panels = Panel.initialize_all()
-
+    panels = panels[:1]
     # for every panel we perform the following actions
     for panel in tqdm.tqdm(panels, desc='Panel'):
         print('\n'+str(panel))
         # Prepare AE.
-        # panel.load_ae()
-        # panel.analyse_ae()
+        panel.load_ae()
+        panel.analyse_ae()
 
         # Prepare LUNA.
         panel.load_luna()

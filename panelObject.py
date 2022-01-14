@@ -137,7 +137,7 @@ class Panel:
         sub_figures = figure.subfigures(1, 1)
 
         # LUNA left foot.
-        axs0 = sub_figures.subplots(3, 1, sharex=True)
+        axs0 = sub_figures.subplots(3, 1, sharex=True, gridspec_kw={'height_ratios': [1, 1, 5]})
         axs0[0].scatter(self.luna_database_filtered[0][:, 0], self.luna_database_filtered[0][:, 1],
                         c=self.luna_database_filtered[0][:, 2], cmap='bwr')
         axs0[0].set_ylabel('length [mm]')
@@ -149,12 +149,12 @@ class Panel:
         axs0[1].set_ylabel('length [mm]')
         axs0[1].set_title('LUNA right foot cluster')
 
-        # TODO: add correct AE cluster.
-        axs0[2].scatter(self.luna_database_filtered[1][:, 0], self.luna_database_filtered[1][:, 1],
-                        c=self.luna_database_filtered[1][:, 2], cmap='bwr')
+        axs0[2].scatter(self.ae_clustered_database['time'], self.ae_clustered_database['energy'],
+                        c=self.ae_clustered_database['frequency_outlier'], cmap='bwr', s=4)
         axs0[2].set_xlabel('time [s]')
-        axs0[2].set_ylabel('Energy [j]')
+        axs0[2].set_ylabel('Energy [J]')
         axs0[2].set_title('AE cluster')
+
 
         plt.show()
 
@@ -167,12 +167,10 @@ class Panel:
 
         LUNA_data_to_save = np.vstack((self.luna_database_filtered[0], self.luna_database_filtered[1]))
 
-        # TODO: add AE data to save.
-
         with open(f'{directory}/LUNA.csv', 'w') as file:
             np.savetxt(file, LUNA_data_to_save, delimiter=',', fmt='%1.3f')
 
-        # TODO: save AE data.
+        pd.DataFrame(self.ae_clustered_database).to_csv(f'{directory}/AE.csv', index=False)
 
     def __repr__(self):
         return f"PanelObject({self.name})"
