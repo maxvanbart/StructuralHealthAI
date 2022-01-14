@@ -22,14 +22,14 @@ if __name__ == "__main__":
         panel.synchronise_luna()
         panel.analyse_luna()
 
-        # Plot and save all the clusters.
-        panel.visualize_all()
-        panel.save_all()
-
         # Do PZT stuff
         panel.load_pzt()
         panel.synchronise_pzt()
         panel.analyse_pzt()
+
+        # Plot and save all the clusters.
+        panel.visualize_all()
+        panel.save_all()
 
     # end time, it also prints the elapsed time
     t1 = time.time()

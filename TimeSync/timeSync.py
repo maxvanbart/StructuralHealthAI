@@ -85,8 +85,8 @@ def sync_pzt(pzt_time, luna_time, ae_ribbons, pzt_file_count, name='Generic Pane
     pzt_time = pzt_time[pzt_file_count:]
 
     best_dt, best_error = calc_translation_coeff(pzt_time, luna_time, pzt_start_points)
-    plt.scatter(pzt_start_points, [1] * len(pzt_start_points), c='g', s=4)
-    plt.scatter(pzt_time, [1] * len(pzt_time), c='g', s=4)
+    # plt.scatter(pzt_start_points, [1] * len(pzt_start_points), c='g', s=4)
+    # plt.scatter(pzt_time, [1] * len(pzt_time), c='g', s=4)
 
 
     pzt_time = pzt_time + best_dt

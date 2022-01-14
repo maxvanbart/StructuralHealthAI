@@ -12,7 +12,6 @@ from AE.clustering import clustering_time_energy
 from PZT.analyze_pzt import analyse_pzt
 from PZT.load_pzt import StatePZT
 
-from LUNA.luna_data_to_array import folder_to_array, gradient_arrays, array_to_image
 from LUNA.luna_data_to_array import folder_to_array, gradient_arrays
 from LUNA.luna_array_to_cluster import array_to_cluster
 from LUNA.luna_preprocessing import preprocess_array

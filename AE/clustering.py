@@ -11,7 +11,6 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, normalize
 from sklearn.metrics import silhouette_score
 import scipy.cluster.hierarchy as shc
-from utilities.cluster_scoring import calinski_score, silhouette_score, davies_score
 
 
 def clustering(database):
