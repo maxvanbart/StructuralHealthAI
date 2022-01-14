@@ -84,7 +84,7 @@ def file_to_array(panel, path):
 
 def gradient_arrays(array):
     """
-    Returns tuple, first entry time derivative vector, second entry the length derivative vector.
+    Returns the time derivative and the length derivative arrays of the data.
     """
     time_derivative_array, length_derivative_array = np.gradient(array)
 
@@ -127,21 +127,23 @@ def array_to_image(array):
 
 def folder_to_array(panel, path):
     """
-    Reads all files of a panel and converts them to left foot and right foot numpy arrays.
+    Reads all files of a panel and converts the data to left foot and right foot numpy arrays.
     """
     files_all = os.listdir(path)
     files_data = []
 
+    # Put all files in 1 list
     for file in files_all:
         if file[:5] == panel:
             files_data.append(path + file)
 
+    # Create empty arrays to fill with data and setting the file counter to 0
     final_left_array, final_right_array = [], []
     final_file_vector = []
     left_labels, right_labels = [], []
-
     count = 0
 
+    # Go through all files and put the data in the final arrays using the file_to_array function
     for file in files_data:
         left_array, right_array, left_labels, right_labels = file_to_array(panel, file)
 
