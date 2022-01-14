@@ -15,12 +15,12 @@ if __name__ == "__main__":
     for panel in tqdm.tqdm(panels, desc='Panel'):
         print('\n'+str(panel))
         # Prepare AE.
-        panel.load_ae()
-        panel.analyse_ae()
+        # panel.load_ae()
+        # panel.analyse_ae()
 
         # Prepare LUNA.
         panel.load_luna()
-        panel.synchronise_luna()
+        # panel.synchronise_luna()
         panel.analyse_luna()
 
         # Plot and save all the clusters.
