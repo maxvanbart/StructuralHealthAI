@@ -244,19 +244,27 @@ class Panel:
 
         # LUNA left foot.
         axs0 = sub_figures.subplots(3, 1, sharex=True, gridspec_kw={'height_ratios': [1, 1, 5]})
-        axs0[0].scatter(self.luna_database_filtered[0][:, 0], self.luna_database_filtered[0][:, 1],
+        img1 = axs0[0].scatter(self.luna_database_filtered[0][:, 0], self.luna_database_filtered[0][:, 1],
                         c=self.luna_database_filtered[0][:, 2], cmap='bwr')
         axs0[0].set_ylabel('length [mm]')
         axs0[0].set_title('LUNA left foot cluster')
 
+        plt.colorbar(img1, label="<--compression/tension-->", location='top', shrink=0.4)
+
         # LUNA right foot.
-        axs0[1].scatter(self.luna_database_filtered[1][:, 0], self.luna_database_filtered[1][:, 1],
+        img2 = axs0[1].scatter(x=self.luna_database_filtered[1][:, 0], y=self.luna_database_filtered[1][:, 1],
                         c=self.luna_database_filtered[1][:, 2], cmap='bwr')
         axs0[1].set_ylabel('length [mm]')
         axs0[1].set_title('LUNA right foot cluster')
 
-        axs0[2].scatter(self.ae_clustered_database['time'], self.ae_clustered_database['energy'],
-                        c=self.ae_clustered_database['frequency_outlier'], cmap='bwr', s=4)
+        # AE cluster.
+        axs0[2].scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == -1],
+                        self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == -1],
+                        c='red', s=4, label='frequency-amp outliers')
+        axs0[2].scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == 0],
+                        self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == 0],
+                        c='blue', s=4, label='frequency-amp normal')
+        axs0[2].legend()
         axs0[2].set_xlabel('time [s]')
         axs0[2].set_ylabel('Energy [J]')
         axs0[2].set_title('AE cluster')
