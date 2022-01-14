@@ -186,18 +186,18 @@ def make_clusters(database, all_clusters_graph=False, barplot=True):
         if item > 0.9*max(output_sum):
             list_to_file[0].append(numb+1)
             continue
-        elif item > 0.7 * max(output_sum):
+        elif item > 0.5 * max(output_sum):
             list_to_file[1].append(numb + 1)
             continue
-        list_to_file[2].append(item+1)
+        list_to_file[2].append(numb+1)
 
     string_to_file = "\n"
     string_to_file += "---------------------------------\n"
     string_to_file += "cluster labels output pzt\n"
     string_to_file += "---------------------------------\n"
-    string_to_file += f"Type 1: state(s) -> {list_to_file[0]}\n"
-    string_to_file += f"Type 2: state(s) -> {list_to_file[1]}\n"
-    string_to_file += f"Type 3: state(s) -> {list_to_file[2]}\n"
+    string_to_file += f"Type 1: state(s) -> {list_to_file[0]} -- total of {len(list_to_file[0])} state(s)\n"
+    string_to_file += f"Type 2: state(s) -> {list_to_file[1]} -- total of {len(list_to_file[1])} state(s)\n"
+    string_to_file += f"Type 3: state(s) -> {list_to_file[2]} -- total of {len(list_to_file[2])} state(s)\n"
     string_to_file += "---------------------------------\n"
     string_to_file += "The higher the type the less interesting the state is\n \n"
     print(string_to_file)
