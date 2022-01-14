@@ -151,7 +151,7 @@ class Panel:
             print("Successfully created PZT clustered .csv.")
 
         # call plotting function
-        make_clusters(self.pzt_clustered_database)
+        make_clusters(self.pzt_clustered_database, self.name)
 
         print(f"Successfully analysed PZT data for {self.name}.")
 
