@@ -6,9 +6,12 @@ import os
 
 def file_to_array(panel, path):
     """
-    Opens file in default LUNA data format and converts this into left and right foot numpy arrays.
+    Opens file in default LUNA data format and converts this into left and right foot arrays.
     """
     def read_sensor_file():
+        """
+        Reads the sensor file and returns the relevant data for the specified panel.
+        """
         sensor_file = '/LUNA_sensor.txt'
         sensor_data = {}
 
@@ -22,9 +25,8 @@ def file_to_array(panel, path):
 
     def read_data_file():
         """
-        Creates the unconverted vector and feature label list to be used later.
+        Creates the unconverted array and feature label list to be used later.
         """
-
         with open(path) as file:
             lines = file.readlines()
             feature_labels_all = lines[0].strip().split('\t')
@@ -56,7 +58,7 @@ def file_to_array(panel, path):
 
     def convert_array(array):
         """
-        Changes all dates to timestamps_clustered, NaN strings to NaN values and remaining strings to floats.
+        Changes all dates to timestamps, NaN strings to NaN values and remaining strings to floats.
         """
         for i in range(len(array)):
             for j in range(len(array[i])):
@@ -84,7 +86,7 @@ def file_to_array(panel, path):
 
 def gradient_arrays(array):
     """
-    Returns tuple, first entry time derivative vector, second entry the length derivative vector.
+    Returns tuple, first entry time derivative array, second entry the length derivative array.
     """
     time_derivative_array, length_derivative_array = np.gradient(array)
 
@@ -100,7 +102,7 @@ def gradient_arrays(array):
 
 def folder_to_array(panel, path):
     """
-    Reads all files of a panel and converts them to left foot and right foot numpy arrays.
+    Reads all files of a panel and converts them to left foot and right foot arrays.
     """
     files_all = os.listdir(path)
     files_data = []

@@ -2,6 +2,9 @@ import numpy as np
 
 
 def filter_array(array, array_cluster, array_row_labels, array_column_labels):
+    """
+    Checks original array with clustered array and returns only the relevant data determined by the clustering.
+    """
     array_filtered = []
     rows, columns = array.shape
 

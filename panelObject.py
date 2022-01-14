@@ -6,8 +6,6 @@ import numpy as np
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import freq_amp_cluster, all_features_cluster, create_cluster_batches, energy_time_cluster, freq_amp_energy_plot
-from AE.clustering import clustering_time_energy
 
 from LUNA.luna_data_to_array import folder_to_array, gradient_arrays
 from LUNA.luna_array_to_cluster import array_to_cluster
@@ -84,13 +82,6 @@ class Panel:
             pd.DataFrame(self.ae_clustered_database).to_csv(location, index=False)
         self.ae_clustered_database = self.ae_clustered_database.sort_values(by=['time'])
 
-        # self.ae_database.corr_matrix()
-        # freq_amp_cluster(self.ae_clustered_database)
-        # all_features_cluster(self.ae_clustered_database)
-        # freq_amp_time_cluster(self.ae_clustered_database)
-        # energy_time_cluster(self.ae_clustered_database)
-        # freq_amp_energy_plot(self.ae_database.hits, title="Frequency, amplitude and energy for uncombined randomly sampled emissions in the L1-03 panel")
-
         print(f"Successfully analysed AE data for {self.name}...")
 
     # All the LUNA related code for the object
@@ -123,7 +114,6 @@ class Panel:
 
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
-
         # 1. get time and length derivatives.
         left_time, left_length = gradient_arrays(self.luna_database[0])
         right_time, right_length = gradient_arrays(self.luna_database[1])
