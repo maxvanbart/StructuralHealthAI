@@ -137,14 +137,15 @@ class Panel:
                     big_df = big_df.append(item, ignore_index=True)
 
             # add state number
-            time_list, state_list = set(big_df["time"]), list(range(1, len(set(big_df["time"])) + 1))
+            time_list, state_list = list(big_df["time"].drop_duplicates()), list(range(1, len(set(big_df["time"])) + 1))
+            time_list.sort()
             state_column = big_df["time"].rename({'time': 'state'}, axis=1).replace(time_list, state_list)
             big_df["state"] = state_column
 
             # reorder and sort big_df on time
             self.pzt_clustered_database = big_df[['time', 'state', 'frequency', 'actionneur', 'max_amp', 'min_amp',
                                                  'avg_abs_amp', 'relative_amp', 'duration', 'rise_time', 'travel_time',
-                                                 'energy', 'avg_freq']].sort_values(by=['time'])
+                                                 'energy', 'avg_freq']].sort_values(by=['time', "actionneur"])
             pd.DataFrame(self.pzt_clustered_database).to_csv(location, index=False)
             print("Successfully created PZT clustered .csv.")
 

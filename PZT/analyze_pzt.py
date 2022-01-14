@@ -145,7 +145,7 @@ def make_clusters(database, all_clusters_graph=False, barplot=True):
     selected_features = ['relative_amp', 'duration', "avg_freq"]
 
     # column list for selection in database
-    col_list = ["state", "frequency"] + selected_features
+    col_list = ["state", "frequency", "actionneur"] + selected_features
 
     # only select frequency
     freq_filtered = database.loc[database['frequency'] == selected_frequency]
@@ -154,7 +154,15 @@ def make_clusters(database, all_clusters_graph=False, barplot=True):
     selected_data = freq_filtered[col_list]
 
 
-    pass
+    exit()
+
+    cluster_list_data = []
+    for state in selected_data["state"].drop_duplicates():
+        state_lst = []
+        state_data = selected_data.loc[selected_data["state"] == state]
+        for act in state_data["actionneur"].drop_duplicates():
+            act_data = state_data.loc[state_data["actionneur"] == act]
+
     # create the array for the clustering
     cluster_list_data = np.array(cluster_list_data)
     names = []  # ["kmeans n=4", "kmeans n=7", ...]
