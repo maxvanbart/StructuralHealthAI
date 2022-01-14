@@ -104,7 +104,7 @@ class Panel:
         self.pzt_start_times = time_list
         print(f"Successfully loaded PZT data for {self.name}.")
 
-    def analyse_pzt(self, force_clustering=False):
+    def analyse_pzt(self, force_clustering=True):
         location = 'Files/' + self.name + "/PZT/" + self.name + "_PZT-clustered.csv"
 
         try:
@@ -146,11 +146,13 @@ class Panel:
             self.pzt_clustered_database = big_df[['time', 'state', 'frequency', 'actionneur', 'max_amp', 'min_amp',
                                                  'avg_abs_amp', 'relative_amp', 'duration', 'rise_time', 'travel_time',
                                                  'energy', 'avg_freq']].sort_values(by=['time', "actionneur"])
+
             pd.DataFrame(self.pzt_clustered_database).to_csv(location, index=False)
             print("Successfully created PZT clustered .csv.")
 
         # call plotting function
         make_clusters(self.pzt_clustered_database)
+
         print(f"Successfully analysed PZT data for {self.name}.")
 
     def time_synchronise(self):

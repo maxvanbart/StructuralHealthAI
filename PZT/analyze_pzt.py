@@ -4,9 +4,6 @@ from tqdm import tqdm
 from matplotlib import pyplot as plt
 import sklearn.cluster as cls
 
-from PZT.load_pzt import StatePZT
-
-
 # this function only works if multiple states are present in the files. Set the count value correctly
 def analyse_pzt(pzt_database, graphing=False, time_check=False):
     # for every run we will do a seperate analysis
@@ -47,91 +44,6 @@ def analyse_pzt(pzt_database, graphing=False, time_check=False):
             plt.title("check if it is a strait line if not, time sync is wrong")
             plt.show()
 
-        ###########################################
-        #  # * # * #   Code of Niels   # * # * #  #
-        ###########################################
-        # should be possible to make this into a neater function, like input
-        # all_frequency = [50000, 100000, 125000, 150000, 200000, 250000]
-        # This list should in the final product only contain the 'useful frequencies'
-        all_frequency = [250000]
-
-        # Only useful features should be contained in this list for the final product
-        # all_features = ['max_amp', 'min_amp', 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time',
-        #                 'travel_time', 'energy']
-        all_features = ['relative_amp', 'duration', 'rise_time', 'travel_time', 'energy', "avg_freq"]
-        all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
-                        "Actionneur7", "Actionneur8"]
-        # all_channels = ["Actionneur1"]
-
-        hits = {}
-        for freq_select in all_frequency:  # loop over all the different frequencies
-            for channel_select in all_channels:  # loop over all of the channels
-                if channel_select not in hits:
-                    hits[channel_select] = []
-                outliers_channels = None
-
-                if graphing:
-                    fig, axs = plt.subplots(2, 4)  # y, x
-                    fig.suptitle(f'different features for emitter {channel_select} and with a frequency {freq_select}',
-                                 fontsize=16)
-                counter = 0  # counter to know where to plot the plot
-                for feature_select in all_features:  # loop over features, max of 8 features possible
-                    state_to_plot = np.array([])
-
-                    state_select_list = list(range(1, len(frequency_array_dict[freq_select]) + 1))
-                    for state_select in state_select_list:
-
-                        # loop over all the states, start at state 1 till end
-                        feature_output = get_feature(frequency_array_dict, state_select, freq_select, channel_select,
-                                                     feature_select)
-                        # function to get all of the features for selected parameters
-                        if state_to_plot.shape == (0,):  # if empty initialize
-                            state_to_plot = feature_output
-                        else:  # else go stacking for different states
-                            state_to_plot = np.vstack((state_to_plot, feature_output))
-
-                    counter += 1  # update counter for next subplot
-
-                # Here we prepare the generated data matrix for the next level
-                if outliers_channels is not None:
-                    outliers_channels = np.transpose(outliers_channels)
-                    hits[channel_select].append(outliers_channels)
-
-                if graphing:
-                    plt.show()
-
-        # # Here we combine the dictionary of margin violations to pull conclusions about the timestamps
-        # # where changes in the panel properties occur
-        # hits_processed = {}
-        # for y in hits:
-        #     hit = sum(hits[y])
-        #     # hit = np.sum(hit, axis=1)
-        #     # print(hit)
-        #     hits_processed[y] = hit
-        #     hits_df = pd.DataFrame(data=hit, columns=all_features)
-        #
-        #     ax = hits_df.plot.bar(rot=1, stacked=True)
-        #     plt.title(f'Margin violations for different measurements of {y} on panel {panel_name}.')
-        #     plt.show()
-        #
-        #     # for y in
-        #     # plt.bar(range(hit.shape[0]), hit)
-        #     # plt.title(f'Margin violations for different measurements of {y}.')
-        #     # plt.show()
-
-        # return hits_processed
-
-
-def get_feature(freq_dict, state, freq_select, channel_select, feature_select):
-    """select a frequency and state, select a channel and a feature
-        returns the feature as a np.array"""
-    state_select = state - 1
-    features_dict_for_each_channel = freq_dict[freq_select][state_select][1]  # enter dictionary with freq and state
-
-    channel_df = features_dict_for_each_channel[channel_select]  # get dataFrame with channel
-    feature_output = channel_df[feature_select]  # get features output with selected feature
-    return np.array(feature_output)  # convert to numpy array
-
 
 def make_clusters(database, all_clusters_graph=False, barplot=True):
     """
@@ -142,7 +54,7 @@ def make_clusters(database, all_clusters_graph=False, barplot=True):
     returns: all of the interesting points of the clusters and the name of each cluster used.
     """
     selected_frequency = 250000
-    selected_features = ['relative_amp', 'duration', "avg_freq", "energy"]
+    selected_features = ['relative_amp', 'duration', "avg_freq"]
 
     # column list for selection in database
     col_list = ["state", "frequency", "actionneur"] + selected_features
@@ -257,14 +169,17 @@ def make_clusters(database, all_clusters_graph=False, barplot=True):
         total_sum_list.append(sum_list)
 
     change_df = pd.DataFrame(data=np.array(total_sum_list).T, columns=names[0:n_algorithms], index=range(1, len(act_lst)+1))
+    output_sum = np.sum(total_sum_list, axis=0)
+
     if barplot:
         ax = change_df.plot.bar(rot=1, stacked=True)
         plt.title("State vs amount of cluster hits")
         plt.xlabel("State.no")
         plt.ylabel("Amount of clusters")
-        plt.plot(np.sum(total_sum_list, axis=0), c="tab:brown")
+        plt.plot(output_sum, ":", c="tab:brown")
         plt.show()
-    return change_array, names
+
+
 
 
 # ---------------------------------
