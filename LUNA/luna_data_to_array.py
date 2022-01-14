@@ -29,7 +29,8 @@ def file_to_array(panel, path):
         """
         with open(path) as file:
             lines = file.readlines()
-            feature_labels_all = lines[0].strip().split('\t')
+            lines = lines[4:]
+            feature_labels_all = lines[0].strip().split('\t')[1:]
 
             data_lists_left = []
             data_lists_right = []

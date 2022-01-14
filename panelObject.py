@@ -23,13 +23,18 @@ files_folder = "Files"
 
 class Panel:
     """An object which represents a panel"""
-    def __init__(self, name, debug=False, debug_graph=False, force_clustering=False, plotting=False):
+    def __init__(self, name, debug=False, force_clustering=False, force_saving=False, plotting=False):
         # General
         self.name = name
         self.debug = debug
-        self.debug_graph = debug_graph
         self.force_clustering = force_clustering
+        self.force_saving = force_saving
         self.plotting = plotting
+
+        # Results
+        self.results_directory = 'Files/' + self.name + '/Results'
+        if not os.path.exists(self.results_directory):
+            os.makedirs(self.results_directory)
 
         # AE
         self.ae_database = None
@@ -60,7 +65,7 @@ class Panel:
         self.pzt_dt = None
 
     @staticmethod
-    def initialize_all(debug=False, debug_graph=False, force_clustering=False, plotting=False):
+    def initialize_all(debug=False, force_clustering=False, plotting=False):
         """A static method which checks the folders present and generates a Panel object for every folder"""
         if force_clustering:
             print("Force clustering is set to True, all datafiles will be regenerated...")
@@ -69,7 +74,7 @@ class Panel:
 
         for entry in entries:
             if entry.is_dir():
-                lst.append(Panel(entry.name, debug=debug, debug_graph=debug_graph, force_clustering=force_clustering,plotting=plotting))
+                lst.append(Panel(entry.name, debug=debug, force_clustering=force_clustering))
         return lst
 
     # All the AE related code for the object
@@ -87,7 +92,7 @@ class Panel:
         try:
             if self.force_clustering:
                 raise FileNotFoundError
-            self.ae_clustered_database = pd.read_csv(location)
+            self.ae_clustered_database = pd.read_csv(self.results_directory + "/AE.csv")
             print(f"Successfully loaded clustered AE data for {self.name}.")
         except FileNotFoundError:
             print('Clustered file not found, clustering data...')
@@ -105,8 +110,6 @@ class Panel:
             self.ae_clustered_database["frequency_outlier"] = freq_amp_cluster(self.ae_clustered_database)
             # adding extracted features and clusters
             print(f"Clustering completed for {self.name}, features and clusters being added to database...")
-            # create new CSV
-            pd.DataFrame(self.ae_clustered_database).to_csv(location, index=False)
         self.ae_clustered_database = self.ae_clustered_database.sort_values(by=['time'])
 
         print(f"Successfully analysed AE data for {self.name}.")
@@ -129,7 +132,7 @@ class Panel:
         print(f"Successfully loaded LUNA data for {self.name}...")
 
     def synchronise_luna(self):
-        """Function which takes all the internal variables related to the seperate sensors and time synchronises them"""
+        """Function which takes all the internal variables related to the separate sensors and time synchronises them"""
         sv, e, rb = sync_luna(self.ae_database.hits, self.luna_file_vector, self.luna_time_labels, name=self.name)
         self.luna_time_shift_vector = sv
         self.luna_time_shift_errors = e
@@ -176,13 +179,11 @@ class Panel:
         print(f"This synchronization gives an error of {best_error}.")
 
     def analyse_pzt(self):
-        location = 'Files/' + self.name + "/PZT/" + self.name + "_PZT-clustered.csv"
-
         try:
             if self.force_clustering:
                 raise FileNotFoundError
             print(f"Successfully loaded clustered PZT data for {self.name}.")
-            self.pzt_clustered_database = pd.read_csv(location)
+            self.pzt_clustered_database = pd.read_csv(self.results_directory + "/PZT.csv")
         except FileNotFoundError:
             print('Clustered PZT file not found, clustering data...')
             # The part where all the data is analyzed
@@ -229,8 +230,7 @@ class Panel:
                                                  'avg_abs_amp', 'relative_amp', 'duration', 'rise_time', 'travel_time',
                                                  'energy', 'avg_freq']].sort_values(by=['time', "actionneur"])
 
-            pd.DataFrame(self.pzt_clustered_database).to_csv(location, index=False)
-            print("Successfully created PZT clustered .csv.")
+            print("Successfully created PZT database.")
 
         # call plotting function
         make_clusters(self.pzt_clustered_database, self.name)
@@ -275,19 +275,26 @@ class Panel:
 
     def save_all(self):
         """Function to save all relevant data to file"""
-        directory = f'{self.folder_parent}/Files/{self.name}/Clusters'
-
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        directory = self.results_directory
 
         LUNA_data_to_save = np.vstack((self.luna_database_filtered[0], self.luna_database_filtered[1]))
-        AE_data_to_save = pd.DataFrame(self.ae_clustered_database)
+        AE_data_to_save = self.ae_clustered_database
+        PZT_data_to_save = self.pzt_clustered_database
 
-        with open(f'{directory}/LUNA.csv', 'w') as file:
-            np.savetxt(file, LUNA_data_to_save, delimiter=',', fmt='%1.3f')
+        if not f'{directory}/LUNA.csv'.is_file() or self.force_saving:
+            with open(f'{directory}/LUNA.csv', 'w') as file:
+                np.savetxt(file, LUNA_data_to_save, delimiter=',', fmt='%1.3f')
+                print("Successfully created LUNA .csv.")
 
-        with open(f'{directory}/AE.csv', 'w') as file:
-            AE_data_to_save.to_csv(file, index=False)
+        if not f'{directory}/LUNA.csv'.is_file() or self.force_saving:
+            with open(f'{directory}/AE.csv', 'w') as file:
+                AE_data_to_save.to_csv(file, index=False)
+                print("Successfully created AE .csv.")
+
+        if not f'{directory}/LUNA.csv'.is_file() or self.force_saving:
+            with open(f'{directory}/PZT.csv', 'w') as file:
+                PZT_data_to_save.to_csv(file, index=False)
+                print("Successfully created PZT .csv.")
 
     def __repr__(self):
         return f"PanelObject({self.name})"
