@@ -31,7 +31,6 @@ class Panel:
         self.force_clustering = force_clustering
 
         # AE
-        self.ae_start_time = None
         self.ae_database = None
         self.ae_clustered_database = None
         self.ae_ribbons = None
@@ -51,7 +50,6 @@ class Panel:
         self.luna_time_shift_vector = None
 
         self.folder_parent = os.path.dirname(__file__)
-        self.folder_ae = None
         self.folder_luna = self.folder_parent + f'/Files/{self.name}/LUNA/'
 
         # PZT
