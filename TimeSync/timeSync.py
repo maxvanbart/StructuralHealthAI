@@ -86,7 +86,6 @@ def sync_pzt(pzt_time, luna_time, ae_ribbons, pzt_file_count, name='Generic Pane
         pzt_start_points = pzt_start_points + best_dt
         plt.title(f"Time sync plot for panel {name}")
         plt.xlabel("Time [s]")
-        plt.ylabel("404")
         for ribbon in ae_ribbons:
             plt.plot([ribbon.t_start, ribbon.t_end], [0, 0], 'b')
 

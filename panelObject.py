@@ -23,12 +23,13 @@ files_folder = "Files"
 
 class Panel:
     """An object which represents a panel"""
-    def __init__(self, name, debug=False, debug_graph=False, force_clustering=False):
+    def __init__(self, name, debug=False, debug_graph=False, force_clustering=False, plotting=False):
         # General
         self.name = name
         self.debug = debug
         self.debug_graph = debug_graph
         self.force_clustering = force_clustering
+        self.plotting = plotting
 
         # AE
         self.ae_database = None
@@ -59,7 +60,7 @@ class Panel:
         self.pzt_dt = None
 
     @staticmethod
-    def initialize_all(debug=False, debug_graph=False, force_clustering=False):
+    def initialize_all(debug=False, debug_graph=False, force_clustering=False, plotting=False):
         """A static method which checks the folders present and generates a Panel object for every folder"""
         if force_clustering:
             print("Force clustering is set to True, all datafiles will be regenerated...")
@@ -68,7 +69,7 @@ class Panel:
 
         for entry in entries:
             if entry.is_dir():
-                lst.append(Panel(entry.name, debug=debug, debug_graph=debug_graph, force_clustering=force_clustering))
+                lst.append(Panel(entry.name, debug=debug, debug_graph=debug_graph, force_clustering=force_clustering,plotting=plotting))
         return lst
 
     # All the AE related code for the object
@@ -170,7 +171,7 @@ class Panel:
         pzt_time = self.pzt_start_times
         luna_time = self.luna_time_labels
         filecount = len(self.pzt_database)
-        self.pzt_dt, best_error = sync_pzt(pzt_time, luna_time, self.ae_ribbons, filecount, name=self.name)
+        self.pzt_dt, best_error = sync_pzt(pzt_time, luna_time, self.ae_ribbons, filecount, name=self.name, graphing=self.plotting)
         print(f"PZT data should be shifted by {self.pzt_dt} seconds in order to achieve the best synchronization.")
         print(f"This synchronization gives an error of {best_error}.")
 
