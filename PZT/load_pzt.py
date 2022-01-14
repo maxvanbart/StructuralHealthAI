@@ -138,7 +138,7 @@ class StatePZT:
         return f"StatePZT({self.name})"
 
     def __lt__(self, other):  # added this for ordering of dictionary keys
-        if self.start_time < other.start_time:  # select on date
+        if self.start_time < other.start_time:  # select on date/time
             return True
         return False
 

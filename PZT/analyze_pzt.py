@@ -4,11 +4,8 @@ from tqdm import tqdm
 from matplotlib import pyplot as plt
 import sklearn.cluster as cls
 
-from PZT.load_pzt import StatePZT
-
-
 # this function only works if multiple states are present in the files. Set the count value correctly
-def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, time_check=False):
+def analyse_pzt(pzt_database, graphing=False, time_check=False):
     # for every run we will do a seperate analysis
     count = 0
     for run in sorted(pzt_database):
@@ -47,169 +44,91 @@ def analyse_pzt(pzt_database, panel_name, graphing=False, plot_violation=False, 
             plt.title("check if it is a strait line if not, time sync is wrong")
             plt.show()
 
-        ###########################################
-        #  # * # * #   Code of Niels   # * # * #  #
-        ###########################################
-        # should be possible to make this into a neater function, like input
-        # all_frequency = [50000, 100000, 125000, 150000, 200000, 250000]
-        # This list should in the final product only contain the 'useful frequencies'
-        all_frequency = [250000]
 
-        # Only useful features should be contained in this list for the final product
-        # all_features = ['max_amp', 'min_amp', 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time',
-        #                 'travel_time', 'energy']
-        all_features = ['relative_amp', 'duration', 'rise_time', 'travel_time', 'energy', "avg_freq"]
-        all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
-                        "Actionneur7", "Actionneur8"]
-        # all_channels = ["Actionneur1"]
+def make_clusters(database, all_clusters_graph=False, barplot=True):
+    """
+    input: database
+    working: clusters all of the data on the selection below. If one emitter is not usefull remove from the list.
+             if all_clusters_graph is True, shows a graph of all clusters, so it is visible what states belong together
+             if barplot is True, shows the bar plot with interesting data and states
+    returns: all of the interesting points of the clusters and the name of each cluster used.
+    """
+    selected_frequency = 250000
+    selected_features = ['relative_amp', 'duration', "avg_freq"]
 
-        hits = {}
-        for freq_select in all_frequency:  # loop over all the different frequencies
-            for channel_select in all_channels:  # loop over all of the channels
-                if channel_select not in hits:
-                    hits[channel_select] = []
-                outliers_channels = None
-                header_channels = None
+    # column list for selection in database
+    col_list = ["state", "frequency", "actionneur"] + selected_features
 
-                if graphing:
-                    fig, axs = plt.subplots(2, 4)  # y, x
-                    fig.suptitle(f'different features for emitter {channel_select} and with a frequency {freq_select}',
-                                 fontsize=16)
-                counter = 0  # counter to know where to plot the plot
-                for feature_select in all_features:  # loop over features, max of 8 features possible
-                    state_to_plot = np.array([])
+    # only select frequency
+    freq_filtered = database.loc[database['frequency'] == selected_frequency]
 
-                    state_select_list = list(range(1, len(frequency_array_dict[freq_select]) + 1))
-                    for state_select in state_select_list:
+    # merge into output list
+    selected_data = freq_filtered[col_list]
 
-                        # loop over all the states, start at state 1 till end
-                        feature_output = get_feature(frequency_array_dict, state_select, freq_select, channel_select,
-                                                     feature_select)
-                        # function to get all of the features for selected parameters
-                        if state_to_plot.shape == (0,):  # if empty initialize
-                            state_to_plot = feature_output
-                        else:  # else go stacking for different states
-                            state_to_plot = np.vstack((state_to_plot, feature_output))
+    # create a list of dataframes that contain the features per actionneur
+    cluster_list = []
+    for act in selected_data["actionneur"].drop_duplicates():
+        act_lst = []
+        act_data = selected_data.loc[selected_data["actionneur"] == act]
+        for state in act_data["state"].drop_duplicates():
+            state_data = act_data.loc[act_data["state"] == state]
+            act_lst.append(state_data)
+        cluster_list.append(act_data)
 
-                    counter += 1  # update counter for next subplot
-
-                # Here we prepare the generated data matrix for the next level
-                if outliers_channels is not None:
-                    outliers_channels = np.transpose(outliers_channels)
-                    hits[channel_select].append(outliers_channels)
-
-                if graphing:
-                    plt.show()
-
-        # # Here we combine the dictionary of margin violations to pull conclusions about the timestamps
-        # # where changes in the panel properties occur
-        # hits_processed = {}
-        # for y in hits:
-        #     hit = sum(hits[y])
-        #     # hit = np.sum(hit, axis=1)
-        #     # print(hit)
-        #     hits_processed[y] = hit
-        #     hits_df = pd.DataFrame(data=hit, columns=all_features)
-        #
-        #     ax = hits_df.plot.bar(rot=1, stacked=True)
-        #     plt.title(f'Margin violations for different measurements of {y} on panel {panel_name}.')
-        #     plt.show()
-        #
-        #     # for y in
-        #     # plt.bar(range(hit.shape[0]), hit)
-        #     # plt.title(f'Margin violations for different measurements of {y}.')
-        #     # plt.show()
-
-        # return hits_processed
-
-
-def get_feature(freq_dict, state, freq_select, channel_select, feature_select):
-    """select a frequency and state, select a channel and a feature
-        returns the feature as a np.array"""
-    state_select = state - 1
-    features_dict_for_each_channel = freq_dict[freq_select][state_select][1]  # enter dictionary with freq and state
-
-    channel_df = features_dict_for_each_channel[channel_select]  # get dataFrame with channel
-    feature_output = channel_df[feature_select]  # get features output with selected feature
-    return np.array(feature_output)  # convert to numpy array
-
-
-def make_clusters(freq_dict, graphing=False):
-    frequency = 200000
-    features = ['relative_amp', 'duration', "avg_freq"]
-    # features = ['duration']
-    all_channels = ["Actionneur1", "Actionneur2", "Actionneur3", "Actionneur4", "Actionneur5", "Actionneur6",
-                    "Actionneur7", "Actionneur8"]  # select emitter
-    # all_channels = ["Actionneur1"]
-
-    state_select_list = list((range(1, len(freq_dict[frequency]) + 1)))
-
-
-    # select "time" column, turn into set, and check length
-
-    # looping over all of the stuff
-    cluster_list_data = []
-    for state in state_select_list:
-        channel_list_data = []
-        for channel in all_channels:
-
-            for feature in features:
-
-                # output shape is list of length 8
-                feature_data = get_feature(freq_dict, state, frequency, channel, feature)
-                channel_list_data.append(list(feature_data))
-                # 3
-        help_list = [item for sublist in channel_list_data for item in sublist]
-        cluster_list_data.append(help_list)
-        # 8
-    # 32
-
-# (32, 192)
     # create the array for the clustering
-    cluster_list_data = np.array(cluster_list_data)
-
+    names = []  # ["kmeans n=4", "kmeans n=7", ...]
     all_cluster_labels = []
-    # do the clustering itself
-    kmean_cluster = cls.KMeans(n_clusters=7, random_state=42)
-    kmean_cluster.fit(cluster_list_data)
-    kmean_labels = kmean_cluster.labels_
-    # print(f'labels of kmeans are {kmean_labels}')
-    all_cluster_labels.append(kmean_labels)
-    plt.plot(kmean_labels, label="kmeans n=7")
+    n_algorithms = 0
+    act_lst = []
+    for ndx, act in enumerate(cluster_list):
+        act_lst = []
+        for state in act["state"].drop_duplicates():
+            state_data = act.loc[act["state"] == state]
+            act_lst.append(state_data.to_numpy().flatten())
+        kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.1), random_state=42)
+        kmean_cluster.fit(act_lst)
+        kmean_labels1 = kmean_cluster.labels_
+        all_cluster_labels.append(kmean_labels1)
+        name = f'kmeans n={int(len(act_lst)*0.1)}'
+        names.append(name)
 
-    kmean_cluster = cls.KMeans(n_clusters=5, random_state=42)
-    kmean_cluster.fit(cluster_list_data)
-    kmean_labels = kmean_cluster.labels_
-    # print(f'labels of kmeans are {kmean_labels}')
-    all_cluster_labels.append(kmean_labels)
-    plt.plot(kmean_labels, label="kmeans n=5")
+        kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.2), random_state=42)
+        kmean_cluster.fit(act_lst)
+        kmean_labels2 = kmean_cluster.labels_
+        all_cluster_labels.append(kmean_labels2)
+        name = f'kmeans n={int(len(act_lst)*0.2)}'
+        names.append(name)
 
-    kmean_cluster = cls.KMeans(n_clusters=10, random_state=42)
-    kmean_cluster.fit(cluster_list_data)
-    kmean_labels = kmean_cluster.labels_
-    # print(f'labels of kmeans are {kmean_labels}')
-    all_cluster_labels.append(kmean_labels)
-    plt.plot(kmean_labels, label="kmeans n=10")
+        kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.3), random_state=42)
+        kmean_cluster.fit(act_lst)
+        kmean_labels3 = kmean_cluster.labels_
+        all_cluster_labels.append(kmean_labels3)
+        name = f'kmeans n={int(len(act_lst)*0.3)}'
+        names.append(name)
 
-    aff_prop_cluster = cls.AffinityPropagation()
-    aff_prop_cluster.fit(cluster_list_data)
-    aff_prop_labels = aff_prop_cluster.labels_
-    # print(f'labels of affinity propagation are {aff_prop_labels}')
-    all_cluster_labels.append(aff_prop_labels)
-    plt.plot(aff_prop_labels, label="aff_prop")
+        aff_prop_cluster = cls.AffinityPropagation()
+        aff_prop_cluster.fit(act_lst)
+        aff_prop_labels = aff_prop_cluster.labels_
+        all_cluster_labels.append(aff_prop_labels)
+        name = "aff_prop"
+        names.append(name)
 
-    # mean_shift_cluster = cls.MeanShift()
-    # mean_shift_cluster.fit(cluster_list_data)
-    # mean_shift_labels = mean_shift_cluster.labels_
-    # plt.plot(mean_shift_labels, label="mean_shift")
+        optics_cluster = cls.OPTICS()
+        optics_cluster.fit(act_lst)
+        optics_labels = optics_cluster.labels_
+        all_cluster_labels.append(optics_labels)
+        name = "OPTICS"
+        names.append(name)
 
-    optics_cluster = cls.OPTICS()
-    optics_cluster.fit(cluster_list_data)
-    optics_labels = optics_cluster.labels_
-    all_cluster_labels.append(optics_labels)
-    plt.plot(optics_labels, label="OPTICS")
+        if n_algorithms == 0:
+            n_algorithms = len(names)
 
-    if graphing:
+    if all_clusters_graph:
+        for i in range(len(names)):
+            plt.plot(all_cluster_labels[i], label=names[i])
+        plt.xlabel("State no.")
+        plt.ylabel("label no.")
+        plt.title("All groups clusters, if change of label no. \n that means a change of data, so interesting point")
         plt.legend()
         plt.show()
 
@@ -240,3 +159,45 @@ def make_clusters(freq_dict, graphing=False):
             changes.append(change)
 
         changelst.append(changes)
+
+    change_array = np.array(changelst)
+
+    total_sum_list = []
+    for i in range(n_algorithms):
+        list_to_add = change_array[i::n_algorithms]
+        sum_list = np.sum(list_to_add, axis=0)
+        total_sum_list.append(sum_list)
+
+    change_df = pd.DataFrame(data=np.array(total_sum_list).T, columns=names[0:n_algorithms], index=range(1, len(act_lst)+1))
+    output_sum = np.sum(total_sum_list, axis=0)
+
+    if barplot:
+        ax = change_df.plot.bar(rot=1, stacked=True)
+        plt.title("State vs amount of cluster hits")
+        plt.suptitle(f'For the following features: {selected_features}')
+        plt.xlabel("State.no")
+        plt.ylabel("Amount of clusters")
+        plt.plot(output_sum, ":", c="tab:brown")
+        plt.show()
+
+    list_to_file = [[], [], []]
+    # 90%, 70%, else
+    for numb, item in enumerate(output_sum):
+        if item > 0.9*max(output_sum):
+            list_to_file[0].append(numb+1)
+            continue
+        elif item > 0.7 * max(output_sum):
+            list_to_file[1].append(numb + 1)
+            continue
+        list_to_file[2].append(item+1)
+
+    string_to_file = "\n"
+    string_to_file += "---------------------------------\n"
+    string_to_file += "cluster labels output pzt\n"
+    string_to_file += "---------------------------------\n"
+    string_to_file += f"Type 1: state(s) -> {list_to_file[0]}\n"
+    string_to_file += f"Type 2: state(s) -> {list_to_file[1]}\n"
+    string_to_file += f"Type 3: state(s) -> {list_to_file[2]}\n"
+    string_to_file += "---------------------------------\n"
+    string_to_file += "The higher the type the less interesting the state is\n \n"
+    print(string_to_file)

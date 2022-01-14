@@ -9,7 +9,7 @@ from AE.feature_analysis import energy_time_cluster, freq_amp_cluster
 from AE.feature_extraction import frequency_extraction
 from AE.clustering import clustering_time_energy
 
-from PZT.analyze_pzt import analyse_pzt
+from PZT.analyze_pzt import analyse_pzt, make_clusters
 from PZT.load_pzt import StatePZT
 
 from LUNA.luna_data_to_array import folder_to_array, gradient_arrays
@@ -245,11 +245,23 @@ class Panel:
                 if item is not None:
                     big_df = big_df.append(item, ignore_index=True)
 
-            self.pzt_clustered_database = big_df
+            # add state number
+            time_list, state_list = list(big_df["time"].drop_duplicates()), list(range(1, len(set(big_df["time"])) + 1))
+            time_list.sort()
+            state_column = big_df["time"].rename({'time': 'state'}, axis=1).replace(time_list, state_list)
+            big_df["state"] = state_column
+
+            # reorder and sort big_df on time
+            self.pzt_clustered_database = big_df[['time', 'state', 'frequency', 'actionneur', 'max_amp', 'min_amp',
+                                                 'avg_abs_amp', 'relative_amp', 'duration', 'rise_time', 'travel_time',
+                                                 'energy', 'avg_freq']].sort_values(by=['time', "actionneur"])
+
             pd.DataFrame(self.pzt_clustered_database).to_csv(location, index=False)
             print("Successfully created PZT clustered .csv.")
 
         # call plotting function
+        make_clusters(self.pzt_clustered_database)
+
         print(f"Successfully analysed PZT data for {self.name}.")
 
     def save_all(self):
