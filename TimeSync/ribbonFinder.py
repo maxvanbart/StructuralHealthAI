@@ -30,13 +30,10 @@ def sort_ribbons(bins, trange, bin_width, max_gap=0):
     # Here we trigger all ribons to update their defining properties using the bins that they are associated with
     for ribbon in ribbon_lst:
         ribbon.update()
-    print(f"Generated {len(ribbon_lst)} ribbons...")
-
     return ribbon_lst
 
 
 def purge_ribbons(ribbon_lst):
-    l0 = len(ribbon_lst)
     # Here we sort out all ribbons with a width less than 3 as these widths are never associated with actual ribbons
     ribbon_lst = [x for x in ribbon_lst if x.width > 3]
 
@@ -47,6 +44,4 @@ def purge_ribbons(ribbon_lst):
         mean_width = np.mean(ribbon_width_lst)
         ribbon_lst = [x for x in ribbon_lst if x.width > mean_width]
         ribbon_width_lst = [x.width for x in ribbon_lst]
-    l1 = len(ribbon_lst)
-    print(f"Purged {round(100*(abs(l0-l1)/l0), 3)}% of ribbons...")
     return ribbon_lst

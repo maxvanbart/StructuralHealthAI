@@ -32,8 +32,3 @@ class Ribbon:
 
     def __repr__(self):
         return f"Ribbon({self.bin_width})"
-
-
-class Entry:
-    def __init__(self):
-        self.name = 'Hans'

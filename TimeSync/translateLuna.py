@@ -25,8 +25,6 @@ def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector, final_time, grap
     for index in indexes:
         groups[index] = np.array(grouped.get_group(index))[:, 0]
 
-    print("Loaded LUNA data...")
-
     best_dts = {}
     error_dicts = {}
     best_errors = {}
@@ -36,7 +34,6 @@ def calc_translation_coeffs(luna_data, ribbon_lst, luna_vector, final_time, grap
         # t0 = group_data[0]
 
         error_dict, best_dt, best_error = explore(error_dict, group_data, edge_list, final_time)
-        print("Finished calculating absolute errors...")
         error_dicts[group] = error_dict
         best_dts[group] = best_dt
         best_errors[group] = best_error

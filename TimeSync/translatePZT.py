@@ -3,7 +3,6 @@ from matplotlib import pyplot as plt
 
 
 def calc_translation_coeff(pzt_time, luna_time, pzt_start_point, graphing=False):
-    """"""
     lst = []
     # Fill the list with the gaps between the LUNA points
     for i in range(len(luna_time) - 1):
@@ -43,7 +42,6 @@ def calc_translation_coeff(pzt_time, luna_time, pzt_start_point, graphing=False)
         plt.xlabel("Time shift dt [s]")
         plt.ylabel("Error [-]")
         plt.show()
-
     return best_dt, error_dict[best_dt]
 
 

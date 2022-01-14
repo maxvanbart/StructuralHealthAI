@@ -11,31 +11,28 @@ from TimeSync.translatePZT import calc_translation_coeff
 def sync_luna(ae_df, vector_luna_source, timestamps_luna, name='Generic Panel', bin_width=1, graphing=False):
     # Convert the AE dataframe to a numpy array
     array = np.array(ae_df)
-
     # Convert luna vector to vector
     vector_luna_source = np.transpose(np.array([vector_luna_source]))
 
     # Determine the highest value of t and use it to create the bins which will be used
     final_time = ae_df[ae_df['time'] == ae_df['time'].max()]
     final_time = int(np.ceil(np.array(final_time['time'])[0]) + 1)
-    print(f"Final value of t: {final_time}...")
 
     # Initialize the bins for the bin based method.
     bin_count = int(np.ceil(final_time / bin_width))
     bins = [0] * bin_count
 
+    # Fill the bins for the bin based method
     for row in list(array):
         # x is the time (t) at which this point occurs
         x = row[0]
         # y is the index of the bin in which this point should be sorted
         y = int(x // bin_width)
         bins[y] += 1
-    print("Finished sorting to bins...")
 
     # This function is used to combine all the bins into data ribbons
     trange = range(0, bin_count)
     ribbon_lst = sort_ribbons(bins, trange, bin_width)
-
     # remove all ribbons which are abnormally small
     ribbon_lst = purge_ribbons(ribbon_lst)
 
@@ -70,13 +67,11 @@ def sync_luna(ae_df, vector_luna_source, timestamps_luna, name='Generic Panel', 
         plt.xlabel("Time [s]")
         plt.ylabel("404")
         plt.show()
-
     return vector_shifts, best_errors, ribbon_lst
 
 
 def sync_pzt(pzt_time, luna_time, ae_ribbons, pzt_file_count, name='Generic Panel', graphing=False):
     pzt_time = np.array(pzt_time) - pzt_time[0]
-
     ####################
     # DATA EXPLORATION #
     ####################
