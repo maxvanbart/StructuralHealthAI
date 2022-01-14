@@ -269,6 +269,7 @@ class Panel:
         axs0[2].set_xlabel('time [s]')
         axs0[2].set_ylabel('Energy [J]')
         axs0[2].set_title('AE cluster')
+        axs0[2].vlines(np.array(self.pzt_start_times)+self.pzt_dt-self.pzt_start_times[0], 50000, 300000, colors='g')
 
         plt.show()
 
