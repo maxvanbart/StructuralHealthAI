@@ -142,7 +142,7 @@ def make_clusters(database, all_clusters_graph=False, barplot=True):
     returns: all of the interesting points of the clusters and the name of each cluster used.
     """
     selected_frequency = 250000
-    selected_features = ['relative_amp', 'duration', "avg_freq"]
+    selected_features = ['relative_amp', 'duration', "avg_freq", "energy"]
 
     # column list for selection in database
     col_list = ["state", "frequency", "actionneur"] + selected_features
@@ -153,56 +153,63 @@ def make_clusters(database, all_clusters_graph=False, barplot=True):
     # merge into output list
     selected_data = freq_filtered[col_list]
 
-
-    exit()
-
-    cluster_list_data = []
-    for state in selected_data["state"].drop_duplicates():
-        state_lst = []
-        state_data = selected_data.loc[selected_data["state"] == state]
-        for act in state_data["actionneur"].drop_duplicates():
-            act_data = state_data.loc[state_data["actionneur"] == act]
+    # create a list of dataframes that contain the features per actionneur
+    cluster_list = []
+    for act in selected_data["actionneur"].drop_duplicates():
+        act_lst = []
+        act_data = selected_data.loc[selected_data["actionneur"] == act]
+        for state in act_data["state"].drop_duplicates():
+            state_data = act_data.loc[act_data["state"] == state]
+            act_lst.append(state_data)
+        cluster_list.append(act_data)
 
     # create the array for the clustering
-    cluster_list_data = np.array(cluster_list_data)
     names = []  # ["kmeans n=4", "kmeans n=7", ...]
-
     all_cluster_labels = []
-    # do the clustering itself
-    kmean_cluster = cls.KMeans(n_clusters=int(len(state_select_list)*0.1), random_state=42)
-    kmean_cluster.fit(cluster_list_data)
-    kmean_labels1 = kmean_cluster.labels_
-    all_cluster_labels.append(kmean_labels1)
-    name = f'kmeans n={int(len(state_select_list)*0.1)}'
-    names.append(name)
+    n_algorithms = 0
+    act_lst = []
+    for ndx, act in enumerate(cluster_list):
+        act_lst = []
+        for state in act["state"].drop_duplicates():
+            state_data = act.loc[act["state"] == state]
+            act_lst.append(state_data.to_numpy().flatten())
+        kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.1), random_state=42)
+        kmean_cluster.fit(act_lst)
+        kmean_labels1 = kmean_cluster.labels_
+        all_cluster_labels.append(kmean_labels1)
+        name = f'kmeans n={int(len(act_lst)*0.1)}'
+        names.append(name)
 
-    kmean_cluster = cls.KMeans(n_clusters=int(len(state_select_list)*0.2), random_state=42)
-    kmean_cluster.fit(cluster_list_data)
-    kmean_labels2 = kmean_cluster.labels_
-    all_cluster_labels.append(kmean_labels2)
-    name = f'kmeans n={int(len(state_select_list)*0.2)}'
-    names.append(name)
+        kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.2), random_state=42)
+        kmean_cluster.fit(act_lst)
+        kmean_labels2 = kmean_cluster.labels_
+        all_cluster_labels.append(kmean_labels2)
+        name = f'kmeans n={int(len(act_lst)*0.2)}'
+        names.append(name)
 
-    kmean_cluster = cls.KMeans(n_clusters=int(len(state_select_list)*0.3), random_state=42)
-    kmean_cluster.fit(cluster_list_data)
-    kmean_labels3 = kmean_cluster.labels_
-    all_cluster_labels.append(kmean_labels3)
-    name = f'kmeans n={int(len(state_select_list)*0.3)}'
-    names.append(name)
+        kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.3), random_state=42)
+        kmean_cluster.fit(act_lst)
+        kmean_labels3 = kmean_cluster.labels_
+        all_cluster_labels.append(kmean_labels3)
+        name = f'kmeans n={int(len(act_lst)*0.3)}'
+        names.append(name)
 
-    aff_prop_cluster = cls.AffinityPropagation()
-    aff_prop_cluster.fit(cluster_list_data)
-    aff_prop_labels = aff_prop_cluster.labels_
-    all_cluster_labels.append(aff_prop_labels)
-    name = "aff_prop"
-    names.append(name)
+        aff_prop_cluster = cls.AffinityPropagation()
+        aff_prop_cluster.fit(act_lst)
+        aff_prop_labels = aff_prop_cluster.labels_
+        all_cluster_labels.append(aff_prop_labels)
+        name = "aff_prop"
+        names.append(name)
 
-    optics_cluster = cls.OPTICS()
-    optics_cluster.fit(cluster_list_data)
-    optics_labels = optics_cluster.labels_
-    all_cluster_labels.append(optics_labels)
-    name = "OPTICS"
-    names.append(name)
+        optics_cluster = cls.OPTICS()
+        optics_cluster.fit(act_lst)
+        optics_labels = optics_cluster.labels_
+        all_cluster_labels.append(optics_labels)
+        name = "OPTICS"
+        names.append(name)
+
+        if n_algorithms == 0:
+            n_algorithms = len(names)
 
     if all_clusters_graph:
         for i in range(len(names)):
@@ -242,15 +249,20 @@ def make_clusters(database, all_clusters_graph=False, barplot=True):
         changelst.append(changes)
 
     change_array = np.array(changelst)
-    change_array_sum = np.sum(change_array, axis=0)
 
-    change_df = pd.DataFrame(data=change_array.T, columns=names, index=range(1, len(state_select_list)+1))
+    total_sum_list = []
+    for i in range(n_algorithms):
+        list_to_add = change_array[i::n_algorithms]
+        sum_list = np.sum(list_to_add, axis=0)
+        total_sum_list.append(sum_list)
+
+    change_df = pd.DataFrame(data=np.array(total_sum_list).T, columns=names[0:n_algorithms], index=range(1, len(act_lst)+1))
     if barplot:
         ax = change_df.plot.bar(rot=1, stacked=True)
         plt.title("State vs amount of cluster hits")
         plt.xlabel("State.no")
         plt.ylabel("Amount of clusters")
-        plt.plot(change_array_sum, c="tab:brown")
+        plt.plot(np.sum(total_sum_list, axis=0), c="tab:brown")
         plt.show()
     return change_array, names
 
