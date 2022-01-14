@@ -5,7 +5,7 @@ import numpy as np
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import energy_time_cluster, freq_amp_cluster
+from AE.feature_analysis import energy_time_cluster, freq_amp_cluster, freq_amp_energy_plot
 from AE.feature_extraction import frequency_extraction
 from AE.clustering import clustering_time_energy
 
