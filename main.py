@@ -2,7 +2,7 @@ import time
 from tqdm import tqdm
 from panelObject import Panel
 
-# this line is needed in case we decide to implement multithreading
+# This line is needed for implementing multi-threading
 if __name__ == "__main__":
     # start time
     t0 = time.time()
