@@ -5,9 +5,8 @@ import numpy as np
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import energy_time_cluster, freq_amp_cluster, freq_amp_energy_plot
+from AE.feature_analysis import energy_time_cluster, freq_amp_cluster
 from AE.feature_extraction import frequency_extraction
-from AE.clustering import clustering_time_energy
 
 from PZT.analyze_pzt import analyse_pzt, make_clusters
 from PZT.load_pzt import StatePZT
@@ -110,10 +109,6 @@ class Panel:
             # create new CSV
             pd.DataFrame(self.ae_clustered_database).to_csv(location, index=False)
         self.ae_clustered_database = self.ae_clustered_database.sort_values(by=['time'])
-
-        # self.ae_database.corr_matrix()
-        # energy_time_cluster(self.ae_clustered_database, plotting=True)
-        # batch_fre_amp_clst(self.ae_clustered_database)
 
         print(f"Successfully analysed AE data for {self.name}.")
 
