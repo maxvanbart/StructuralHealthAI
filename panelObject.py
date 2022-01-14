@@ -140,7 +140,6 @@ class Panel:
         self.luna_time_labels = self.luna_time_labels + self.luna_time_shift_vector
         self.ae_ribbons = rb
 
-        print(self.luna_time_shift_errors)
         print(f"Successfully synchronized time for {self.name}...")
 
     def analyse_luna(self):

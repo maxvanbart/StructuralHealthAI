@@ -81,17 +81,23 @@ def sync_pzt(pzt_time, luna_time, ae_ribbons, pzt_file_count, name='Generic Pane
     # DATA EXPLORATION #
     ####################
     # There always seem to be n shitty nodes, these can be disregarded during file syncing
+    pzt_start_points = pzt_time[:pzt_file_count]
     pzt_time = pzt_time[pzt_file_count:]
 
-    best_dt, best_error = calc_translation_coeff(pzt_time, luna_time)
+    best_dt, best_error = calc_translation_coeff(pzt_time, luna_time, pzt_start_points)
+    plt.scatter(pzt_start_points, [1] * len(pzt_start_points), c='g', s=4)
+    plt.scatter(pzt_time, [1] * len(pzt_time), c='g', s=4)
+
 
     pzt_time = pzt_time + best_dt
-    plt.title(name)
+    pzt_start_points = pzt_start_points + best_dt
+    plt.title(f"Time sync plot for panel {name}")
     plt.xlabel("Time [s]")
     plt.ylabel("404")
     for ribbon in ae_ribbons:
         plt.plot([ribbon.t_start, ribbon.t_end], [0, 0], 'b')
 
+    plt.scatter(pzt_start_points, [0]*len(pzt_start_points), c='g', s=4)
     plt.scatter(pzt_time, [0]*len(pzt_time), c='g', s=4)
     plt.scatter(luna_time, [0]*len(luna_time), c='r', s=4)
     plt.show()
