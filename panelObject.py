@@ -155,7 +155,6 @@ class Panel:
         axs0[2].set_ylabel('Energy [J]')
         axs0[2].set_title('AE cluster')
 
-
         plt.show()
 
     def save_all(self):
@@ -166,11 +165,13 @@ class Panel:
             os.makedirs(directory)
 
         LUNA_data_to_save = np.vstack((self.luna_database_filtered[0], self.luna_database_filtered[1]))
+        AE_data_to_save = pd.DataFrame(self.ae_clustered_database)
 
         with open(f'{directory}/LUNA.csv', 'w') as file:
             np.savetxt(file, LUNA_data_to_save, delimiter=',', fmt='%1.3f')
 
-        pd.DataFrame(self.ae_clustered_database).to_csv(f'{directory}/AE.csv', index=False)
+        with open(f'{directory}/AE.csv', 'w') as file:
+            AE_data_to_save.to_csv(file, index=False)
 
     def __repr__(self):
         return f"PanelObject({self.name})"
