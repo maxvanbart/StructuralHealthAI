@@ -63,6 +63,8 @@ class Panel:
     @staticmethod
     def initialize_all(debug=False, debug_graph=False, force_clustering=False):
         """A static method which checks the folders present and generates a Panel object for every folder"""
+        if force_clustering:
+            print("Force clustering is set to True, all datafiles will be regenerated...")
         entries = os.scandir(files_folder)
         lst = []
 

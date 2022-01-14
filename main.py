@@ -8,7 +8,7 @@ if __name__ == "__main__":
     t0 = time.time()
 
     # initialize all the panels from the folders
-    panels = Panel.initialize_all()
+    panels = Panel.initialize_all(force_clustering=True)
 
     # for every panel we perform the following actions
     for panel in tqdm(panels, desc='Panel'):
