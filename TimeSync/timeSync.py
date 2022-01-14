@@ -20,7 +20,7 @@ def sync_luna(ae_df, vector_luna_source, timestamps_luna, name='Generic Panel', 
     final_time = int(np.ceil(np.array(final_time['time'])[0]) + 1)
     print(f"Final value of t: {final_time}...")
 
-    # Initialize the bins for the bin based method
+    # Initialize the bins for the bin based method.
     bin_count = int(np.ceil(final_time / bin_width))
     bins = [0] * bin_count
 
