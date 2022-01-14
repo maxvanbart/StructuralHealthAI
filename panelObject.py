@@ -204,8 +204,8 @@ class Panel:
         pzt_time = self.pzt_start_times
         luna_time = self.luna_time_labels
         filecount = len(self.pzt_database)
-        pzt_dt, best_error = sync_pzt(pzt_time, luna_time, self.ae_ribbons, filecount, name=self.name)
-        print(f"PZT data should be shifted by {pzt_dt} seconds in order to achieve the best synchronization.")
+        self.pzt_dt, best_error = sync_pzt(pzt_time, luna_time, self.ae_ribbons, filecount, name=self.name)
+        print(f"PZT data should be shifted by {self.pzt_dt} seconds in order to achieve the best synchronization.")
         print(f"This synchronization gives an error of {best_error}.")
 
     def analyse_pzt(self):
@@ -256,6 +256,8 @@ class Panel:
             big_df["state"] = state_column
 
             # reorder and sort big_df on time
+            big_df['time'] = big_df['time'] - min(big_df['time'])
+            big_df['time'] = big_df['time'] + self.pzt_dt
             self.pzt_clustered_database = big_df[['time', 'state', 'frequency', 'actionneur', 'max_amp', 'min_amp',
                                                  'avg_abs_amp', 'relative_amp', 'duration', 'rise_time', 'travel_time',
                                                  'energy', 'avg_freq']].sort_values(by=['time', "actionneur"])
