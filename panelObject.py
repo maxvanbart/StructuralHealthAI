@@ -24,11 +24,12 @@ files_folder = "Files"
 
 class Panel:
     """An object which represents a panel"""
-    def __init__(self, name, debug=False, debug_graph=False):
+    def __init__(self, name, debug=False, debug_graph=False, force_clustering=False):
         # General
         self.name = name
         self.debug = debug
         self.debug_graph = debug_graph
+        self.force_clustering = force_clustering
 
         # AE
         self.ae_start_time = None
@@ -60,14 +61,14 @@ class Panel:
         self.pzt_start_times = None
 
     @staticmethod
-    def initialize_all(debug=False, debug_graph=False):
+    def initialize_all(debug=False, debug_graph=False, force_clustering=False):
         """A static method which checks the folders present and generates a Panel object for every folder"""
         entries = os.scandir(files_folder)
         lst = []
 
         for entry in entries:
             if entry.is_dir():
-                lst.append(Panel(entry.name, debug=debug, debug_graph=debug_graph))
+                lst.append(Panel(entry.name, debug=debug, debug_graph=debug_graph, force_clustering=force_clustering))
         return lst
 
     # All the AE related code for the object
@@ -78,12 +79,12 @@ class Panel:
         # print(self.ae_database.hits)
         print(f"Successfully loaded AE data for {self.name}...")
 
-    def analyse_ae(self, force_clustering=False):
+    def analyse_ae(self):
         """Function to analyse the AE data in the folder"""
         # Try to find a clustered file else cluster the data
         location = 'Files/' + self.name + "/AE/" + self.name + "-clustered.csv"
         try:
-            if force_clustering:
+            if self.force_clustering:
                 raise FileNotFoundError
             self.ae_clustered_database = pd.read_csv(location)
             print(f"Successfully loaded clustered AE data for {self.name}.")
@@ -204,11 +205,11 @@ class Panel:
         print(f"PZT data should be shifted by {pzt_dt} seconds in order to achieve the best synchronization.")
         print(f"This synchronization gives an error of {best_error}.")
 
-    def analyse_pzt(self, force_clustering=False):
+    def analyse_pzt(self):
         location = 'Files/' + self.name + "/PZT/" + self.name + "_PZT-clustered.csv"
 
         try:
-            if force_clustering:
+            if self.force_clustering:
                 raise FileNotFoundError
             print(f"Successfully loaded clustered PZT data for {self.name}.")
             self.pzt_clustered_database = pd.read_csv(location)
