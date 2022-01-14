@@ -11,6 +11,9 @@ def scaling(array):
 
 
 def k_means(array, n=5, scaled=True):
+    """
+    Clustering function using the Sklearn KMeans function. Returns the labels of the data and a list of unique labels.
+    """
     # scale array
     if scaled:
         array = scaling(array)
@@ -83,12 +86,17 @@ def davies_score(array, labels):  # if needed could be called independent
 
 
 def array_to_cluster(array_time_left, array_time_right, array_length_left, array_length_right):
+    """
+    Clusters the LUNA data to find the useful data using K-means clustering. Returns the cluster labels for both stringer feet.
+    """
     array_time = np.hstack((array_time_left, array_time_right))
     array_length = np.hstack((array_length_left, array_length_right))
 
+    # Using the k_means clustering function to cluster the data. Hyperparameters are set in that function
     cluster_time, cluster_time_values = k_means(array_time.reshape(-1, 1))
     cluster_length, cluster_length_values = k_means(array_length. reshape(-1, 1))
 
+    # Combining the clustering of the time and length derivatives and reshaping them to the shape of the data.
     cluster = cluster_time.reshape(array_time.shape) + cluster_length.reshape(array_length.shape)
     split = array_time_left.shape[1]
     cluster_left, cluster_right = cluster[:, :split], cluster[:, split:]
