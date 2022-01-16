@@ -4,6 +4,7 @@ from tqdm import tqdm
 from matplotlib import pyplot as plt
 import sklearn.cluster as cls
 
+
 # this function only works if multiple states are present in the files. Set the count value correctly
 def analyse_pzt(pzt_database, graphing=False, time_check=False):
     # for every run we will do a separate analysis
@@ -203,3 +204,6 @@ def make_clusters(database, panel_name, all_clusters_graph=False, barplot=True):
         string_to_file += "---------------------------------\n"
         string_to_file += "The higher the type the less interesting the state is\n \n"
 
+        tree = f"Files/{panel_name}/PZT/"
+        with open(tree+f"pzt_output_clustering_{panel_name}.txt", "w+") as f:
+            f.write(string_to_file)
