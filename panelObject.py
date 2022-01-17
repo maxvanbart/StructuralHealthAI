@@ -74,7 +74,7 @@ class Panel:
 
         for entry in entries:
             if entry.is_dir():
-                lst.append(Panel(entry.name, debug=debug, force_clustering=force_clustering))
+                lst.append(Panel(entry.name, debug=debug, force_clustering=force_clustering, plotting=plotting))
         return lst
 
     # All the AE related code for the object
