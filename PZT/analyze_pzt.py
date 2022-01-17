@@ -6,7 +6,7 @@ import sklearn.cluster as cls
 
 
 # this function only works if multiple states are present in the files. Set the count value correctly
-def analyse_pzt(pzt_database, graphing=False, time_check=False):
+def analyse_pzt(pzt_database, time_check=False):
     # for every run we will do a separate analysis
     count = 0
     for run in sorted(pzt_database):
@@ -46,15 +46,15 @@ def analyse_pzt(pzt_database, graphing=False, time_check=False):
             plt.show()
 
 
-def make_clusters(database, panel_name, all_clusters_graph=False, barplot=False):
+def make_clusters(database, panel_name, all_clusters_graph=False, barplot=True, selected_frequencies=[250000]):
     """
-    input: database
+    input: database, panel name
     working: clusters all of the data on the selection below. If one emitter is not usefull remove from the list.
              if all_clusters_graph is True, shows a graph of all clusters, so it is visible what states belong together
              if barplot is True, shows the bar plot with interesting data and states
     returns: all of the interesting points of the clusters and the name of each cluster used.
     """
-    selected_frequencies = [250000]
+    # selected_frequencies = [250000]  # selected frequency
     selected_features = ['relative_amp', 'duration', "avg_freq"]
 
     # column list for selection in database
@@ -125,9 +125,14 @@ def make_clusters(database, panel_name, all_clusters_graph=False, barplot=False)
             if n_algorithms == 0:
                 n_algorithms = len(names)
 
+        selected_emitter_plot = 2
         if all_clusters_graph:
             for i in range(len(names)):
-                plt.plot(all_cluster_labels[i], label=names[i])
+                print(i)
+                if (selected_emitter_plot-1) * n_algorithms <= i < selected_emitter_plot * n_algorithms:
+                    plt.plot(all_cluster_labels[i], label=names[i])
+                    # 0,1,2,3,4
+                    # 5,6,7,8,9
             plt.xlabel("State no.")
             plt.ylabel("label no.")
             plt.title("All groups clusters, if change of label no. \n that means a change of data, so interesting point")
@@ -173,6 +178,18 @@ def make_clusters(database, panel_name, all_clusters_graph=False, barplot=False)
         change_df = pd.DataFrame(data=np.array(total_sum_list).T, columns=names[0:n_algorithms], index=range(1, len(act_lst)+1))
         output_sum = np.sum(total_sum_list, axis=0)
 
+        list_to_file = [[], [], []]
+        # 90%, 50%, else
+        selected_groups = [0.9, 0.5]
+        for numb, item in enumerate(output_sum):
+            if item > selected_groups[0]*max(output_sum):
+                list_to_file[0].append(numb+1)
+                continue
+            elif item > selected_groups[1] * max(output_sum):
+                list_to_file[1].append(numb + 1)
+                continue
+            list_to_file[2].append(numb+1)
+
         if barplot:
             ax = change_df.plot.bar(rot=1, stacked=True)
             plt.title("Cumulative number of feature changes detected by an auctionneur between states \n "
@@ -181,28 +198,20 @@ def make_clusters(database, panel_name, all_clusters_graph=False, barplot=False)
             plt.xlabel("State number")
             plt.ylabel("Number of feature changes detected")
             plt.plot(output_sum, ":", c="tab:brown")
+            plt.hlines(selected_groups[0]*max(output_sum), 0, len(act_lst), linestyles=":", color='tab:blue', label=f"{selected_groups[0]*100}%")
+            plt.hlines(selected_groups[1]*max(output_sum), 0, len(act_lst), linestyles=":", color='tab:pink', label=f"{selected_groups[1]*100}%")
+            plt.legend()
             plt.show()
-
-        list_to_file = [[], [], []]
-        # 90%, 70%, else
-        for numb, item in enumerate(output_sum):
-            if item > 0.9*max(output_sum):
-                list_to_file[0].append(numb+1)
-                continue
-            elif item > 0.5 * max(output_sum):
-                list_to_file[1].append(numb + 1)
-                continue
-            list_to_file[2].append(numb+1)
 
         string_to_file = "\n"
         string_to_file += "---------------------------------\n"
         string_to_file += f"Importance of changes detected in panel {panel_name} for frequency {frequency} at states: \n"
+        string_to_file += f"(Used {selected_groups[0]*100}%, {selected_groups[1]*100}% as thresholds)\n"
         string_to_file += "---------------------------------\n"
         string_to_file += f"High interest: state(s) -> \t {list_to_file[0]} -- total of {len(list_to_file[0])} state(s)\n"
         string_to_file += f"Medium interest: state(s) -> {list_to_file[1]} -- total of {len(list_to_file[1])} state(s)\n"
         string_to_file += f"Low interest: state(s) -> \t {list_to_file[2]} -- total of {len(list_to_file[2])} state(s)\n"
         string_to_file += "---------------------------------\n"
-        string_to_file += "The higher the type the less interesting the state is\n \n"
 
         tree = f"Files/{panel_name}/PZT/"
         with open(tree+f"pzt_output_clustering_{panel_name}.txt", "w+") as f:

@@ -3,7 +3,7 @@ This readme should provide context for the client on how to utilize the final pr
 
 Has been tested on Windows, not Linux, IOS, ect....
 
-- corect file structure (input format)
+- correct file structure (input format)
 - force clustering
 
 - luna default file format
