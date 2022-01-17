@@ -26,9 +26,11 @@ class Pridb:
         """A function to save the hits from the pridb to a csv file"""
         pd.DataFrame(self.hits).to_csv('Files/'+self.filename+"/AE/"+self.filename+".csv", index=False)
 
-    def load_csv(self):
+    def load_csv(self, force_clustering):
         """A function which tries to load the data from a csv file, otherwise it will generate it from the pridb file"""
         try:
+            if force_clustering:
+                raise FileNotFoundError
             self.hits = pd.read_csv('Files/'+self.filename+"/AE/"+self.filename+".csv")
         except FileNotFoundError:
             print('File not found, generating from pridb file')

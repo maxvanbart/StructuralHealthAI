@@ -81,7 +81,7 @@ class Panel:
     def load_ae(self):
         """Function to load the AE data in the folder"""
         self.ae_database = Pridb(self.name)
-        self.ae_database.load_csv()
+        self.ae_database.load_csv(self.force_clustering)
         # print(self.ae_database.hits)
         print(f"Successfully loaded AE data for {self.name}...")
 
