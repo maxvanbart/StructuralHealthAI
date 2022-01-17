@@ -11,3 +11,7 @@ Has been tested on Windows, not Linux, IOS, ect....
 - luna sensor file
 
 - file output format
+
+
+
+NOTE TO SELF: if you want to redefine the threshold, force regenerating the databases

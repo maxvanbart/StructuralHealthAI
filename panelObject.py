@@ -23,12 +23,11 @@ files_folder = "Files"
 
 class Panel:
     """An object which represents a panel"""
-    def __init__(self, name, pzt_thr, debug=False, force_clustering=False, force_saving=False, plotting=False):
+    def __init__(self, name, pzt_thr, debug=False, force_clustering=False, plotting=False):
         # General
         self.name = name
         self.debug = debug
         self.force_clustering = force_clustering
-        self.force_saving = force_saving
         self.plotting = plotting
 
         # Results
@@ -73,7 +72,6 @@ class Panel:
             print("Force clustering is set to True, all datafiles will be regenerated...")
         entries = os.scandir(files_folder)
         lst = []
-
         for entry in entries:
             if entry.is_dir():
                 lst.append(Panel(entry.name, pzt_thr, debug=debug, force_clustering=force_clustering, plotting=plotting))
@@ -111,9 +109,9 @@ class Panel:
             self.ae_clustered_database["frequency_outlier"] = freq_amp_cluster(self.ae_clustered_database)
             # adding extracted features and clusters
             print(f"Clustering completed for {self.name}, features and clusters being added to database...")
-        self.ae_clustered_database = self.ae_clustered_database.sort_values(by=['time'])
+            print(f"Successfully analysed AE data for {self.name}.")
 
-        print(f"Successfully analysed AE data for {self.name}.")
+        self.ae_clustered_database = self.ae_clustered_database.sort_values(by=['time'])
 
     # All the LUNA related code for the object
     def load_luna(self):
@@ -134,7 +132,7 @@ class Panel:
 
     def synchronise_luna(self):
         """Function which takes all the internal variables related to the separate sensors and time synchronises them"""
-        if not os.path.isfile(f'{self.results_directory}/LUNA_left.csv') or self.force_saving:
+        if not os.path.isfile(f'{self.results_directory}/LUNA_left.csv') or self.force_clustering:
             sv, e, rb = sync_luna(self.ae_database.hits, self.luna_file_vector, self.luna_time_labels, name=self.name)
             self.luna_time_shift_vector = sv
             self.luna_time_shift_errors = e
@@ -142,12 +140,12 @@ class Panel:
             self.luna_time_labels = self.luna_time_labels + self.luna_time_shift_vector
             self.ae_ribbons = rb
 
-        print(f"Successfully time-synchronized LUNA data for {self.name}.")
+            print(f"Successfully time-synchronized LUNA data for {self.name}.")
 
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
 
-        if not os.path.isfile(f'{self.results_directory}/LUNA_left.csv') or self.force_saving:
+        if not os.path.isfile(f'{self.results_directory}/LUNA_left.csv') or self.force_clustering:
             # 1. get time and length derivatives.
             left_time, left_length = gradient_arrays(self.luna_database[0])
             right_time, right_length = gradient_arrays(self.luna_database[1])
@@ -208,7 +206,8 @@ class Panel:
         pzt_time = self.pzt_start_times
         luna_time = self.luna_time_labels
         filecount = len(self.pzt_database)
-        self.pzt_dt, best_error = sync_pzt(pzt_time, luna_time, self.ae_ribbons, filecount, name=self.name, graphing=self.plotting)
+        self.pzt_dt, best_error = sync_pzt(pzt_time, luna_time, self.ae_ribbons, filecount, self.results_directory,
+                                           name=self.name, graphing=self.plotting)
         print(f"Successfully time-synchronized PZT data for {self.name}.")
 
     def analyse_pzt(self):
@@ -316,7 +315,7 @@ class Panel:
                        colors='g', label='PZT measurements')
         axs0[2].legend()
 
-        plt.savefig(f'{self.results_directory}/LUNA-PZT-AE-combined_{self.name}.png')
+        plt.savefig(f'{self.results_directory}/combined_LUNA-PZT-AE energy_{self.name}.png')
         if plotting:
             plt.show()
 
@@ -328,6 +327,7 @@ class Panel:
         plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == 0],
                     self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == 0],
                     s=4, c='blue', label='Normal Frequency-Amplitude')
+
         plt.vlines(np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0],
                    ymin=min(self.ae_clustered_database['frequency']), ymax=max(self.ae_clustered_database['frequency']),
                    colors='g', label='PZT measurements')
@@ -336,6 +336,7 @@ class Panel:
         plt.legend()
         plt.title(f'Panel {self.name} Amplitude Frequency Clustering')
 
+        plt.savefig(f'{self.results_directory}/combined_PZT-AE freq_{self.name}.png')
         if plotting:
             plt.show()
 
@@ -349,19 +350,20 @@ class Panel:
         ae_data_to_save = self.ae_clustered_database
         pzt_data_to_save = self.pzt_clustered_database
 
-        if not os.path.isfile(f'{directory}/LUNA.csv') or self.force_saving:
+        if not os.path.isfile(f'{directory}/LUNA_left.csv') or os.path.isfile(f'{directory}/LUNA_right.csv') \
+                or self.force_clustering:
             with open(f'{directory}/LUNA_left.csv', 'w') as file:
                 np.savetxt(file, luna_data_to_save_left, delimiter=',', fmt='%1.3f')
             with open(f'{directory}/LUNA_right.csv', 'w') as file:
                 np.savetxt(file, luna_data_to_save_right, delimiter=',', fmt='%1.3f')
                 print("Successfully created LUNA .csv.")
 
-        if not os.path.isfile(f'{directory}/AE.csv') or self.force_saving:
+        if not os.path.isfile(f'{directory}/AE.csv') or self.force_clustering:
             with open(f'{directory}/AE.csv', 'w') as file:
                 ae_data_to_save.to_csv(file, index=False)
                 print("Successfully created AE .csv.")
 
-        if not os.path.isfile(f'{directory}/PZT.csv') or self.force_saving:
+        if not os.path.isfile(f'{directory}/PZT.csv') or self.force_clustering:
             with open(f'{directory}/PZT.csv', 'w') as file:
                 pzt_data_to_save.to_csv(file, index=False)
                 print("Successfully created PZT .csv.")
