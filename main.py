@@ -34,7 +34,6 @@ def main(force_clustering=False, visualization=False, pzt_thr=0.1):
         panel.save_all()
         panel.visualize_all(visualization)
 
-
     # end time, it also prints the elapsed time
     t1 = time.time()
     print(f"Total time elapsed: {round((t1 - t0) / 60, 3)} minutes")
