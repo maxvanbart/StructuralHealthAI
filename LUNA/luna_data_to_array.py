@@ -40,7 +40,6 @@ def file_to_array(panel, path):
             feature_labels_left = [i for i in feature_labels_all if left_end >= float(i) >= left_start]
             feature_labels_right = [i for i in feature_labels_all if right_end >= float(i) >= right_start]
 
-            # Niels: I get a error that the list index is out of range? might be the 0 index?
             left_index_start = feature_labels_all.index(feature_labels_left[0])
             left_index_stop = feature_labels_all.index(feature_labels_left[-1])
 
