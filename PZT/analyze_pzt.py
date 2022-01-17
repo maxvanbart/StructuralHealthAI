@@ -40,10 +40,10 @@ def analyse_pzt(pzt_database, time_check=False):
             # make the start_time list
             time_list.append(state.start_time)
         time_list = np.array(time_list)
-        if time_check:
-            plt.plot(time_list)
-            plt.title("check if it is a strait line if not, time sync is wrong")
-            plt.show()
+        # if time_check:
+        #     plt.plot(time_list)
+        #     plt.title("check if it is a strait line if not, time sync is wrong")
+        #     plt.show()
 
 
 def make_clusters(database, panel_name, results_dir, barplot):
@@ -189,17 +189,20 @@ def make_clusters(database, panel_name, results_dir, barplot):
                 continue
             list_to_file[2].append(numb+1)
 
+        ax = change_df.plot.bar(rot=1, stacked=True, figsize=(9, 6))
+        plt.title("Cumulative number of feature changes detected by an auctionneur between states \n "
+                  f"Features selected: {selected_features}, frequency selected: {frequency/1000} kHz, panel: {panel_name}")
+        plt.suptitle(f'')
+        plt.xlabel("State number")
+        plt.ylabel("Number of feature changes detected")
+        plt.plot(output_sum, ":", c="tab:brown")
+        plt.hlines(selected_groups[0]*max(output_sum), 0, len(act_lst), linestyles=":", color='tab:blue', label=f"{selected_groups[0]*100}%")
+        plt.hlines(selected_groups[1]*max(output_sum), 0, len(act_lst), linestyles=":", color='tab:pink', label=f"{selected_groups[1]*100}%")
+        plt.legend()
+
+        plt.savefig(f'{results_dir}/PZT_statechanges_{panel_name}.png')
+
         if barplot:
-            ax = change_df.plot.bar(rot=1, stacked=True)
-            plt.title("Cumulative number of feature changes detected by an auctionneur between states \n "
-                      f"Features selected: {selected_features}, frequency selected: {frequency/1000} kHz, panel: {panel_name}")
-            plt.suptitle(f'')
-            plt.xlabel("State number")
-            plt.ylabel("Number of feature changes detected")
-            plt.plot(output_sum, ":", c="tab:brown")
-            plt.hlines(selected_groups[0]*max(output_sum), 0, len(act_lst), linestyles=":", color='tab:blue', label=f"{selected_groups[0]*100}%")
-            plt.hlines(selected_groups[1]*max(output_sum), 0, len(act_lst), linestyles=":", color='tab:pink', label=f"{selected_groups[1]*100}%")
-            plt.legend()
             plt.show()
 
         string_to_file = "\n"

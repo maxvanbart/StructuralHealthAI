@@ -24,7 +24,7 @@ def freq_amp_energy_plot(database, ref_amp=10**(-5), title=None):
     plt.show()
 
 
-def energy_time_cluster(database, plotting=False):
+def energy_time_cluster(database, results_dir, name, plotting=False):
     features = database
     energy, time = features["energy"], features["time"]
     data = pd.concat([energy, time], axis=1)
@@ -36,17 +36,10 @@ def energy_time_cluster(database, plotting=False):
         else:
             labels.append(0)
 
-    if plotting:
-        plt.figure(figsize=(9, 7))
-        plt.xlabel("Time [$10^{2}$ s]")
-        plt.ylabel("Peak energy of emission [$10^{-14}$ J]")
-        plt.scatter(data["time"]/100, data["energy"], c=labels, s=1)
-        plt.show()
-
     return labels
 
 
-def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=False):
+def freq_amp_cluster(database, results_dir, name, ref_amp=10**(-5),  min_samples=1500, plotting=False):
     """DBSCAN clustering"""
     features = database
     amp, freq = features["amplitude"], frequency_extraction(features).divide(1000)
@@ -64,13 +57,33 @@ def freq_amp_cluster(database, ref_amp=10**(-5),  min_samples=1500, plotting=Fal
         clusters = knn_classification.predict(full_data)
     full_data["clusters"] = clusters
 
+    return clusters
+
+
+def AE_plot_visualisation(full_data, results_dir, name, plotting=False):
+    plt.figure(figsize=(9, 6))
+    plt.scatter(full_data['amplitude'], full_data['frequency'], c=full_data["frequency_outlier"], s=4)
+    plt.title(f"Average frequency against amplitude of AE emissions in panel {name}")
+    plt.xlabel("Peak amplitude of emission [dB]")
+    plt.ylabel("Average frequency of emission [kHz]")
+
+    plt.savefig(f'{results_dir}/AE_freq-amp_{name}.png')
+
     if plotting:
-        plt.scatter(full_data['amplitude'], full_data['frequency'], c=full_data["clusters"], s=4)
-        plt.xlabel("Peak amplitude of emission [dB]")
-        plt.ylabel("Average frequency of emission [kHz]")
         plt.show()
 
-    return clusters
+    plt.figure(figsize=(9, 6))
+    plt.scatter(full_data["time"]/100, full_data["energy"],  s=3)
+    plt.title(f"Peak energy of AE emissions in panel {name}")
+    plt.xlabel("Time [$10^{2}$ s]")
+    plt.ylabel("Peak energy of emission [$10^{-14}$ J]")
+
+    plt.savefig(f'{results_dir}/AE_energy-time_{name}.png')
+
+    if plotting:
+        plt.show()
+
+
 
 
 

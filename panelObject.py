@@ -5,7 +5,7 @@ import numpy as np
 
 from AE.utilities import Pridb
 from AE.hit_combination import init_clustering
-from AE.feature_analysis import energy_time_cluster, freq_amp_cluster
+from AE.feature_analysis import energy_time_cluster, freq_amp_cluster, AE_plot_visualisation
 from AE.feature_extraction import frequency_extraction
 
 from PZT.analyze_pzt import analyse_pzt, make_clusters
@@ -98,7 +98,9 @@ class Panel:
             # creation of clustered database
             self.ae_clustered_database = self.ae_database.hits
             # detection of energy outliers
-            self.ae_clustered_database["energy_outlier"] = energy_time_cluster(self.ae_clustered_database)
+            self.ae_clustered_database["energy_outlier"] = energy_time_cluster(self.ae_clustered_database,
+                                                                               self.results_directory,
+                                                                               self.name)
             # removal of the energy outlier
             self.ae_clustered_database = self.ae_clustered_database[self.ae_clustered_database["energy_outlier"] == 1]
             # hits combination
@@ -106,7 +108,9 @@ class Panel:
             # adding frequency to the database
             self.ae_clustered_database["frequency"] = frequency_extraction(self.ae_clustered_database)
             # frequency outlier detection
-            self.ae_clustered_database["frequency_outlier"] = freq_amp_cluster(self.ae_clustered_database)
+            self.ae_clustered_database["frequency_outlier"] = freq_amp_cluster(self.ae_clustered_database,
+                                                                               self.results_directory,
+                                                                               self.name)
             # adding extracted features and clusters
             print(f"Clustering completed for {self.name}, features and clusters being added to database...")
             print(f"Successfully analysed AE data for {self.name}.")
@@ -269,14 +273,18 @@ class Panel:
         print(f"Successfully analysed PZT data for {self.name}.")
 
     def visualize_all(self, plotting):
+        # plot AE visualisations
+        AE_plot_visualisation(self.ae_clustered_database, self.results_directory, self.name, plotting=plotting)
+
+        # plot combined visualisations
         self.visualize_luna()
 
-        figure = plt.figure(constrained_layout=True)
+        figure = plt.figure(constrained_layout=True, figsize=(12, 9))
 
         sub_figures = figure.subfigures(1, 1)
         sub_figures.suptitle(f'Panel {self.name}')
-
         # LUNA left foot.
+
         axs0 = sub_figures.subplots(3, 1, sharex=True, gridspec_kw={'height_ratios': [1, 1, 5]})
 
         if len(self.luna_database_visualize[0]) > 0:
@@ -316,18 +324,18 @@ class Panel:
                        colors='g', label='PZT measurements')
         axs0[2].legend()
 
-        plt.savefig(f'{self.results_directory}/combined_LUNA-PZT-AE energy_{self.name}.png')
+        plt.savefig(f'{self.results_directory}/combined_LUNA-PZT-AE energy_{self.name}.png',  dpi=200)
         if plotting:
             plt.show()
 
         # Separate AE plot for clustered frequency and amplitude
-
+        plt.figure(figsize=(11, 7))
         plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == -1],
                     self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == -1],
-                    s=4, c='red', label='Frequency-Amplitude outliers')
+                    s=3, c='red', label='Frequency-Amplitude outliers')
         plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == 0],
                     self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == 0],
-                    s=4, c='blue', label='Normal Frequency-Amplitude')
+                    s=3, c='blue', label='Normal Frequency-Amplitude')
 
         plt.vlines(np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0],
                    ymin=min(self.ae_clustered_database['frequency']), ymax=max(self.ae_clustered_database['frequency']),
@@ -337,7 +345,7 @@ class Panel:
         plt.legend()
         plt.title(f'Panel {self.name} Amplitude Frequency Clustering')
 
-        plt.savefig(f'{self.results_directory}/combined_PZT-AE freq_{self.name}.png')
+        plt.savefig(f'{self.results_directory}/combined_PZT-AE freq_{self.name}.png', dpi=200)
         if plotting:
             plt.show()
 
