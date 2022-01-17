@@ -26,7 +26,7 @@ def calc_translation_coeff(pzt_time, luna_time, pzt_start_point, graphing=False)
         # Increase the resolution
         ddt = int(ddt/10)
 
-    print(f"Found best dt for the PZT time shift to be {best_dt} with an error of {error_dict[best_dt]}.")
+    # print(f"Found best dt for the PZT time shift to be {best_dt} with an error of {error_dict[best_dt]}.")
     # This graph plots the attempted time shifts and their respective errors
     if graphing:
         # Create an array to store the values used for the plotting
