@@ -9,7 +9,7 @@ from PZT.feature_extractor import relative_amp_calc, duration_calc, rise_time_ca
 
 
 class TestPZT:
-    def __init__(self, name, location):
+    def __init__(self, name, location, panel):
         # basic object information
         self.name = name
         self.location = f"{location}/{name}"
@@ -18,6 +18,8 @@ class TestPZT:
         # complex actual data
         self.matlab_array = {}
         self.feature_dict = {}
+
+        self.panel = panel
 
     def load(self):
         # open all the actionneur related files for easy data loading
@@ -50,7 +52,7 @@ class TestPZT:
             # relative amplitude: amplitude relative to channel 1
             relative_amp_column = relative_amp_calc(maximum_column)
             # Threshold
-            threshold = calculate_threshold(maximum_column)
+            threshold = calculate_threshold(maximum_column, self.panel)
             # duration: time from first threshold crossing to last
             duration_column = duration_calc(data, threshold)
             # rise time: time from first threshold crossing to maximum amplitude
@@ -79,26 +81,27 @@ class TestPZT:
 
 
 class StatePZT:
-    def __init__(self, name, location):
+    def __init__(self, name, location, panel):
         # simple information
         self.name = name
         self.location = location + '/' + name
-        self.test_lst = [TestPZT(x, self.location) for x in get_subfolders(self.location)]
         self.state_number = int(name.split('_')[1])
-        self.f_list = [x.frequency for x in self.test_lst]
 
         # analysis stuff
         self.frequency_dict = dict()
         self.start_time = convert_to_datetime(self.name[-19:])
+        self.panel = panel
+        self.test_lst = [TestPZT(x, self.location, self.panel) for x in get_subfolders(self.location)]
+        self.f_list = [x.frequency for x in self.test_lst]
 
     @staticmethod
-    def initialize_pzt(name):
+    def initialize_pzt(name, panel):
         location = f"Files/{name}/PZT/"
         folders = get_subfolders(location)
         subfolder_dict = dict()
         for folder in folders:
             subfolders = get_subfolders(location + folder)
-            subfolders = [StatePZT(x, location + folder) for x in subfolders]
+            subfolders = [StatePZT(x, location + folder, panel) for x in subfolders]
             subfolder_dict[folder] = subfolders
         return subfolder_dict
 

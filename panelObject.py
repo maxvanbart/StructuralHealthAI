@@ -23,7 +23,7 @@ files_folder = "Files"
 
 class Panel:
     """An object which represents a panel"""
-    def __init__(self, name, debug=False, force_clustering=False, force_saving=False, plotting=False):
+    def __init__(self, name, pzt_thr, debug=False, force_clustering=False, force_saving=False, plotting=False):
         # General
         self.name = name
         self.debug = debug
@@ -64,9 +64,10 @@ class Panel:
         self.pzt_clustered_database = None
         self.pzt_start_times = None
         self.pzt_dt = None
+        self.pzt_threshold = pzt_thr
 
     @staticmethod
-    def initialize_all(debug=False, force_clustering=False, plotting=False):
+    def initialize_all(pzt_thr, debug=False, force_clustering=False, plotting=False):
         """A static method which checks the folders present and generates a Panel object for every folder"""
         if force_clustering:
             print("Force clustering is set to True, all datafiles will be regenerated...")
@@ -75,14 +76,14 @@ class Panel:
 
         for entry in entries:
             if entry.is_dir():
-                lst.append(Panel(entry.name, debug=debug, force_clustering=force_clustering))
+                lst.append(Panel(entry.name, pzt_thr, debug=debug, force_clustering=force_clustering, plotting=plotting))
         return lst
 
     # All the AE related code for the object
     def load_ae(self):
         """Function to load the AE data in the folder"""
         self.ae_database = Pridb(self.name)
-        self.ae_database.load_csv(force_clustering = self.force_clustering)
+        self.ae_database.load_csv(force_clustering=self.force_clustering)
         print(f"Successfully loaded AE data for {self.name}.")
 
     def analyse_ae(self):
@@ -195,7 +196,7 @@ class Panel:
 
     # All PZT related code for the object
     def load_pzt(self):
-        self.pzt_database = StatePZT.initialize_pzt(self.name)
+        self.pzt_database = StatePZT.initialize_pzt(self.name, self)
         time_list = []
         for identifier in self.pzt_database:
             time_list += [x.start_time for x in self.pzt_database[identifier]]
