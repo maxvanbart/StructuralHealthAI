@@ -7,6 +7,11 @@
 - The user can also enable a plot of the final clustering to aid visualization of the clustered data.
 - The final product will contain CSV files with all the clustered databases per sensor and an image of the clustered data.
 
+# Todo:
+
+- Folder structure
+- Extra modules used
+
 ## LUNA
 
 - The LUNA sensor file contains the start and end values of where the sensor is attached to the panel, 
@@ -15,6 +20,7 @@
   this part of the code has been tuned to work with the provided panels, but does not guarantee support for future panels.
   If the setup of the experiment in terms of measurement intervals changes significantly from the default case, this part of
   the code has to be checked thoroughly.
+-   
 
 ## AE
 
