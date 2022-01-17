@@ -108,7 +108,7 @@ def make_clusters(database, panel_name, all_clusters_graph=False, barplot=False)
             name = f'kmeans n={int(len(act_lst)*0.3)}'
             names.append(name)
 
-            aff_prop_cluster = cls.AffinityPropagation()
+            aff_prop_cluster = cls.AffinityPropagation(random_state=None)
             aff_prop_cluster.fit(act_lst)
             aff_prop_labels = aff_prop_cluster.labels_
             all_cluster_labels.append(aff_prop_labels)
