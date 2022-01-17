@@ -1,10 +1,12 @@
 # StructuralHealthAI
-This readme should provide context for the client on how to utilize the final product
 
-Has been tested on Windows, not Linux, IOS, ect....
-
+- Default file formats
+- Has been tested on Windows, not Linux, IOS, ect....
 - correct file structure (input format)
-- force clustering
+- user inputs at start program
+- outputs of program
+
+## LUNA
 
 - luna default file format
 - luna outlier filter method
@@ -12,7 +14,8 @@ Has been tested on Windows, not Linux, IOS, ect....
 
 - file output format
 
+## AE
 
+## PZT
 
 NOTE TO SELF: if you want to redefine the threshold, force regenerating the databases
-well hello there
