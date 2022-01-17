@@ -81,4 +81,5 @@ if __name__ == "__main__":
                 thr = 0.1
         if not succes:
             print("Please enter a valid value or leave empty for default")
+    print(f"Using a threshold value of {thr} for the PZT data.")
     main(force_clustering=fc, visualization=vs, pzt_thr=thr)
