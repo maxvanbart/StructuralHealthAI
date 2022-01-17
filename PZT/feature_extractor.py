@@ -17,8 +17,8 @@ def relative_amp_calc(maximum_column):
     return relative_max_column
 
 
-def calculate_threshold(max_amp):
-    return max_amp * 0.1
+def calculate_threshold(max_amp, panel):
+    return max_amp * panel.pzt_threshold
 
 
 def duration_calc(database, threshold, debug_graph=False):

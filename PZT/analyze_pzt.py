@@ -46,7 +46,7 @@ def analyse_pzt(pzt_database, time_check=False):
             plt.show()
 
 
-def make_clusters(database, panel_name, all_clusters_graph=False, barplot=True, selected_frequencies=[250000]):
+def make_clusters(database, panel_name, results_dir, barplot):
     """
     input: database, panel name
     working: clusters all of the data on the selection below. If one emitter is not usefull remove from the list.
@@ -54,7 +54,8 @@ def make_clusters(database, panel_name, all_clusters_graph=False, barplot=True, 
              if barplot is True, shows the bar plot with interesting data and states
     returns: all of the interesting points of the clusters and the name of each cluster used.
     """
-    # selected_frequencies = [250000]  # selected frequency
+    all_clusters_graph = False
+    selected_frequencies = [250000]  # selected frequency
     selected_features = ['relative_amp', 'duration', "avg_freq"]
 
     # column list for selection in database
@@ -125,14 +126,12 @@ def make_clusters(database, panel_name, all_clusters_graph=False, barplot=True, 
             if n_algorithms == 0:
                 n_algorithms = len(names)
 
-        selected_emitter_plot = 2
+        selected_emitter_plot = 1
         if all_clusters_graph:
             for i in range(len(names)):
                 print(i)
                 if (selected_emitter_plot-1) * n_algorithms <= i < selected_emitter_plot * n_algorithms:
                     plt.plot(all_cluster_labels[i], label=names[i])
-                    # 0,1,2,3,4
-                    # 5,6,7,8,9
             plt.xlabel("State no.")
             plt.ylabel("label no.")
             plt.title("All groups clusters, if change of label no. \n that means a change of data, so interesting point")
@@ -213,6 +212,5 @@ def make_clusters(database, panel_name, all_clusters_graph=False, barplot=True, 
         string_to_file += f"Low interest: state(s) -> \t {list_to_file[2]} -- total of {len(list_to_file[2])} state(s)\n"
         string_to_file += "---------------------------------\n"
 
-        tree = f"Files/{panel_name}/PZT/"
-        with open(tree+f"pzt_output_clustering_{panel_name}.txt", "w+") as f:
+        with open(results_dir+f"PZT_clustering_{panel_name}_output.txt", "w+") as f:
             f.write(string_to_file)

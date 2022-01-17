@@ -3,15 +3,15 @@ from tqdm import tqdm
 from panelObject import Panel
 
 
-def main(force_clustering=False, visualization=False):
+def main(force_clustering=False, visualization=False, pzt_thr=0.1):
     # start time
     t0 = time.time()
 
     # initialize all the panels from the folders
-    panels = Panel.initialize_all(force_clustering=force_clustering, plotting=visualization)
+    panels = Panel.initialize_all(pzt_thr, force_clustering=force_clustering, plotting=visualization)
 
     # select specific panels
-    # panels = panels[:1]
+    # panels = panels[4:]
 
     # for every panel we perform the following actions
     for panel in tqdm(panels, desc='Panel'):
@@ -31,9 +31,8 @@ def main(force_clustering=False, visualization=False):
         panel.analyse_pzt()
 
         # Plot and save all the clusters.
-        if visualization:
-            panel.visualize_all()
         panel.save_all()
+        panel.visualize_all(visualization)
 
     # end time, it also prints the elapsed time
     t1 = time.time()
@@ -64,4 +63,23 @@ if __name__ == "__main__":
         vs = True
     else:
         vs = False
-    main(force_clustering=fc, visualization=vs)
+
+    # Ask for a custom PZT threshold
+    succes = False
+    print("Do you want to use a custom threshold for the PZT data?")
+    print("Leave empty for default value of 0.1 or enter value between 0 and 1.")
+    print("Please note that databases need to be regenerated for a different threshold value to take effect.")
+    while not succes:
+        thr = input("Please enter PZT threshold value: ")
+        try:
+            thr = float(thr)
+            if 1 > thr > 0:
+                succes = True
+        except ValueError:
+            if thr == "":
+                succes = True
+                thr = 0.1
+        if not succes:
+            print("Please enter a valid value or leave empty for default")
+    print(f"Using a threshold value of {thr} for the PZT data.")
+    main(force_clustering=fc, visualization=vs, pzt_thr=thr)

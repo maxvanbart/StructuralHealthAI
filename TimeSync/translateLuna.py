@@ -63,7 +63,6 @@ def explore(error_dict, group_data, edge_list, final_time):
         error_dict, best_dt = explore_range(error_dict, group_data, edge_list, -ddt*100+best_dt, ddt*100+best_dt, ddt)
         ddt = int(ddt/10)
 
-    print(f"Found best dt for the LUNA time shift to be {best_dt} with an error of {error_dict[best_dt]}.")
     return error_dict, best_dt, error_dict[best_dt]
 
 
