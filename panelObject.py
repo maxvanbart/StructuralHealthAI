@@ -285,7 +285,7 @@ class Panel:
         sub_figures.suptitle(f'Panel {self.name}')
         # LUNA left foot.
 
-        axs0 = sub_figures.subplots(3, 1, sharex=True, gridspec_kw={'height_ratios': [1, 1, 5]})
+        axs0 = sub_figures.subplots(3, 1, sharex=True, gridspec_kw={'height_ratios': [1, 1, 2]})
 
         if len(self.luna_database_visualize[0]) > 0:
             axs0[0].scatter(self.luna_database_visualize[0][:, 0], self.luna_database_visualize[0][:, 1],
@@ -332,10 +332,10 @@ class Panel:
         plt.figure(figsize=(11, 7))
         plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == -1],
                     self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == -1],
-                    s=3, c='red', label='Frequency-Amplitude outliers')
+                    s=3, c='red', label='AE frequency outliers')
         plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == 0],
                     self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == 0],
-                    s=3, c='blue', label='Normal Frequency-Amplitude')
+                    s=3, c='blue', label='AE non-outliers')
 
         plt.vlines(np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0],
                    ymin=min(self.ae_clustered_database['frequency']), ymax=max(self.ae_clustered_database['frequency']),
@@ -343,7 +343,7 @@ class Panel:
         plt.xlabel("Time [s]")
         plt.ylabel("Average frequency of emission [kHz]")
         plt.legend()
-        plt.title(f'Panel {self.name} Amplitude Frequency Clustering')
+        plt.title(f'Panel {self.name}: clustered AE emissions shown with timestamps of PZT measurements')
 
         plt.savefig(f'{self.results_directory}/combined_PZT-AE freq_{self.name}.png', dpi=200)
         if plotting:
