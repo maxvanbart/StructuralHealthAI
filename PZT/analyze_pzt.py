@@ -54,7 +54,7 @@ def make_clusters(database, panel_name, results_dir, barplot):
              if barplot is True, shows the bar plot with interesting data and states
     returns: all of the interesting points of the clusters and the name of each cluster used.
     """
-    all_clusters_graph = False
+    all_clusters_graph = False  # plot one graph with cluster labels for emitter 1
     selected_frequencies = [250000]  # selected frequency
     selected_features = ['relative_amp', 'duration', "avg_freq"]
 
