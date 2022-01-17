@@ -134,28 +134,37 @@ class Panel:
 
     def synchronise_luna(self):
         """Function which takes all the internal variables related to the separate sensors and time synchronises them"""
-        sv, e, rb = sync_luna(self.ae_database.hits, self.luna_file_vector, self.luna_time_labels, name=self.name)
-        self.luna_time_shift_vector = sv
-        self.luna_time_shift_errors = e
+        if not os.path.isfile(f'{self.results_directory}/LUNA_left.csv') or self.force_saving:
+            sv, e, rb = sync_luna(self.ae_database.hits, self.luna_file_vector, self.luna_time_labels, name=self.name)
+            self.luna_time_shift_vector = sv
+            self.luna_time_shift_errors = e
 
-        self.luna_time_labels = self.luna_time_labels + self.luna_time_shift_vector
-        self.ae_ribbons = rb
+            self.luna_time_labels = self.luna_time_labels + self.luna_time_shift_vector
+            self.ae_ribbons = rb
 
         print(f"Successfully synchronized time for {self.name}...")
 
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
-        # 1. get time and length derivatives.
-        left_time, left_length = gradient_arrays(self.luna_database[0])
-        right_time, right_length = gradient_arrays(self.luna_database[1])
 
-        # 2. get clustered database.
-        self.luna_database_derivatives = [left_time, right_time, left_length, right_length]
-        self.luna_database_clustered = array_to_cluster(left_time, right_time, left_length, right_length)
+        if not os.path.isfile(f'{self.results_directory}/LUNA_left.csv') or self.force_saving:
+            # 1. get time and length derivatives.
+            left_time, left_length = gradient_arrays(self.luna_database[0])
+            right_time, right_length = gradient_arrays(self.luna_database[1])
 
-        # 3. filter original database with clustered database.
-        left_filtered = filter_array(self.luna_database[0], self.luna_database_clustered[0], self.luna_time_labels, self.luna_length_labels[0])
-        right_filtered = filter_array(self.luna_database[1], self.luna_database_clustered[1], self.luna_time_labels, self.luna_length_labels[1])
+            # 2. get clustered database.
+            self.luna_database_derivatives = [left_time, right_time, left_length, right_length]
+            self.luna_database_clustered = array_to_cluster(left_time, right_time, left_length, right_length)
+
+            # 3. filter original database with clustered database.
+            left_filtered = filter_array(self.luna_database[0], self.luna_database_clustered[0], self.luna_time_labels, self.luna_length_labels[0])
+            right_filtered = filter_array(self.luna_database[1], self.luna_database_clustered[1], self.luna_time_labels, self.luna_length_labels[1])
+
+        else:
+            with open(f'{self.results_directory}/LUNA_left.csv') as file:
+                left_filtered = np.genfromtxt(file, delimiter=',')
+            with open(f'{self.results_directory}/LUNA_right.csv') as file:
+                right_filtered = np.genfromtxt(file, delimiter=',')
 
         self.luna_database_filtered = [left_filtered, right_filtered]
 
@@ -329,13 +338,17 @@ class Panel:
         """Function to save all relevant data to file"""
         directory = self.results_directory
 
-        luna_data_to_save = np.vstack((self.luna_database_filtered[0], self.luna_database_filtered[1]))
+        luna_data_to_save_left = self.luna_database_filtered[0]
+        luna_data_to_save_right = self.luna_database_filtered[1]
+
         ae_data_to_save = self.ae_clustered_database
         pzt_data_to_save = self.pzt_clustered_database
 
         if not os.path.isfile(f'{directory}/LUNA.csv') or self.force_saving:
-            with open(f'{directory}/LUNA.csv', 'w') as file:
-                np.savetxt(file, luna_data_to_save, delimiter=',', fmt='%1.3f')
+            with open(f'{directory}/LUNA_left.csv', 'w') as file:
+                np.savetxt(file, luna_data_to_save_left, delimiter=',', fmt='%1.3f')
+            with open(f'{directory}/LUNA_right.csv', 'w') as file:
+                np.savetxt(file, luna_data_to_save_right, delimiter=',', fmt='%1.3f')
                 print("Successfully created LUNA .csv.")
 
         if not os.path.isfile(f'{directory}/AE.csv') or self.force_saving:
