@@ -11,7 +11,7 @@ def main(force_clustering=False, visualization=False):
     panels = Panel.initialize_all(force_clustering=force_clustering, plotting=visualization)
 
     # select specific panels
-    # panels = panels[:1]
+    panels = panels[:1]
 
     # for every panel we perform the following actions
     for panel in tqdm(panels, desc='Panel'):
@@ -31,9 +31,9 @@ def main(force_clustering=False, visualization=False):
         panel.analyse_pzt()
 
         # Plot and save all the clusters.
-        if visualization:
-            panel.visualize_all()
         panel.save_all()
+        panel.visualize_all(visualization)
+
 
     # end time, it also prints the elapsed time
     t1 = time.time()

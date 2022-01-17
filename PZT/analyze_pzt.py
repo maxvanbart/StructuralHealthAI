@@ -46,7 +46,7 @@ def analyse_pzt(pzt_database, graphing=False, time_check=False):
             plt.show()
 
 
-def make_clusters(database, panel_name, all_clusters_graph=False, barplot=False):
+def make_clusters(database, panel_name, results_dir, barplot):
     """
     input: database
     working: clusters all of the data on the selection below. If one emitter is not usefull remove from the list.
@@ -125,15 +125,6 @@ def make_clusters(database, panel_name, all_clusters_graph=False, barplot=False)
             if n_algorithms == 0:
                 n_algorithms = len(names)
 
-        if all_clusters_graph:
-            for i in range(len(names)):
-                plt.plot(all_cluster_labels[i], label=names[i])
-            plt.xlabel("State no.")
-            plt.ylabel("label no.")
-            plt.title("All groups clusters, if change of label no. \n that means a change of data, so interesting point")
-            plt.legend()
-            plt.show()
-
         from itertools import tee, islice, chain
 
         def previous_and_next(some_iterable):
@@ -204,6 +195,5 @@ def make_clusters(database, panel_name, all_clusters_graph=False, barplot=False)
         string_to_file += "---------------------------------\n"
         string_to_file += "The higher the type the less interesting the state is\n \n"
 
-        tree = f"Files/{panel_name}/PZT/"
-        with open(tree+f"pzt_output_clustering_{panel_name}.txt", "w+") as f:
+        with open(results_dir+f"PZT_clustering_{panel_name}_output.txt", "w+") as f:
             f.write(string_to_file)

@@ -82,9 +82,8 @@ class Panel:
     def load_ae(self):
         """Function to load the AE data in the folder"""
         self.ae_database = Pridb(self.name)
-        self.ae_database.load_csv(self.force_clustering)
-        # print(self.ae_database.hits)
-        print(f"Successfully loaded AE data for {self.name}...")
+        self.ae_database.load_csv(force_clustering = self.force_clustering)
+        print(f"Successfully loaded AE data for {self.name}.")
 
     def analyse_ae(self):
         """Function to analyse the AE data in the folder"""
@@ -130,7 +129,7 @@ class Panel:
         self.luna_time_labels = luna_data_left[:, 0] - luna_data_left[0, 0]
         self.luna_length_labels = [labels_left, labels_right]
 
-        print(f"Successfully loaded LUNA data for {self.name}...")
+        print(f"Successfully loaded LUNA data for {self.name}.")
 
     def synchronise_luna(self):
         """Function which takes all the internal variables related to the separate sensors and time synchronises them"""
@@ -142,7 +141,7 @@ class Panel:
             self.luna_time_labels = self.luna_time_labels + self.luna_time_shift_vector
             self.ae_ribbons = rb
 
-        print(f"Successfully synchronized time for {self.name}...")
+        print(f"Successfully time-synchronized LUNA data for {self.name}.")
 
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
@@ -168,7 +167,7 @@ class Panel:
 
         self.luna_database_filtered = [left_filtered, right_filtered]
 
-        print(f"Successfully analysed LUNA data for {self.name}...")
+        print(f"Successfully analysed LUNA data for {self.name}.")
 
     def visualize_luna(self):
         """
@@ -209,8 +208,7 @@ class Panel:
         luna_time = self.luna_time_labels
         filecount = len(self.pzt_database)
         self.pzt_dt, best_error = sync_pzt(pzt_time, luna_time, self.ae_ribbons, filecount, name=self.name, graphing=self.plotting)
-        print(f"PZT data should be shifted by {self.pzt_dt} seconds in order to achieve the best synchronization.")
-        print(f"This synchronization gives an error of {best_error}.")
+        print(f"Successfully time-synchronized PZT data for {self.name}.")
 
     def analyse_pzt(self):
         try:
@@ -267,9 +265,10 @@ class Panel:
             print("Successfully created PZT database.")
 
         # call plotting function
-        make_clusters(self.pzt_clustered_database, self.name)
+        make_clusters(self.pzt_clustered_database, self.name, self.results_directory, self.plotting)
+        print(f"Successfully analysed PZT data for {self.name}.")
 
-    def visualize_all(self):
+    def visualize_all(self, plotting):
         self.visualize_luna()
 
         figure = plt.figure(constrained_layout=True)
@@ -315,7 +314,10 @@ class Panel:
                        ymin=min(self.ae_clustered_database['energy']), ymax=max(self.ae_clustered_database['energy']),
                        colors='g', label='PZT measurements')
         axs0[2].legend()
-        plt.show()
+
+        plt.savefig(f'{self.results_directory}/LUNA-PZT-AE-combined_{self.name}.png')
+        if plotting:
+            plt.show()
 
         # Separate AE plot for clustered frequency and amplitude
 
@@ -332,7 +334,9 @@ class Panel:
         plt.ylabel("Average frequency of emission [kHz]")
         plt.legend()
         plt.title(f'Panel {self.name} Amplitude Frequency Clustering')
-        plt.show()
+
+        if plotting:
+            plt.show()
 
     def save_all(self):
         """Function to save all relevant data to file"""
