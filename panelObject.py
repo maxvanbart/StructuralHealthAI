@@ -248,10 +248,10 @@ class Panel:
         axs0[0].set_ylabel('length [mm]')
         axs0[0].set_title('LUNA left foot cluster')
 
-        plt.colorbar(img1, label="<--compression/tension-->", location='top', shrink=0.4)
+        plt.colorbar(img1, label="<--compression/tension-->", location='right', shrink=0.4, orientation='vertical')
 
         # LUNA right foot.
-        img2 = axs0[1].scatter(x=self.luna_database_filtered[1][:, 0], y=self.luna_database_filtered[1][:, 1],
+        axs0[1].scatter(x=self.luna_database_filtered[1][:, 0], y=self.luna_database_filtered[1][:, 1],
                         c=self.luna_database_filtered[1][:, 2], cmap='bwr')
         axs0[1].set_ylabel('length [mm]')
         axs0[1].set_title('LUNA right foot cluster')
