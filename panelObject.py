@@ -235,8 +235,6 @@ class Panel:
         # call plotting function
         make_clusters(self.pzt_clustered_database, self.name)
 
-        print(f"Successfully analysed PZT data for {self.name}.")
-
     def visualize_all(self):
         figure = plt.figure(tight_layout=True)
         figure.suptitle(f'Panel {self.name}')

@@ -46,7 +46,7 @@ def analyse_pzt(pzt_database, graphing=False, time_check=False):
             plt.show()
 
 
-def make_clusters(database, panel_name, all_clusters_graph=False, barplot=True):
+def make_clusters(database, panel_name, all_clusters_graph=False, barplot=False):
     """
     input: database
     working: clusters all of the data on the selection below. If one emitter is not usefull remove from the list.
