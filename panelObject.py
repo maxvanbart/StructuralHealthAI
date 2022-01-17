@@ -46,6 +46,7 @@ class Panel:
         self.luna_database_derivatives = None
         self.luna_database_clustered = None
         self.luna_database_filtered = None
+        self.luna_database_visualize = None
 
         self.luna_file_vector = None
 
@@ -160,6 +161,30 @@ class Panel:
 
         print(f"Successfully analysed LUNA data for {self.name}...")
 
+    def visualize_luna(self):
+        """
+        This function prepares LUNA data to be plotted later.
+        """
+        left_positive, left_negative = [], []
+        right_positive, right_negative = [], []
+
+        for i in range(len(self.luna_database_filtered[0][:, 2])):
+            if self.luna_database_filtered[0][i, 2] < 0:
+                left_negative.append([self.luna_database_filtered[0][i, 0], self.luna_database_filtered[0][i, 1]])
+            else:
+                left_positive.append([self.luna_database_filtered[0][i, 0], self.luna_database_filtered[0][i, 1]])
+
+        for i in range(len(self.luna_database_filtered[1][:, 2])):
+            if self.luna_database_filtered[1][i, 2] < 0:
+                right_negative.append([self.luna_database_filtered[1][i, 0], self.luna_database_filtered[1][i, 1]])
+            else:
+                right_positive.append([self.luna_database_filtered[1][i, 0], self.luna_database_filtered[1][i, 1]])
+
+        left_positive, left_negative = np.array(left_positive), np.array(left_negative)
+        right_positive, right_negative = np.array(right_positive), np.array(right_negative)
+
+        self.luna_database_visualize = [left_positive, left_negative, right_positive, right_negative]
+
     # All PZT related code for the object
     def load_pzt(self):
         self.pzt_database = StatePZT.initialize_pzt(self.name)
@@ -236,6 +261,8 @@ class Panel:
         make_clusters(self.pzt_clustered_database, self.name)
 
     def visualize_all(self):
+        self.visualize_luna()
+
         figure = plt.figure(tight_layout=True)
         figure.suptitle(f'Panel {self.name}')
 
@@ -243,18 +270,30 @@ class Panel:
 
         # LUNA left foot.
         axs0 = sub_figures.subplots(3, 1, sharex=True, gridspec_kw={'height_ratios': [1, 1, 5]})
-        img1 = axs0[0].scatter(self.luna_database_filtered[0][:, 0], self.luna_database_filtered[0][:, 1],
-                        c=self.luna_database_filtered[0][:, 2], cmap='bwr')
+
+        if len(self.luna_database_visualize[0]) > 0:
+            axs0[0].scatter(self.luna_database_visualize[0][:, 0], self.luna_database_visualize[0][:, 1],
+                            color='red', label='Tension')
+        if len(self.luna_database_visualize[1]) > 0:
+            axs0[0].scatter(self.luna_database_visualize[1][:, 0], self.luna_database_visualize[1][:, 1],
+                            color='blue', label='Compression')
+
         axs0[0].set_ylabel('length [mm]')
         axs0[0].set_title('LUNA left foot cluster')
-
-        plt.colorbar(img1, label="<--compression/tension-->", location='right', shrink=0.4, orientation='vertical')
+        axs0[0].legend(loc='lower right')
 
         # LUNA right foot.
-        axs0[1].scatter(x=self.luna_database_filtered[1][:, 0], y=self.luna_database_filtered[1][:, 1],
-                        c=self.luna_database_filtered[1][:, 2], cmap='bwr')
+        if len(self.luna_database_visualize[2]) > 0:
+            axs0[1].scatter(self.luna_database_visualize[2][:, 0], self.luna_database_visualize[2][:, 1],
+                            color='red', label='Tension')
+
+        if len(self.luna_database_visualize[3]) > 0:
+            axs0[1].scatter(self.luna_database_visualize[3][:, 0], self.luna_database_visualize[3][:, 1],
+                            color='blue', label='Compression')
+
         axs0[1].set_ylabel('length [mm]')
         axs0[1].set_title('LUNA right foot cluster')
+        axs0[1].legend(loc='lower right')
 
         # AE cluster.
         axs0[2].scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == -1],
