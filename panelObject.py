@@ -359,20 +359,20 @@ class Panel:
         ae_data_to_save = self.ae_clustered_database
         pzt_data_to_save = self.pzt_clustered_database
 
-        if not os.path.isfile(f'{directory}/LUNA_left.csv') or os.path.isfile(f'{directory}/LUNA_right.csv') \
+        if not os.path.isfile(f'{directory}/LUNA_left_{self.name}.csv') or os.path.isfile(f'{directory}/LUNA_right_{self.name}.csv') \
                 or self.force_clustering:
-            with open(f'{directory}/LUNA_left.csv', 'w') as file:
+            with open(f'{directory}/LUNA_left_{self.name}.csv', 'w') as file:
                 np.savetxt(file, luna_data_to_save_left, delimiter=',', fmt='%1.3f')
-            with open(f'{directory}/LUNA_right.csv', 'w') as file:
+            with open(f'{directory}/LUNA_right_{self.name}.csv', 'w') as file:
                 np.savetxt(file, luna_data_to_save_right, delimiter=',', fmt='%1.3f')
                 print("Successfully created LUNA .csv.")
 
-        if not os.path.isfile(f'{directory}/AE.csv') or self.force_clustering:
+        if not os.path.isfile(f'{directory}/AE_{self.name}.csv') or self.force_clustering:
             with open(f'{directory}/AE.csv', 'w') as file:
                 ae_data_to_save.to_csv(file, index=False)
                 print("Successfully created AE .csv.")
 
-        if not os.path.isfile(f'{directory}/PZT.csv') or self.force_clustering:
+        if not os.path.isfile(f'{directory}/PZT_{self.name}.csv') or self.force_clustering:
             with open(f'{directory}/PZT.csv', 'w') as file:
                 pzt_data_to_save.to_csv(file, index=False)
                 print("Successfully created PZT .csv.")

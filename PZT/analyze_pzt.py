@@ -216,5 +216,5 @@ def make_clusters(database, panel_name, results_dir, barplot):
         string_to_file += f"Low interest: state(s) -> \t {list_to_file[2]} -- total of {len(list_to_file[2])} state(s)\n"
         string_to_file += "---------------------------------\n"
 
-        with open(results_dir+f"/PZT_clustering_{panel_name}_output.txt", "w+") as f:
+        with open(results_dir+f"/PZT_clustering-output_{panel_name}.txt", "w+") as f:
             f.write(string_to_file)
