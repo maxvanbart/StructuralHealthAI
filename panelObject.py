@@ -286,7 +286,7 @@ class Panel:
             axs0[0].scatter(self.luna_database_visualize[1][:, 0], self.luna_database_visualize[1][:, 1],
                             color='blue', label='Compression')
 
-        axs0[0].set_ylabel('length [mm]')
+        axs0[0].set_ylabel('Length [mm]')
         axs0[0].set_title('LUNA left foot cluster')
         axs0[0].legend(loc='lower right')
 
@@ -299,7 +299,8 @@ class Panel:
             axs0[1].scatter(self.luna_database_visualize[3][:, 0], self.luna_database_visualize[3][:, 1],
                             color='blue', label='Compression')
 
-        axs0[1].set_ylabel('length [mm]')
+        axs0[1].set_xlabel("Time [s]")
+        axs0[1].set_ylabel('Length [mm]')
         axs0[1].set_title('LUNA right foot cluster')
         axs0[1].legend(loc='lower right')
 
@@ -308,7 +309,7 @@ class Panel:
                         self.ae_clustered_database['energy'],
                         s=10, label='High energy events')
         axs0[2].set_xlabel("Time [s]")
-        axs0[2].set_ylabel("Peak energy of emission [J]")
+        axs0[2].set_ylabel("Peak energy of emission [$10^{-14}$ J]")
         axs0[2].set_title('AE energy plot')
         axs0[2].vlines(np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0],
                        ymin=min(self.ae_clustered_database['energy']), ymax=max(self.ae_clustered_database['energy']),
