@@ -236,10 +236,10 @@ class Panel:
         make_clusters(self.pzt_clustered_database, self.name)
 
     def visualize_all(self):
-        figure = plt.figure(tight_layout=True)
-        figure.suptitle(f'Panel {self.name}')
+        figure = plt.figure(constrained_layout=True)
 
         sub_figures = figure.subfigures(1, 1)
+        sub_figures.suptitle(f'Panel {self.name}')
 
         # LUNA left foot.
         axs0 = sub_figures.subplots(3, 1, sharex=True, gridspec_kw={'height_ratios': [1, 1, 5]})
@@ -248,27 +248,40 @@ class Panel:
         axs0[0].set_ylabel('length [mm]')
         axs0[0].set_title('LUNA left foot cluster')
 
-        plt.colorbar(img1, label="<--compression/tension-->", location='right', shrink=0.4, orientation='vertical')
-
         # LUNA right foot.
         axs0[1].scatter(x=self.luna_database_filtered[1][:, 0], y=self.luna_database_filtered[1][:, 1],
                         c=self.luna_database_filtered[1][:, 2], cmap='bwr')
         axs0[1].set_ylabel('length [mm]')
         axs0[1].set_title('LUNA right foot cluster')
 
-        # AE cluster.
-        axs0[2].scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == -1],
-                        self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == -1],
-                        c='red', s=4, label='frequency-amp outliers')
-        axs0[2].scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == 0],
-                        self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == 0],
-                        c='blue', s=4, label='frequency-amp normal')
+        # AE energy plot.
+        axs0[2].scatter(self.ae_clustered_database['time'],
+                        self.ae_clustered_database['energy'],
+                        s=10, label='High energy events')
+        axs0[2].set_xlabel("Time [s]")
+        axs0[2].set_ylabel("Peak energy of emission [J]")
+        axs0[2].set_title('AE energy plot')
+        axs0[2].vlines(np.array(self.pzt_start_times)+self.pzt_dt-self.pzt_start_times[0],
+                       ymin=min(self.ae_clustered_database['energy']), ymax=max(self.ae_clustered_database['energy']),
+                       colors='g', label='PZT measurements')
         axs0[2].legend()
-        axs0[2].set_xlabel('time [s]')
-        axs0[2].set_ylabel('Energy [J]')
-        axs0[2].set_title('AE cluster')
-        axs0[2].vlines(np.array(self.pzt_start_times)+self.pzt_dt-self.pzt_start_times[0], 50000, 300000, colors='g')
+        plt.show()
 
+        # Separate AE plot for clustered frequency and amplitude
+
+        plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == -1],
+                    self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == -1],
+                    s=4, c='red', label='Frequency-Amplitude outliers')
+        plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == 0],
+                    self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == 0],
+                    s=4, c='blue', label='Normal Frequency-Amplitude')
+        plt.vlines(np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0],
+                ymin=min(self.ae_clustered_database['frequency']), ymax=max(self.ae_clustered_database['frequency']),
+               colors='g', label='PZT measurements')
+        plt.xlabel("Time [s]")
+        plt.ylabel("Average frequency of emission [kHz]")
+        plt.legend()
+        plt.title(f'Panel {self.name} Amplitude Frequency Clustering')
         plt.show()
 
     def save_all(self):
