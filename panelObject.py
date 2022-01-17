@@ -277,23 +277,23 @@ class Panel:
         """Function to save all relevant data to file"""
         directory = self.results_directory
 
-        LUNA_data_to_save = np.vstack((self.luna_database_filtered[0], self.luna_database_filtered[1]))
-        AE_data_to_save = self.ae_clustered_database
-        PZT_data_to_save = self.pzt_clustered_database
+        luna_data_to_save = np.vstack((self.luna_database_filtered[0], self.luna_database_filtered[1]))
+        ae_data_to_save = self.ae_clustered_database
+        pzt_data_to_save = self.pzt_clustered_database
 
         if not os.path.isfile(f'{directory}/LUNA.csv') or self.force_saving:
             with open(f'{directory}/LUNA.csv', 'w') as file:
-                np.savetxt(file, LUNA_data_to_save, delimiter=',', fmt='%1.3f')
+                np.savetxt(file, luna_data_to_save, delimiter=',', fmt='%1.3f')
                 print("Successfully created LUNA .csv.")
 
         if not os.path.isfile(f'{directory}/AE.csv') or self.force_saving:
             with open(f'{directory}/AE.csv', 'w') as file:
-                AE_data_to_save.to_csv(file, index=False)
+                ae_data_to_save.to_csv(file, index=False)
                 print("Successfully created AE .csv.")
 
         if not os.path.isfile(f'{directory}/PZT.csv') or self.force_saving:
             with open(f'{directory}/PZT.csv', 'w') as file:
-                PZT_data_to_save.to_csv(file, index=False)
+                pzt_data_to_save.to_csv(file, index=False)
                 print("Successfully created PZT .csv.")
 
     def __repr__(self):
