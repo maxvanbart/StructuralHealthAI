@@ -10,7 +10,7 @@
 # Todo:
 
 - Folder structure
-- Extra modules used
+- Extra modules
 
 ## LUNA
 
