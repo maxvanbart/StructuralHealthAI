@@ -88,12 +88,13 @@ def make_clusters(database, panel_name, results_dir, barplot):
             for state in act["state"].drop_duplicates():
                 state_data = act.loc[act["state"] == state]
                 act_lst.append(state_data.to_numpy().flatten())
-            kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.1), random_state=42)
-            kmean_cluster.fit(act_lst)
-            kmean_labels1 = kmean_cluster.labels_
-            all_cluster_labels.append(kmean_labels1)
-            name = f'kmeans n={int(len(act_lst)*0.1)}'
-            names.append(name)
+
+            # kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.1), random_state=42)
+            # kmean_cluster.fit(act_lst)
+            # kmean_labels1 = kmean_cluster.labels_
+            # all_cluster_labels.append(kmean_labels1)
+            # name = f'kmeans n={int(len(act_lst)*0.1)}'
+            # names.append(name)
 
             kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.2), random_state=42)
             kmean_cluster.fit(act_lst)
@@ -102,12 +103,12 @@ def make_clusters(database, panel_name, results_dir, barplot):
             name = f'kmeans n={int(len(act_lst)*0.2)}'
             names.append(name)
 
-            kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.3), random_state=42)
-            kmean_cluster.fit(act_lst)
-            kmean_labels3 = kmean_cluster.labels_
-            all_cluster_labels.append(kmean_labels3)
-            name = f'kmeans n={int(len(act_lst)*0.3)}'
-            names.append(name)
+            # kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.25), random_state=42)
+            # kmean_cluster.fit(act_lst)
+            # kmean_labels3 = kmean_cluster.labels_
+            # all_cluster_labels.append(kmean_labels3)
+            # name = f'kmeans n={int(len(act_lst)*0.25)}'
+            # names.append(name)
 
             aff_prop_cluster = cls.AffinityPropagation(random_state=None)
             aff_prop_cluster.fit(act_lst)
@@ -179,7 +180,7 @@ def make_clusters(database, panel_name, results_dir, barplot):
 
         list_to_file = [[], [], []]
         # 90%, 50%, else
-        selected_groups = [0.9, 0.5]
+        selected_groups = [0.8, 0.5]
         for numb, item in enumerate(output_sum):
             if item > selected_groups[0]*max(output_sum):
                 list_to_file[0].append(numb+1)
