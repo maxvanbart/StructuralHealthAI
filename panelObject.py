@@ -293,7 +293,7 @@ class Panel:
         if len(self.luna_database_visualize[1]) > 0:
             axs0[0].scatter(self.luna_database_visualize[1][:, 0], self.luna_database_visualize[1][:, 1],
                             color='tab:blue', label='Compression')
-        #
+
         axs0[0].set_ylabel('Length [mm]')
         axs0[0].set_title('LUNA left foot cluster')
         axs0[0].legend(loc='lower right')

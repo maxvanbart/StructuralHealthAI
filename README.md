@@ -1,15 +1,66 @@
 # StructuralHealthAI
 
-- It is assumed all future data uses the same data format which has been used previously,
-  if this is not the case either the code, or the data layout has to be changed.
-- Has been successfully tested on Windows, unknown if compatible with other operating systems.
-- The user has an option to skip (re)generating the clustered databases to save time, in case of multiple reruns.
-- The user can also enable a plot of the final clustering to aid visualization of the clustered data.
-- The final product will contain CSV files with all the clustered databases per sensor and an image of the clustered data.
+
+# # General Information
+- To load the measurements from experiments into this program, a complete .zip for all panels must be downloaded from 
+  Dataverse (https://dataverse.nl/dataset.xhtml?persistentId=doi:10.34894/QNURER). Then, the complete .zip must be put 
+  into the Files folder (see Folder Structure for more information). Then, the user must select "Extract here" on it and 
+  repeat this for every single .zip folder (e.g. AE.zip in L1-03) that it contains.
+- In Files > (Panel Name), a new folder named Results will be created on first run. Here, the final databases and 
+  any visualisations or plots will be stored.
+- This program has been successfully tested on Windows, unknown if compatible with other operating systems.
+- In case of multiple re-runs, the code will not regenerate clustered databases and instead load them from saved 
+  .csv files in the Results folder. It is possible to forcibly regenerate all databases if desired.
+- The user can enable visualisation within Python (pop-up plots). If this is disabled, the plots will still be saved in 
+  the Results folder. 
+
+
+# # Required Libraries
+
+# # Folder Structure
+Project Folder
+│   README.md
+│   main.py
+│   panelObject.py
+└───Files
+│   │   Impact_Locations.pdf
+│   │   MANIFEST.TXT
+│   └───L1-03
+│       │   L1-03.pdf
+│       └───AE (if any of these folders are a .zip, they must be unzipped.)
+│       └───LUNA
+│       └───PZT
+│       └───Results (created on first run of the program)
+│   └───l1-04
+│   └───L1-05 
+|   └───...
+└───AE
+│   │   clustering.py
+│   │   feature_analysis.py
+│   │   feature_extraction.py
+│   │   hit_combination.py
+│   │   utilities.py
+└───LUNA
+│   │   luna_array_to_cluster.py
+│   │   luna_data_to_array.py
+│   │   luna_postprocessing.py
+│   │   luna_preprocessing.py
+│   │   LUNA_sensor.txt
+└───PZT
+│   │   analyze_pzt.py
+│   │   feature_extractor.py
+│   │   load_pzt.py
+└───TimeSync
+│   │   dataTypeClasses.py
+│   │   ribbonFinder.py
+│   │   timeSync.py
+│   │   translateLuna.py
+│   │   translatePZT.py
+└───utilities
+│   │   datetime_conv.pu
 
 # Todo:
 
-- Folder structure
 - Extra modules
   - main
     - tqdm
