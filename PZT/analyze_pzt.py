@@ -192,7 +192,7 @@ def make_clusters(database, panel_name, results_dir, barplot):
 
         ax = change_df.plot.bar(rot=1, stacked=True, figsize=(9, 6))
         plt.title("Cumulative number of feature changes detected by an emitter between states \n "
-                  f"Features selected: {selected_features} \n "
+                  f"Features selected: {selected_features} \n " 
                   f"Frequency selected: {frequency/1000} kHz, Panel: {panel_name}")
         plt.suptitle(f'')
         plt.xlabel("State number")
