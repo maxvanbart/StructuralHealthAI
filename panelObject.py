@@ -289,10 +289,10 @@ class Panel:
 
         if len(self.luna_database_visualize[0]) > 0:
             axs0[0].scatter(self.luna_database_visualize[0][:, 0], self.luna_database_visualize[0][:, 1],
-                            color='red', label='Tension')
+                            color='tab:red', label='Tension')
         if len(self.luna_database_visualize[1]) > 0:
             axs0[0].scatter(self.luna_database_visualize[1][:, 0], self.luna_database_visualize[1][:, 1],
-                            color='blue', label='Compression')
+                            color='tab:blue', label='Compression')
 
         axs0[0].set_ylabel('Length [mm]')
         axs0[0].set_title('LUNA left foot cluster')
