@@ -64,10 +64,10 @@ def AE_plot_visualisation(full_data, results_dir, name, plotting=False):
     plt.figure(figsize=(9, 6))
     ref_amp = 10 ** (-5)
     plt.scatter(20 * np.log10(full_data['amplitude'][full_data['frequency_outlier'] == -1] / ref_amp),
-                full_data['frequency'][full_data['frequency_outlier'] == -1],
+                full_data['frequency'][full_data['frequency_outlier'] == -1]/1000,
                 s=3, color="#334451", label='AE frequency outliers')
     plt.scatter(20 * np.log10(full_data['amplitude'][full_data['frequency_outlier'] == 0] / ref_amp),
-                full_data['frequency'][full_data['frequency_outlier'] == 0],
+                full_data['frequency'][full_data['frequency_outlier'] == 0]/1000,
                 s=3, c='tab:blue', label='AE non-outliers')
     plt.title(f"Average frequency against amplitude of AE emissions in panel {name}")
     plt.xlabel("Peak amplitude of emission [dB]")
