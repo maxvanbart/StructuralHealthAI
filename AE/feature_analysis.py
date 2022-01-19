@@ -62,11 +62,16 @@ def freq_amp_cluster(database, results_dir, name, ref_amp=10**(-5),  min_samples
 
 def AE_plot_visualisation(full_data, results_dir, name, plotting=False):
     plt.figure(figsize=(9, 6))
-    plt.scatter(full_data['amplitude'], full_data['frequency'], c=full_data["frequency_outlier"], cmap="coolwarm", s=4)
+    plt.scatter(full_data['time'][full_data['frequency_outlier'] == -1],
+                full_data['frequency'][full_data['frequency_outlier'] == -1],
+                s=3, c='navy', label='AE frequency outliers')
+    plt.scatter(full_data['time'][full_data['frequency_outlier'] == 0],
+                full_data['frequency'][full_data['frequency_outlier'] == 0],
+                s=3, c='tab:blue', label='AE non-outliers')
     plt.title(f"Average frequency against amplitude of AE emissions in panel {name}")
     plt.xlabel("Peak amplitude of emission [dB]")
     plt.ylabel("Average frequency of emission [kHz]")
-
+    plt.legend()
     plt.savefig(f'{results_dir}/AE_freq-amp_{name}.png')
 
     if plotting:

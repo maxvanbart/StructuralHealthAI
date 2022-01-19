@@ -301,11 +301,11 @@ class Panel:
         # LUNA right foot.
         if len(self.luna_database_visualize[2]) > 0:
             axs0[1].scatter(self.luna_database_visualize[2][:, 0], self.luna_database_visualize[2][:, 1],
-                            color='red', label='Tension')
+                            color='tab:red', label='Tension')
 
         if len(self.luna_database_visualize[3]) > 0:
             axs0[1].scatter(self.luna_database_visualize[3][:, 0], self.luna_database_visualize[3][:, 1],
-                            color='blue', label='Compression')
+                            color='tab:blue', label='Compression')
 
         axs0[1].set_xlabel("Time [s]")
         axs0[1].set_ylabel('Length [mm]')
@@ -315,7 +315,7 @@ class Panel:
         # AE energy plot.
         axs0[2].scatter(self.ae_clustered_database['time'],
                         self.ae_clustered_database['energy'],
-                        s=10, label='High energy events')
+                        s=10, label='High energy events', c="tab:blue")
         axs0[2].set_xlabel("Time [s]")
         axs0[2].set_ylabel("Peak energy of emission [$10^{-14}$ J]")
         axs0[2].set_title('AE energy plot')
@@ -332,10 +332,10 @@ class Panel:
         plt.figure(figsize=(11, 7))
         plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == -1],
                     self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == -1],
-                    s=3, c='red', label='AE frequency outliers')
+                    s=3, c='navy', label='AE frequency outliers')
         plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == 0],
                     self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == 0],
-                    s=3, c='blue', label='AE non-outliers')
+                    s=3, c='tab:blue', label='AE non-outliers')
 
         plt.vlines(np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0],
                    ymin=min(self.ae_clustered_database['frequency']), ymax=max(self.ae_clustered_database['frequency']),
@@ -359,7 +359,7 @@ class Panel:
         ae_data_to_save = self.ae_clustered_database
         pzt_data_to_save = self.pzt_clustered_database
 
-        if not os.path.isfile(f'{directory}/LUNA_left_{self.name}.csv') or os.path.isfile(f'{directory}/LUNA_right_{self.name}.csv') \
+        if not os.path.isfile(f'{directory}/LUNA_left_{self.name}.csv') or not os.path.isfile(f'{directory}/LUNA_right_{self.name}.csv') \
                 or self.force_clustering:
             with open(f'{directory}/LUNA_left_{self.name}.csv', 'w') as file:
                 np.savetxt(file, luna_data_to_save_left, delimiter=',', fmt='%1.3f')
