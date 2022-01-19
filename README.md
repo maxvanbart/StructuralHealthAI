@@ -11,6 +11,7 @@
 
 - Folder structure
 - Extra modules
+pzt -- sklearn, numpy, matplotlib, pandas, tqdm, scipy.io, os, daytime
 
 ## LUNA
 

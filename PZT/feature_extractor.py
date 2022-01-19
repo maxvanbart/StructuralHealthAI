@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from matplotlib import pyplot as plt
 
 # all functions should return a 1x8 numpy array
@@ -96,7 +95,7 @@ def travel_time_calc(data, threshold):
 
 
 def avgfreq_calc(data, threshold, debugging=False):
-    """returns average frequency of waveform that crosses threshold"""
+    """returns average frequency of waveform that crosses the origin"""
     duration_array = duration_calc(data, threshold)
     time_array = data[:, 0]
     data = data[:, 1:]

@@ -321,7 +321,7 @@ class Panel:
         axs0[2].set_title('AE energy plot')
         axs0[2].vlines(np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0],
                        ymin=min(self.ae_clustered_database['energy']), ymax=max(self.ae_clustered_database['energy']),
-                       colors='g', label='PZT measurements')
+                       colors='tab:orange', label='PZT measurements')
         axs0[2].legend()
 
         plt.savefig(f'{self.results_directory}/combined_LUNA-PZT-AE energy_{self.name}.png',  dpi=200)
@@ -339,7 +339,7 @@ class Panel:
 
         plt.vlines(np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0],
                    ymin=min(self.ae_clustered_database['frequency']), ymax=max(self.ae_clustered_database['frequency']),
-                   colors='g', label='PZT measurements')
+                   colors='tab:orange', label='PZT measurements')
         plt.xlabel("Time [s]")
         plt.ylabel("Average frequency of emission [kHz]")
         plt.legend()
