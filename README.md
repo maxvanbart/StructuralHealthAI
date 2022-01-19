@@ -1,5 +1,4 @@
-# StructuralHealthAI
-
+# # # Structural Health Monitoring - Capstone AI # # #
 
 # # General Information
 - To load the measurements from experiments into this program, a complete .zip for all panels must be downloaded from 
@@ -16,6 +15,14 @@
 
 
 # # Required Libraries
+- tqdm              - sklearn
+- numpy             - time
+- matplotlib        - psutil
+- pandas
+- daytime
+- os
+- scipy
+
 
 # # Folder Structure
 Project Folder
@@ -57,26 +64,10 @@ Project Folder
 │   │   translateLuna.py
 │   │   translatePZT.py
 └───utilities
-│   │   datetime_conv.pu
+│   │   datetime_conv.py
 
-# Todo:
-
-- Extra modules
-  - main
-    - tqdm
-    - numpy
-    - matplotlib
-    - pandas
-    - daytime
-    - os
-    - scipy.io
-  - AE
-  - LUNA
-  - pzt
-    - sklearn
 
 ## LUNA
-
 - The LUNA sensor file contains the start and end values of where the sensor is attached to the panel, 
   if a new panel is investigated with this program the new start and end values must be added to this file.
 - To properly synchronise the LUNA data with the AE data the LUNA data is preprocessed to remove outliers, 
@@ -87,6 +78,7 @@ Project Folder
 
 ## AE
 
-## PZT
 
-NOTE TO SELF: if you want to redefine the threshold, force regenerating the databases
+## PZT
+- It is possible to redefine the threshold that is used to calculate e.g. risetime. This is done by forcing the databases    
+  to regenerate, at which point you will be asked to input a new threshold (default 0.1)

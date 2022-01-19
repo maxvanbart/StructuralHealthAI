@@ -65,7 +65,7 @@ def AE_plot_visualisation(full_data, results_dir, name, plotting=False):
     ref_amp = 10 ** (-5)
     plt.scatter(20 * np.log10(full_data['amplitude'][full_data['frequency_outlier'] == -1] / ref_amp),
                 full_data['frequency'][full_data['frequency_outlier'] == -1],
-                s=3, c='navy', label='AE frequency outliers')
+                s=3, color="#334451", label='AE frequency outliers')
     plt.scatter(20 * np.log10(full_data['amplitude'][full_data['frequency_outlier'] == 0] / ref_amp),
                 full_data['frequency'][full_data['frequency_outlier'] == 0],
                 s=3, c='tab:blue', label='AE non-outliers')

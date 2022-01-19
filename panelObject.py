@@ -332,7 +332,7 @@ class Panel:
         plt.figure(figsize=(11, 7))
         plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == -1],
                     self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == -1],
-                    s=3, c='navy', label='AE frequency outliers')
+                    s=3, c='#334451', label='AE frequency outliers')
         plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == 0],
                     self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == 0],
                     s=3, c='tab:blue', label='AE non-outliers')
