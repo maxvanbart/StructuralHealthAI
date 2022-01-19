@@ -91,7 +91,7 @@ class Panel:
         try:
             if self.force_clustering:
                 raise FileNotFoundError
-            self.ae_clustered_database = pd.read_csv(self.results_directory + "/AE.csv")
+            self.ae_clustered_database = pd.read_csv(self.results_directory + f"/AE_{self.name}.csv")
             print(f"Successfully loaded clustered AE data for {self.name}.")
         except FileNotFoundError:
             print('Clustered file not found, clustering data...')
@@ -136,7 +136,7 @@ class Panel:
 
     def synchronise_luna(self):
         """Function which takes all the internal variables related to the separate sensors and time synchronises them"""
-        if not os.path.isfile(f'{self.results_directory}/LUNA_left.csv') or self.force_clustering:
+        if not os.path.isfile(f'{self.results_directory}/LUNA_left_{self.name}.csv') or self.force_clustering:
             sv, e, rb = sync_luna(self.ae_database.hits, self.luna_file_vector, self.luna_time_labels, name=self.name)
             self.luna_time_shift_vector = sv
             self.luna_time_shift_errors = e
@@ -149,7 +149,7 @@ class Panel:
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
 
-        if not os.path.isfile(f'{self.results_directory}/LUNA_left.csv') or self.force_clustering:
+        if not os.path.isfile(f'{self.results_directory}/LUNA_left_{self.name}.csv') or self.force_clustering:
             # 1. get time and length derivatives.
             left_time, left_length = gradient_arrays(self.luna_database[0])
             right_time, right_length = gradient_arrays(self.luna_database[1])
@@ -163,9 +163,9 @@ class Panel:
             right_filtered = filter_array(self.luna_database[1], self.luna_database_clustered[1], self.luna_time_labels, self.luna_length_labels[1])
 
         else:
-            with open(f'{self.results_directory}/LUNA_left.csv') as file:
+            with open(f'{self.results_directory}/LUNA_left_{self.name}.csv') as file:
                 left_filtered = np.genfromtxt(file, delimiter=',')
-            with open(f'{self.results_directory}/LUNA_right.csv') as file:
+            with open(f'{self.results_directory}/LUNA_right_{self.name}.csv') as file:
                 right_filtered = np.genfromtxt(file, delimiter=',')
 
         self.luna_database_filtered = [left_filtered, right_filtered]
@@ -219,7 +219,7 @@ class Panel:
             if self.force_clustering:
                 raise FileNotFoundError
             print(f"Successfully loaded clustered PZT data for {self.name}.")
-            self.pzt_clustered_database = pd.read_csv(self.results_directory + "/PZT.csv")
+            self.pzt_clustered_database = pd.read_csv(self.results_directory + f"/PZT_{self.name}.csv")
         except FileNotFoundError:
             print('Clustered PZT file not found, clustering data...')
             # The part where all the data is analyzed
