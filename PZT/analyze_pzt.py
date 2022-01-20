@@ -3,6 +3,7 @@ import pandas as pd
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 import sklearn.cluster as cls
+from sklearn import metrics
 
 
 # this function only works if multiple states are present in the files. Set the count value correctly
@@ -56,7 +57,7 @@ def make_clusters(database, panel_name, results_dir, barplot):
     """
     all_clusters_graph = False  # plot one graph with cluster labels for emitter 1
     selected_frequencies = [250000]  # selected frequency
-    selected_features = ['relative_amp', 'duration', "avg_freq"]
+    selected_features = ['relative_amp', 'rise_time', "avg_freq", "duration"]
 
     # column list for selection in database
     col_list = ["state", "frequency", "actionneur"] + selected_features
@@ -89,11 +90,11 @@ def make_clusters(database, panel_name, results_dir, barplot):
                 state_data = act.loc[act["state"] == state]
                 act_lst.append(state_data.to_numpy().flatten())
 
-            # kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.1), random_state=42)
+            # kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.15), random_state=42)
             # kmean_cluster.fit(act_lst)
             # kmean_labels1 = kmean_cluster.labels_
             # all_cluster_labels.append(kmean_labels1)
-            # name = f'kmeans n={int(len(act_lst)*0.1)}'
+            # name = f'kmeans n={int(len(act_lst)*0.15)}'
             # names.append(name)
 
             kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.2), random_state=42)
@@ -130,12 +131,11 @@ def make_clusters(database, panel_name, results_dir, barplot):
         selected_emitter_plot = 1
         if all_clusters_graph:
             for i in range(len(names)):
-                print(i)
                 if (selected_emitter_plot-1) * n_algorithms <= i < selected_emitter_plot * n_algorithms:
                     plt.plot(all_cluster_labels[i], label=names[i])
             plt.xlabel("State no.")
             plt.ylabel("label no.")
-            plt.title("All groups clusters, if change of label no. \n that means a change of data, so interesting point")
+            plt.title("All groups clusters, if change of label no. \n that might indicate damage, so interesting point")
             plt.legend()
             plt.show()
 
@@ -191,8 +191,9 @@ def make_clusters(database, panel_name, results_dir, barplot):
             list_to_file[2].append(numb+1)
 
         ax = change_df.plot.bar(rot=1, stacked=True, figsize=(9, 6))
-        plt.title("Cumulative number of feature changes detected by an auctionneur between states \n "
-                  f"Features selected: {selected_features}, frequency selected: {frequency/1000} kHz, panel: {panel_name}")
+        plt.title("Cumulative number of feature changes detected by an emitter between states \n "
+                  f"Features selected: {selected_features} \n " 
+                  f"Frequency selected: {frequency/1000} kHz, Panel: {panel_name}")
         plt.suptitle(f'')
         plt.xlabel("State number")
         plt.ylabel("Number of feature changes detected")
@@ -218,3 +219,16 @@ def make_clusters(database, panel_name, results_dir, barplot):
 
         with open(results_dir+f"/PZT_clustering-output_{panel_name}.txt", "w+") as f:
             f.write(string_to_file)
+
+        # results = []
+        # for labels in all_cluster_labels:
+        #     result = silhouette_score(act_lst, labels)
+        #     results.append(result)
+        # plt.plot(results)
+        # plt.show()
+
+
+def silhouette_score(array, labels):  # if needed could be called independent
+    score = metrics.silhouette_score(array, labels)
+    return score
+

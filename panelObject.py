@@ -91,7 +91,7 @@ class Panel:
         try:
             if self.force_clustering:
                 raise FileNotFoundError
-            self.ae_clustered_database = pd.read_csv(self.results_directory + "/AE.csv")
+            self.ae_clustered_database = pd.read_csv(self.results_directory + f"/AE_{self.name}.csv")
             print(f"Successfully loaded clustered AE data for {self.name}.")
         except FileNotFoundError:
             print('Clustered file not found, clustering data...')
@@ -136,7 +136,7 @@ class Panel:
 
     def synchronise_luna(self):
         """Function which takes all the internal variables related to the separate sensors and time synchronises them"""
-        if not os.path.isfile(f'{self.results_directory}/LUNA_left.csv') or self.force_clustering:
+        if not os.path.isfile(f'{self.results_directory}/LUNA_left_{self.name}.csv') or self.force_clustering:
             sv, e, rb = sync_luna(self.ae_database.hits, self.luna_file_vector, self.luna_time_labels, name=self.name)
             self.luna_time_shift_vector = sv
             self.luna_time_shift_errors = e
@@ -149,7 +149,7 @@ class Panel:
     def analyse_luna(self):
         """A function to analyse the LUNA data in the folder"""
 
-        if not os.path.isfile(f'{self.results_directory}/LUNA_left.csv') or self.force_clustering:
+        if not os.path.isfile(f'{self.results_directory}/LUNA_left_{self.name}.csv') or self.force_clustering:
             # 1. get time and length derivatives.
             left_time, left_length = gradient_arrays(self.luna_database[0])
             right_time, right_length = gradient_arrays(self.luna_database[1])
@@ -163,9 +163,9 @@ class Panel:
             right_filtered = filter_array(self.luna_database[1], self.luna_database_clustered[1], self.luna_time_labels, self.luna_length_labels[1])
 
         else:
-            with open(f'{self.results_directory}/LUNA_left.csv') as file:
+            with open(f'{self.results_directory}/LUNA_left_{self.name}.csv') as file:
                 left_filtered = np.genfromtxt(file, delimiter=',')
-            with open(f'{self.results_directory}/LUNA_right.csv') as file:
+            with open(f'{self.results_directory}/LUNA_right_{self.name}.csv') as file:
                 right_filtered = np.genfromtxt(file, delimiter=',')
 
         self.luna_database_filtered = [left_filtered, right_filtered]
@@ -219,7 +219,7 @@ class Panel:
             if self.force_clustering:
                 raise FileNotFoundError
             print(f"Successfully loaded clustered PZT data for {self.name}.")
-            self.pzt_clustered_database = pd.read_csv(self.results_directory + "/PZT.csv")
+            self.pzt_clustered_database = pd.read_csv(self.results_directory + f"/PZT_{self.name}.csv")
         except FileNotFoundError:
             print('Clustered PZT file not found, clustering data...')
             # The part where all the data is analyzed
@@ -289,10 +289,10 @@ class Panel:
 
         if len(self.luna_database_visualize[0]) > 0:
             axs0[0].scatter(self.luna_database_visualize[0][:, 0], self.luna_database_visualize[0][:, 1],
-                            color='red', label='Tension')
+                            color='tab:red', label='Tension')
         if len(self.luna_database_visualize[1]) > 0:
             axs0[0].scatter(self.luna_database_visualize[1][:, 0], self.luna_database_visualize[1][:, 1],
-                            color='blue', label='Compression')
+                            color='tab:blue', label='Compression')
 
         axs0[0].set_ylabel('Length [mm]')
         axs0[0].set_title('LUNA left foot cluster')
@@ -301,11 +301,11 @@ class Panel:
         # LUNA right foot.
         if len(self.luna_database_visualize[2]) > 0:
             axs0[1].scatter(self.luna_database_visualize[2][:, 0], self.luna_database_visualize[2][:, 1],
-                            color='red', label='Tension')
+                            color='tab:red', label='Tension')
 
         if len(self.luna_database_visualize[3]) > 0:
             axs0[1].scatter(self.luna_database_visualize[3][:, 0], self.luna_database_visualize[3][:, 1],
-                            color='blue', label='Compression')
+                            color='tab:blue', label='Compression')
 
         axs0[1].set_xlabel("Time [s]")
         axs0[1].set_ylabel('Length [mm]')
@@ -315,13 +315,13 @@ class Panel:
         # AE energy plot.
         axs0[2].scatter(self.ae_clustered_database['time'],
                         self.ae_clustered_database['energy'],
-                        s=10, label='High energy events')
+                        s=10, label='High energy events', c="tab:blue")
         axs0[2].set_xlabel("Time [s]")
         axs0[2].set_ylabel("Peak energy of emission [$10^{-14}$ J]")
         axs0[2].set_title('AE energy plot')
         axs0[2].vlines(np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0],
                        ymin=min(self.ae_clustered_database['energy']), ymax=max(self.ae_clustered_database['energy']),
-                       colors='g', label='PZT measurements')
+                       colors='tab:orange', label='PZT measurements')
         axs0[2].legend()
 
         plt.savefig(f'{self.results_directory}/combined_LUNA-PZT-AE energy_{self.name}.png',  dpi=200)
@@ -332,14 +332,14 @@ class Panel:
         plt.figure(figsize=(11, 7))
         plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == -1],
                     self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == -1],
-                    s=3, c='red', label='AE frequency outliers')
+                    s=3, c='#334451', label='AE frequency outliers')
         plt.scatter(self.ae_clustered_database['time'][self.ae_clustered_database['frequency_outlier'] == 0],
                     self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == 0],
-                    s=3, c='blue', label='AE non-outliers')
+                    s=3, c='tab:blue', label='AE non-outliers')
 
         plt.vlines(np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0],
                    ymin=min(self.ae_clustered_database['frequency']), ymax=max(self.ae_clustered_database['frequency']),
-                   colors='g', label='PZT measurements')
+                   colors='tab:orange', label='PZT measurements')
         plt.xlabel("Time [s]")
         plt.ylabel("Average frequency of emission [kHz]")
         plt.legend()
@@ -359,7 +359,7 @@ class Panel:
         ae_data_to_save = self.ae_clustered_database
         pzt_data_to_save = self.pzt_clustered_database
 
-        if not os.path.isfile(f'{directory}/LUNA_left_{self.name}.csv') or os.path.isfile(f'{directory}/LUNA_right_{self.name}.csv') \
+        if not os.path.isfile(f'{directory}/LUNA_left_{self.name}.csv') or not os.path.isfile(f'{directory}/LUNA_right_{self.name}.csv') \
                 or self.force_clustering:
             with open(f'{directory}/LUNA_left_{self.name}.csv', 'w') as file:
                 np.savetxt(file, luna_data_to_save_left, delimiter=',', fmt='%1.3f')

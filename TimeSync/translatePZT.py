@@ -90,10 +90,8 @@ def shift_error_front(pzt_start_point, luna_time, dt):
     # This function uses a different metric for error as these points should be placed different than the others
     for i in pzt_start_point:
         q = [i-x for x in luna_time]
-        # print(q)
         if max(q) > 0:
             final_error += max(q)
-    # print(dt, final_error)
     return 10*final_error
 
 
