@@ -84,17 +84,17 @@ def sync_pzt(pzt_time, luna_time, ae_ribbons, pzt_file_count, results, name='Gen
     # ###################
     # pzt_time = pzt_time + best_dt
     # pzt_start_points = pzt_start_points + best_dt
-    # plt.title(f"Time sync plot for panel {name}")
-    # plt.xlabel("Time [s]")
-    # i = 0
+    # # plt.title(f"Time sync plot for panel {name}", fontsize=20)
+    # plt.xlabel("Time [s]", fontsize=20)
+    # i = 1
     # for ribbon in ae_ribbons:
-    #     plt.plot([ribbon.t_start, ribbon.t_end], [0, 0], 'b', label="AE ribbons" if i == 0 else "")
+    #     plt.plot([ribbon.t_start, ribbon.t_end], [0, 0], 'b', label="AE ribbons" if i == 1 else "", linewidth=3, zorder=i)
     #     i += 1
     #
-    # plt.scatter(pzt_start_points, [0] * len(pzt_start_points), c='g', s=4, label="PZT measurements")
-    # plt.scatter(pzt_time, [0] * len(pzt_time), c='g', s=4, label="")
-    # plt.scatter(luna_time, [0] * len(luna_time), c='r', s=4, label="LUNA measurements")
-    # plt.legend()
+    # plt.scatter(pzt_start_points, [0] * len(pzt_start_points), c='g', s=32, label="PZT measurements", zorder=i+1)
+    # plt.scatter(pzt_time, [0] * len(pzt_time), c='g', s=32, label="", zorder=i+2)
+    # plt.scatter(luna_time, [0] * len(luna_time), c='r', s=32, label="LUNA measurements", zorder=i+3)
+    # plt.legend(fontsize=20)
     #
     # plt.savefig(f'{results}/TimeSync_{name}.png')
     # if graphing:
