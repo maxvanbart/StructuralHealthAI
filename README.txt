@@ -1,30 +1,34 @@
 # # # Structural Health Monitoring - Capstone AI # # #
 
-# # General Information
-- To load the measurements from experiments into this program, a complete .zip for all panels must be downloaded from 
-  Dataverse (https://dataverse.nl/dataset.xhtml?persistentId=doi:10.34894/QNURER). Then, the complete .zip must be put 
-  into the Files folder (see Folder Structure for more information). Then, the user must select "Extract here" on it and 
+# # READ BEFORE RUNNING # #
+- To load the measurements from experiments into this program, a complete .zip for all panels must be downloaded from
+  Dataverse (https://dataverse.nl/dataset.xhtml?persistentId=doi:10.34894/QNURER). Then, the complete .zip must be put
+  into the Files folder (see Folder Structure for more information). Then, the user must select "Extract here" on it and
   repeat this for every single .zip folder (e.g. AE.zip in L1-03) that it contains.
-- In Files > (Panel Name), a new folder named Results will be created on first run. Here, the final databases and 
+- In Files > (Panel Name), a new folder named Results will be created on first run. Here, the final databases and
   any visualisations or plots will be stored.
-- This program has been successfully tested on Windows, unknown if compatible with other operating systems.
-- In case of multiple re-runs, the code will not regenerate clustered databases and instead load them from saved 
+
+
+# # General Information / Running for the first time # #
+- To run this program, main.py must be executed. It will prompt some inputs from the user, such as forcibly generating
+  databases or enabling visualisations.
+- In case of multiple re-runs, the code will not regenerate clustered databases and instead load them from saved
   .csv files in the Results folder. It is possible to forcibly regenerate all databases if desired.
-- The user can enable visualisation within Python (pop-up plots). If this is disabled, the plots will still be saved in 
-  the Results folder. 
+- The user can enable visualisation within Python (pop-up plots). If this is disabled, the plots will still be saved in
+  the Results folder.
+- This program has been successfully tested on Windows, unknown if compatible with other operating systems.
 
 
-# # Required Libraries
+# # Required Libraries # #
 - tqdm              - sklearn
-- numpy             - time
-- matplotlib        - psutil
+- numpy             - psutil
+- matplotlib
 - pandas
 - daytime
-- os
 - scipy
 
 
-# # Folder Structure
+# # Folder Structure # #
 Project Folder
 │   README.md
 │   main.py
@@ -67,7 +71,7 @@ Project Folder
 │   │   datetime_conv.py
 
 
-# # LUNA
+# # LUNA # #
 - The LUNA sensor file contains the start and end values of where the sensor is attached to the panel, 
   if a new panel is investigated with this program the new start and end values must be added to this file.
 - To properly synchronise the LUNA data with the AE data the LUNA data is preprocessed to remove outliers, 
@@ -76,9 +80,9 @@ Project Folder
   the code has to be checked thoroughly.
 
 
-# # AE
+# # AE # #
 
 
-# # PZT
+# # PZT # #
 - It is possible to redefine the threshold that is used to calculate e.g. risetime. This is done by forcing the databases    
   to regenerate, at which point you will be asked to input a new threshold (default 0.1)
