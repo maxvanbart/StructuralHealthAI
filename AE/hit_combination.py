@@ -7,10 +7,11 @@ import pandas as pd
 
 
 def init_clustering(database, delta=100, debug=False, debug_graph=False):
+    debug_graph = True
     # select the features for the clustering
     cols = ['time', 'amplitude', 'duration', 'energy', 'rms', 'rise_time', 'counts']
     features = database.hits[cols]
-    features = features[-500000:]
+    features = features[:1000000]
     # debug_graph = True
 
     # ['time', 'channel', 'param_id', 'amplitude', 'duration', 'energy', 'rms', 'threshold', 'rise_time', 'counts',
@@ -27,13 +28,14 @@ def init_clustering(database, delta=100, debug=False, debug_graph=False):
 
     # Enabeling this debug graph will show the batch division of the selected datapoints
     if debug_graph:
+        print("Debug graph")
         n = 0
         for batch in batches:
             n += len(batch)
-            plt.scatter(batch[:, 0], batch[:, 4], s=4)
+            plt.scatter(batch[:, 0], batch[:, 4], s=4, c='tab:blue')
         print(n)
-        plt.xlabel("Time")
-        plt.ylabel("RMS voltage")
+        plt.xlabel("Time [s]", fontsize=20)
+        plt.ylabel("RMS voltage [µV]", fontsize=20)
         plt.show()
 
     # cluster all the batches found by the batch splitter
