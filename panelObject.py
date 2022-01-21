@@ -223,7 +223,7 @@ class Panel:
         except FileNotFoundError:
             print('Clustered PZT file not found, clustering data...')
             # The part where all the data is analyzed
-            analyse_pzt(self.pzt_database, self.name)
+            analyse_pzt(self.pzt_database)
             # The part where all the data boils up
             lst = []
             for folder in self.pzt_database:

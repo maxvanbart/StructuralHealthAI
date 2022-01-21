@@ -9,12 +9,11 @@ import json
 
 
 # this function only works if multiple states are present in the files. Set the count value correctly
-def analyse_pzt(pzt_database, time_check=False):
+def analyse_pzt(pzt_database):
     # for every run we will do a separate analysis
     count = 0
     for run in sorted(pzt_database):
         count += 1
-        # /!\ MIGHT BE BETTER TO BASE THIS ON THE AMOUNT OF STATES IN A RUN /!\
         if count < len(pzt_database):
             # This prevents a division by zero error
             continue
@@ -29,7 +28,6 @@ def analyse_pzt(pzt_database, time_check=False):
         for f in f_list:
             frequency_array_dict[f] = []
         # here we fill the frequency array dict with the results for the different frequencies
-        time_list = []
         pzt_database_run = sorted(pzt_database[run])
         for state in tqdm(pzt_database_run, desc='State'):
             z, state_number = state.analyse()
@@ -39,14 +37,6 @@ def analyse_pzt(pzt_database, time_check=False):
                 # per channel
 
                 frequency_array_dict[f].append((state_number, z[f]))
-
-            # make the start_time list
-            time_list.append(state.start_time)
-        time_list = np.array(time_list)
-        # if time_check:
-        #     plt.plot(time_list)
-        #     plt.title("check if it is a strait line if not, time sync is wrong")
-        #     plt.show()
 
 
 def make_clusters(database, panel_name, results_dir, barplot):

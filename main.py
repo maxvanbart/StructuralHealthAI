@@ -12,7 +12,7 @@ def main(force_clustering=False, visualization=False, pzt_thr=0.1):
     panels = Panel.initialize_all(pzt_thr, force_clustering=force_clustering, plotting=visualization)
 
     # select specific panels
-    panels = panels[:1]
+    panels = panels[4:]
 
     # for every panel we perform the following actions
     for panel in tqdm(panels, desc='Panel'):
