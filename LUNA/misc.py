@@ -1,8 +1,12 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import time
 
 import datetime
+
+import sklearn.cluster as cl
+from sklearn import metrics
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
@@ -30,7 +34,7 @@ def raw_to_array_complete(folder_path, file_name):
 
     def convert_array(array):
         """
-        Changes all dates to timestamps, NaN strings to NaN values and remaining strings to floats.
+        Changes all dates to timestamps_clustered, NaN strings to NaN values and remaining strings to floats.
         """
         for i in range(len(array)):
             for j in range(len(array[i])):
@@ -136,3 +140,283 @@ def cluster_to_image(vector):
         image.append(image_row)
 
     return np.flip(image, axis=0)
+
+
+def do_in_batches(array, batches, function):
+    i = 0
+    output = None
+    values_output = []
+    for sub_array in np.array_split(array, batches, axis=0):
+        begin_time = time.time()
+        print(sub_array)
+        cluster, values = function(sub_array) # meanshift(sub_array)
+        values_output.append(values)
+        if i == 0:
+            output = cluster
+        if i != 0:
+            output = np.hstack((output, cluster))
+        i += 1
+        print(f'runtime for batch {i} = {begin_time - time.time()}')
+    return output, values_output
+
+def cluster_to_image(cluster):
+    cluster_image = np.ones(cluster.shape)
+
+    for i in range(len(cluster)):
+        for j in range(len(cluster[i])):
+            if not cluster[i, j]:
+                cluster_image[i, j] = 0.0
+
+    return np.flip(cluster_image, axis=0)
+
+
+def print_scores_of_clusters(array, labels, panel_name, cluster_name, get_silhouette=True, get_calinski=True, get_davies=True):
+    print(f"\nThese are the scores for panel {panel_name}, for cluster {cluster_name}")
+    if get_silhouette:
+        silhouette = silhouette_score(array, labels)
+        print(f'----------------------------')
+        print(f'silhouette score = {silhouette}')
+
+    if get_calinski:
+        calinski = calinski_score(array, labels)
+        print(f'----------------------------')
+        print(f'calinski score = {calinski}')
+
+    if get_davies:
+        davies = davies_score(array, labels)
+        print(f'----------------------------')
+        print(f'davies score = {davies}')
+
+    print(f'----------------------------')
+    return
+
+
+def mean_shift(array, scaled=True):
+    # scale array
+    if scaled:
+        array = scaling(array)
+
+    # clustering
+    model = cl.MeanShift()
+    cluster = model.fit_predict(array)
+    cluster_values = np.unique(cluster)
+
+    # output
+    return cluster.reshape(-1, 1), cluster_values
+
+
+def aff_prop(array, scaled=True):
+    # scale array
+    if scaled:
+        array = scaling(array)
+
+    # clustering
+    model = cl.AffinityPropagation()
+    cluster = model.fit_predict(array)
+    cluster_values = np.unique(cluster)
+
+    # output
+    return cluster.reshape(-1, 1), cluster_values
+
+
+def agglo(array, n=5, scaled=True):
+    # scale array
+    if scaled:
+        array = scaling(array)
+
+    # clustering
+    model = cl.AgglomerativeClustering(n_clusters=n, distance_threshold=1)
+    cluster = model.fit_predict(array)
+
+    cluster_values = np.unique(cluster)
+
+    # output
+    return cluster.reshape(-1, 1), cluster_values
+
+
+def silhouette_score(array, labels):  # if needed could be called independent
+    score = metrics.silhouette_score(array, labels)
+    return score
+
+
+def calinski_score(array, labels):  # if needed could be called independent
+    score = metrics.calinski_harabasz_score(array, labels)
+    return score
+
+
+def davies_score(array, labels):  # if needed could be called independent
+    score = metrics.davies_bouldin_score(array, labels)
+    return score
+
+
+def array_to_image(array):
+    """
+    Generates a new vector with each value in the original vector converted to an RGB color.
+    """
+    min_value, max_value = np.nanmin(array) / 4, np.nanmax(array) / 4
+
+    image = []
+
+    for i in range(len(array)):
+        image_row = []
+
+        for j in range(len(array[i])):
+
+            if array[i, j] <= 0:
+                # image_column = [max(1 - (array[i, j] / min_value), 0), max(1 - (array[i, j] / min_value), 0), 1]
+
+                image_column = - max(1 - (array[i, j] / min_value), 0)
+
+            elif array[i, j] > 0:
+                # image_column = [1, max(1 - (array[i, j] / max_value), 0), max(1 - (array[i, j] / max_value), 0)]
+
+                image_column = max(1 - (array[i, j] / min_value), 0)
+
+            else:
+                # image_column = [0, 0, 0]
+
+                image_column = 0
+
+            image_row.append(image_column)
+
+        image.append(image_row)
+
+    # return np.flip(np.transpose(image, (1, 0, 2)), axis=0)
+
+    return np.flip(np.transpose(image, (1, 0, 2)), axis=0)
+
+
+def plot_arrays(image, image_time, image_length, length, time, panel, left=True):
+    """
+    Plots the original vector, time derivative vector and length derivative vector including a color bar.
+    """
+    plt.subplot(1, 3, 1)
+    plt.imshow(image, extent=[0, length, 0, time])
+    plt.xlabel('L [mm]')
+    plt.ylabel('Timestamp [-]')
+    plt.title('Micro strain')
+
+    plt.subplot(1, 3, 2)
+    plt.imshow(image_time, extent=[0, length, 0, time])
+    plt.xlabel('L [mm]')
+    plt.ylabel('Timestamp [-]')
+    plt.title('Time (partial) derivative')
+
+    plt.subplot(1, 3, 3)
+    plt.imshow(image_length, extent=[0, length, 0, time])
+    plt.xlabel('L [mm]')
+    plt.ylabel('Timestamp [-]')
+    plt.title('Length (partial) derivative')
+
+    if left:
+        plt.suptitle(f'Left foot panel {panel}')
+    else:
+        plt.suptitle(f'Right foot panel {panel}')
+
+    cbr = plt.colorbar(plt.cm.ScalarMappable(cmap='bwr', norm=mpl.Normalize(vmin=-1, vmax=1)))
+    cbr.set_label('Scaled values [-]')
+    plt.show()
+
+
+def plot_cluster(im_time_left, im_time_right, im_length_left, im_length_right, im_cluster_left, im_cluster_right,
+                 length_left, length_right, time, panel):
+
+    figure = plt.figure(constrained_layout=True)
+    figure.supxlabel('Length measurements [-]')
+    figure.supylabel('Time measurements [-]')
+    figure.suptitle(f'Panel {panel}')
+
+    sub_figures = figure.subfigures(1, 3)
+    sub_figures[0].suptitle('Time derivatives')
+    sub_figures[1].suptitle('Length derivatives')
+    sub_figures[2].suptitle('Clusters')
+
+    axs0 = sub_figures[0].subplots(1, 2, sharey=True)
+    axs0[0].imshow(im_time_left, extent=[0, length_left, 0, time], aspect='auto')
+    axs0[0].set_title('Left')
+
+    axs0[1].imshow(im_time_right, extent=[0, length_right, 0, time], aspect='auto')
+    axs0[1].set_title('Right')
+
+    axs1 = sub_figures[1].subplots(1, 2, sharey=True)
+    axs1[0].imshow(im_length_left, extent=[0, length_left, 0, time], aspect='auto')
+    axs1[0].set_title('Left')
+
+    axs1[1].imshow(im_length_right, extent=[0, length_right, 0, time], aspect='auto')
+    axs1[1].set_title('Right')
+
+    axs2 = sub_figures[2].subplots(1, 2, sharey=True)
+    axs2[0].imshow(im_cluster_left, extent=[0, length_left, 0, time], aspect='auto', cmap='gray')
+    axs2[0].set_title('Left')
+
+    axs2[1].imshow(im_cluster_right, extent=[0, length_right, 0, time], aspect='auto', cmap='gray')
+    axs2[1].set_title('Right')
+
+    plt.show()
+
+
+def plot_example_cluster(image_time, cluster_array, cluster_name, cluster_values, length, time):
+    plt.subplot(1, 2, 1)
+    plt.imshow(image_time, extent=[0, length, 0, time])
+    plt.xlabel('L [mm]')
+    plt.ylabel('Timestamp [-]')
+    plt.title('Reference')
+
+    image_cluster = np.flip(cluster_array, axis=0)
+
+    plt.subplot(1, 2, 2)
+    plt.imshow(image_cluster, extent=[0, length, 0, time], cmap='inferno')
+    plt.xlabel(f'Number of clusters: {len(cluster_values)}')
+    plt.ylabel('Timestamp [-]')
+    plt.xticks([])
+    plt.yticks([])
+    plt.title(f'{cluster_name} clustering')
+
+    plt.show()
+
+
+def plot_clusters(image_left, image_right, length_left_labels, length_right_labels, time_labels, panel, division=20):
+
+    labels_time = []
+    labels_length_left = [int(float(length_left_labels[0])), int(float(length_left_labels[len(length_left_labels) // 2])), int(float(length_left_labels[-1]))]
+    labels_length_right = [int(float(length_right_labels[0])),
+                           int(float(length_right_labels[len(length_left_labels) // 2])),
+                           int(float(length_right_labels[-1]))]
+
+    for i in range(len(time_labels)):
+        if i % division == 0 and i == 0:
+            labels_time.append(0)
+
+        elif i % division == 0:
+            labels_time.append(int(float(time_labels[i])))
+
+    figure = plt.figure(constrained_layout=True)
+    # figure.supxlabel('Length measurements [-]')
+    # figure.supylabel('Time measurements [-]')
+    figure.suptitle(f'Panel {panel}')
+
+    sub_figures = figure.subfigures(2, 1)
+    sub_figures[0].suptitle('LUNA clusters')
+    sub_figures[1].suptitle('AE clusters')
+
+    axs0 = sub_figures[0].subplots(2, 1, sharex=True)
+    axs0[0].imshow(image_left, extent=[0, len(time_labels), 0, len(length_left_labels)], aspect='auto')
+    # axs0[0].set_title('Left')
+
+    axs0[0].set_xticks(np.arange(len(labels_time)) * division)
+    axs0[0].set_xticklabels(labels_time)
+
+    axs0[0].set_yticks([0, 0.5 * len(length_left_labels), len(length_left_labels)])
+    axs0[0].set_yticklabels(labels_length_left)
+    axs0[0].set_ylabel('length [mm]')
+
+    axs0[1].imshow(image_right, extent=[0, len(time_labels), 0, len(length_right_labels)], aspect='auto')
+    # axs0[1].set_title('Right')
+    axs0[1].set_xlabel('time [s]')
+
+    axs0[1].set_yticks([0, 0.5 * len(length_right_labels), len(length_right_labels)])
+    axs0[1].set_yticklabels(labels_length_right)
+    axs0[1].set_ylabel('length [mm]')
+    axs0[1].set_ylabel('length [mm]')
+
+    plt.show()

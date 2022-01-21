@@ -1,17 +1,21 @@
 import numpy as np
 
 import datetime
+import os
 
 
-def raw_to_array(panel):
+def file_to_array(panel, path):
     """
-    Opens file in default LUNA data format and converts this into left and right foot numpy arrays.
+    Opens file in default LUNA data format and converts this into left and right foot arrays.
     """
     def read_sensor_file():
-        sensor_file = 'LUNA/LUNA_sensor.txt'
+        """
+        Reads the sensor file and returns the relevant data for the specified panel.
+        """
+        sensor_file = '/LUNA_sensor.txt'
         sensor_data = {}
 
-        with open(sensor_file) as file:
+        with open(os.path.dirname(__file__) + sensor_file) as file:
             data = np.genfromtxt(file, delimiter=',', skip_header=True, dtype=str)
 
             for line in data:
@@ -21,13 +25,12 @@ def raw_to_array(panel):
 
     def read_data_file():
         """
-        Creates the unconverted vector and feature label list to be used later.
+        Creates the unconverted array and feature label list to be used later.
         """
-        path = f'Files/{panel[:5]}/LUNA/{panel}.txt'
-
         with open(path) as file:
             lines = file.readlines()
-            feature_labels_all = lines[0].strip().split('\t')
+            lines = lines[4:]
+            feature_labels_all = lines[0].strip().split('\t')[1:]
 
             data_lists_left = []
             data_lists_right = []
@@ -49,10 +52,10 @@ def raw_to_array(panel):
                 data_lists_left.append([line_data[0]] + line_data[left_index_start:left_index_stop + 1])
                 data_lists_right.append([line_data[0]] + line_data[right_index_start:right_index_stop + 1])
 
-            array_left = np.array(data_lists_left, dtype=object)
-            array_right = np.array(data_lists_right, dtype=object)
+            data_left = np.array(data_lists_left, dtype=object)
+            data_right = np.array(data_lists_right, dtype=object)
 
-            return array_left, array_right, feature_labels_left, feature_labels_right
+            return data_left, data_right, feature_labels_left, feature_labels_right
 
     def convert_array(array):
         """
@@ -74,17 +77,17 @@ def raw_to_array(panel):
                 else:
                     array[i, j] = float(array[i, j])
 
-    data_np_left, data_np_right, labels_left, labels_right = read_data_file()
+    array_left, array_right, labels_left, labels_right = read_data_file()
 
-    convert_array(data_np_left)
-    convert_array(data_np_right)
+    convert_array(array_left)
+    convert_array(array_right)
 
-    return data_np_left, data_np_right, labels_left, labels_right
+    return array_left, array_right, labels_left, labels_right
 
 
 def gradient_arrays(array):
     """
-    Returns tuple, first entry time derivative vector, second entry the length derivative vector.
+    Returns tuple, first entry time derivative array, second entry the length derivative array.
     """
     time_derivative_array, length_derivative_array = np.gradient(array)
 
@@ -98,28 +101,38 @@ def gradient_arrays(array):
     return time_derivative_array, length_derivative_array
 
 
-def array_to_image(array):
+def folder_to_array(panel, path):
     """
-    Generates a new vector with each value in the original vector converted to an RGB color.
+    Reads all files of a panel and converts them to left foot and right foot arrays.
     """
-    min_value, max_value = np.nanmin(array) / 4, np.nanmax(array) / 4
+    files_all = os.listdir(path)
+    files_data = []
 
-    image = []
+    # Put all files in 1 list
+    for file in files_all:
+        if file[:5] == panel:
+            files_data.append(path + file)
 
-    for i in range(len(array)):
-        image_row = []
+    # Create empty arrays to fill with data and setting the file counter to 0
+    final_left_array, final_right_array = [], []
+    final_file_vector = []
+    left_labels, right_labels = [], []
+    count = 0
 
-        for j in range(len(array[i])):
+    # Go through all files and put the data in the final arrays using the file_to_array function
+    for file in files_data:
+        left_array, right_array, left_labels, right_labels = file_to_array(panel, file)
 
-            if array[i, j] <= 0:
-                image_column = [max(1 - (array[i, j] / min_value), 0), max(1 - (array[i, j] / min_value), 0), 1]
-            elif array[i, j] > 0:
-                image_column = [1, max(1 - (array[i, j] / max_value), 0), max(1 - (array[i, j] / max_value), 0)]
-            else:
-                image_column = [0, 0, 0]
+        if len(final_left_array) == 0:
+            final_left_array, final_right_array = left_array, right_array
+            final_file_vector = np.ones((len(left_array), 1)) * count
+        else:
+            final_left_array = np.vstack((final_left_array, left_array))
+            final_right_array = np.vstack((final_right_array, right_array))
 
-            image_row.append(image_column)
+            file_vector = np.ones((len(left_array), 1)) * count
+            final_file_vector = np.vstack((final_file_vector, file_vector))
 
-        image.append(image_row)
+        count += 1
 
-    return np.flip(image, axis=0)
+    return final_left_array, final_right_array, final_file_vector, left_labels, right_labels
