@@ -26,7 +26,7 @@ def main(force_clustering=False, visualization=False, pzt_thr=0.1):
         panel.synchronise_luna()
         panel.analyse_luna()
 
-        # Prepare PZT
+        # Prepare PZT.
         panel.load_pzt()
         panel.synchronise_pzt()
         panel.analyse_pzt()
