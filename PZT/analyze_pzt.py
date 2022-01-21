@@ -210,7 +210,7 @@ def make_clusters(database, panel_name, results_dir, barplot):
         plt.hlines(selected_groups[1]*max(output_sum), 0, len(act_lst), linestyles=":", color='tab:pink', label=f"{selected_groups[1]*100}%")
         plt.legend()
 
-        plt.savefig(f'{results_dir}/PZT_statechanges_{panel_name}.png')
+        plt.savefig(f'{results_dir}/PZT_statechanges_clusters_{panel_name}.png')
 
         if barplot:
             plt.show()
@@ -228,6 +228,9 @@ def make_clusters(database, panel_name, results_dir, barplot):
         plt.hlines(selected_groups[1] * max(output_sum), 0, len(act_lst), linestyles=":", color='tab:pink',
                    label=f"{selected_groups[1] * 100}%")
         plt.legend()
+
+        plt.savefig(f'{results_dir}/PZT_statechanges_emitters_{panel_name}.png')
+
         if barplot:
             plt.show()
 
