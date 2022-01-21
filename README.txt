@@ -80,8 +80,11 @@ Project Folder
 
 
 # # AE # #
-
+- The AE_panel name.csv contains a database with only high-energy events and their extracted features.
+- All other measurements are synchronised in time relative to the start of the AE measurements.
 
 # # PZT # #
+- PZT database has averaged the 10 measurements per frequency. It lists the emitted frequency, as well as the state
+  number with the corresponding time relative to the AE data for each measurement.
 - It is possible to redefine the threshold that is used to calculate e.g. risetime. This is done by forcing the databases    
   to regenerate, at which point you will be asked to input a new threshold (default 0.1)

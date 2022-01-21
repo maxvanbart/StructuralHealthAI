@@ -352,14 +352,14 @@ class Panel:
                     s=3, c='tab:blue', label='AE non-outliers')
 
         # PZT Lines
-        axs0[2].vlines(pzt_high, ymin=min(self.ae_clustered_database['energy']),
-                       ymax=max(self.ae_clustered_database['energy']), colors='tab:red',
+        plt.vlines(pzt_high, ymin=min(self.ae_clustered_database['frequency']),
+                       ymax=max(self.ae_clustered_database['frequency']), colors='tab:red',
                        label='High-interest PZT measurements')
-        axs0[2].vlines(pzt_med, ymin=min(self.ae_clustered_database['energy']),
-                       ymax=max(self.ae_clustered_database['energy']), colors='tab:orange',
+        plt.vlines(pzt_med, ymin=min(self.ae_clustered_database['frequency']),
+                       ymax=max(self.ae_clustered_database['frequency']), colors='tab:orange',
                        label='Medium-interest PZT measurements')
-        axs0[2].vlines(pzt_low, ymin=min(self.ae_clustered_database['energy']),
-                       ymax=max(self.ae_clustered_database['energy']), colors='tab:green',
+        plt.vlines(pzt_low, ymin=min(self.ae_clustered_database['frequency']),
+                       ymax=max(self.ae_clustered_database['frequency']), colors='tab:green',
                        label='Low-interest PZT measurements')
         plt.xlabel("Time [s]")
         plt.ylabel("Average frequency of emission [kHz]")
