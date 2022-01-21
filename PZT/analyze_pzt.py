@@ -111,7 +111,7 @@ def make_clusters(database, panel_name, results_dir, barplot):
             # name = f'kmeans n={int(len(act_lst)*0.25)}'
             # names.append(name)
 
-            aff_prop_cluster = cls.AffinityPropagation(random_state=None)
+            aff_prop_cluster = cls.AffinityPropagation(random_state=None, damping=0.75)
             aff_prop_cluster.fit(act_lst)
             aff_prop_labels = aff_prop_cluster.labels_
             all_cluster_labels.append(aff_prop_labels)
@@ -179,8 +179,8 @@ def make_clusters(database, panel_name, results_dir, barplot):
         output_sum = np.sum(total_sum_list, axis=0)
 
         list_to_file = [[], [], []]
-        # 90%, 50%, else
-        selected_groups = [0.8, 0.5]
+        # 75%, 50%, else
+        selected_groups = [0.75, 0.5]
         for numb, item in enumerate(output_sum):
             if item > selected_groups[0]*max(output_sum):
                 list_to_file[0].append(numb+1)
@@ -189,6 +189,14 @@ def make_clusters(database, panel_name, results_dir, barplot):
                 list_to_file[1].append(numb + 1)
                 continue
             list_to_file[2].append(numb+1)
+
+        total_sum_list2 = []
+        for j in range(8):
+            list_to_add = change_array[j*3:(j+1)*3]
+            sum_list = np.sum(list_to_add, axis=0)
+            total_sum_list2.append(sum_list)
+        header = ["Emitter 1", "Emitter 2", "Emitter 3", "Emitter 4", "Emitter 5", "Emitter 6", "Emitter 7", "Emitter 8"]
+        change_df2 = pd.DataFrame(data=np.array(total_sum_list2).T, columns=header, index=range(1, len(act_lst)+1))
 
         ax = change_df.plot.bar(rot=1, stacked=True, figsize=(9, 6))
         plt.title("Cumulative number of feature changes detected by an emitter between states \n "
@@ -207,6 +215,22 @@ def make_clusters(database, panel_name, results_dir, barplot):
         if barplot:
             plt.show()
 
+        ax = change_df2.plot.bar(rot=1, stacked=True, figsize=(9, 6))
+        plt.title("Cumulative number of feature changes detected by an emitter between states \n "
+                  f"Features selected: {selected_features} \n "
+                  f"Frequency selected: {frequency / 1000} kHz, Panel: {panel_name}")
+        plt.suptitle(f'')
+        plt.xlabel("State number")
+        plt.ylabel("Number of feature changes detected")
+        plt.plot(output_sum, ":", c="tab:brown")
+        plt.hlines(selected_groups[0] * max(output_sum), 0, len(act_lst), linestyles=":", color='tab:blue',
+                   label=f"{selected_groups[0] * 100}%")
+        plt.hlines(selected_groups[1] * max(output_sum), 0, len(act_lst), linestyles=":", color='tab:pink',
+                   label=f"{selected_groups[1] * 100}%")
+        plt.legend()
+        if barplot:
+            plt.show()
+
         string_to_file = "\n"
         string_to_file += "---------------------------------\n"
         string_to_file += f"Importance of changes detected in panel {panel_name} for frequency {frequency} at states: \n"
@@ -219,13 +243,6 @@ def make_clusters(database, panel_name, results_dir, barplot):
 
         with open(results_dir+f"/PZT_clustering-output_{panel_name}.txt", "w+") as f:
             f.write(string_to_file)
-
-        # results = []
-        # for labels in all_cluster_labels:
-        #     result = silhouette_score(act_lst, labels)
-        #     results.append(result)
-        # plt.plot(results)
-        # plt.show()
 
 
 def silhouette_score(array, labels):  # if needed could be called independent
