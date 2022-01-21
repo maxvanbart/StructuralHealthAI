@@ -97,6 +97,21 @@ def make_clusters(database, panel_name, results_dir, barplot):
             # name = f'kmeans n={int(len(act_lst)*0.15)}'
             # names.append(name)
 
+            # try elbow method, might give different k for different sensors, so is not comparable to each other.
+            # intertia is also very high, might try a different type of metric comparison.
+            # possible_k = range(4, int(len(act_lst)*0.4))
+            # inertias = []
+            # for k in possible_k:
+            #     kmean_cluster = cls.KMeans(n_clusters=k, random_state=42)
+            #     kmean_cluster.fit(act_lst)
+            #     inertias.append(kmean_cluster.inertia_)
+
+            # plt.plot(possible_k, inertias, "bx-")
+            # plt.xlabel('Values of K')
+            # plt.ylabel('Inertia')
+            # plt.title('The Elbow Method using Inertia')
+            # plt.show()
+
             kmean_cluster = cls.KMeans(n_clusters=int(len(act_lst)*0.2), random_state=42)
             kmean_cluster.fit(act_lst)
             kmean_labels2 = kmean_cluster.labels_
