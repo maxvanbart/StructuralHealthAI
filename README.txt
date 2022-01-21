@@ -1,11 +1,11 @@
 # # # Structural Health Monitoring - Capstone AI # # #
 
 # # READ BEFORE RUNNING # #
-- To load the measurements from experiments into this program, a complete .zip for all panels must be downloaded from
-  Dataverse (https://dataverse.nl/dataset.xhtml?persistentId=doi:10.34894/QNURER). Then, the complete .zip must be put
-  into the Files folder (see Folder Structure for more information). Then, the user must select "Extract here" on it and
+- To load the measurements from experiments into this program, a complete .zip for all panels must be downloaded from 
+  Dataverse (https://dataverse.nl/dataset.xhtml?persistentId=doi:10.34894/QNURER). Then, the complete .zip must be put 
+  into the Files folder (see Folder Structure for more information). Then, the user must select "Extract here" on it and 
   repeat this for every single .zip folder (e.g. AE.zip in L1-03) that it contains.
-- In Files > (Panel Name), a new folder named Results will be created on first run. Here, the final databases and
+- In Files > (Panel Name), a new folder named Results will be created on first run. Here, the final databases and 
   any visualisations or plots will be stored.
 
 

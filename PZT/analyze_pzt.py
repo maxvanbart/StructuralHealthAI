@@ -232,3 +232,8 @@ def silhouette_score(array, labels):  # if needed could be called independent
     score = metrics.silhouette_score(array, labels)
     return score
 
+
+def extract_scores(results_directory, name):
+    file = open(f"{results_directory}/PZT_clustering-output_{name}.txt")
+    for line in file:
+        print(line)

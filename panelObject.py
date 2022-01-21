@@ -8,7 +8,7 @@ from AE.hit_combination import init_clustering
 from AE.feature_analysis import energy_time_cluster, freq_amp_cluster, AE_plot_visualisation
 from AE.feature_extraction import frequency_extraction
 
-from PZT.analyze_pzt import analyse_pzt, make_clusters
+from PZT.analyze_pzt import analyse_pzt, make_clusters, extract_scores
 from PZT.load_pzt import StatePZT
 
 from LUNA.luna_data_to_array import folder_to_array, gradient_arrays
@@ -285,6 +285,10 @@ class Panel:
         sub_figures.suptitle(f'Panel {self.name}')
         # LUNA left foot.
 
+
+        # Open PZT states of interest
+        # extract_scores(self.results_directory, self.name)
+
         axs0 = sub_figures.subplots(3, 1, sharex=True, gridspec_kw={'height_ratios': [1, 1, 2]})
 
         if len(self.luna_database_visualize[0]) > 0:
@@ -368,12 +372,12 @@ class Panel:
                 print("Successfully created LUNA .csv.")
 
         if not os.path.isfile(f'{directory}/AE_{self.name}.csv') or self.force_clustering:
-            with open(f'{directory}/AE.csv', 'w') as file:
+            with open(f'{directory}/AE_{self.name}.csv', 'w') as file:
                 ae_data_to_save.to_csv(file, index=False)
                 print("Successfully created AE .csv.")
 
         if not os.path.isfile(f'{directory}/PZT_{self.name}.csv') or self.force_clustering:
-            with open(f'{directory}/PZT.csv', 'w') as file:
+            with open(f'{directory}/PZT_{self.name}.csv', 'w') as file:
                 pzt_data_to_save.to_csv(file, index=False)
                 print("Successfully created PZT .csv.")
 
