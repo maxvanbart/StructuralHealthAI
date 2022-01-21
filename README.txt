@@ -22,9 +22,8 @@
 # # Required Libraries # #
 - tqdm              - sklearn
 - numpy             - psutil
-- matplotlib
+- matplotlib        - scipy
 - pandas
-- scipy
 
 
 # # Folder Structure # #
@@ -86,7 +85,7 @@ Project Folder
 # # PZT # #
 - PZT database has averaged the 10 measurements per frequency. It lists the emitted frequency, as well as the state
   number with the corresponding time relative to the AE data for each measurement.
-- It is possible to redefine the threshold that is used to calculate e.g. risetime. This is done by forcing the databases    
+- It is possible to redefine the threshold that is used to calculate e.g. risetime. This is done by forcing the databases
   to regenerate, at which point you will be asked to input a new threshold (default 0.1)
 - PZT will only work if the last file contains all the needed measurements. If measurements are split up in multiple files,
   the time sync will not work. This has not been tried, but one might try to combine all measurements in one file.
