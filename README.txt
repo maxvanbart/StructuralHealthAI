@@ -24,7 +24,6 @@
 - numpy             - psutil
 - matplotlib
 - pandas
-- daytime
 - scipy
 
 

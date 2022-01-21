@@ -4,7 +4,8 @@ from tqdm import tqdm
 from matplotlib import pyplot as plt
 import sklearn.cluster as cls
 from sklearn import metrics
-
+import re
+import json
 
 # this function only works if multiple states are present in the files. Set the count value correctly
 def analyse_pzt(pzt_database, time_check=False):
@@ -270,5 +271,12 @@ def silhouette_score(array, labels):  # if needed could be called independent
 
 def extract_scores(results_directory, name):
     file = open(f"{results_directory}/PZT_clustering-output_{name}.txt")
-    for line in file:
-        print(line)
+    lines = file.readlines()[5:8]
+    interestlst = []
+    for line in lines:
+        line = line.strip()
+        pattern = "->(.*?)-- "
+        substring = re.search(pattern, line).group(1)
+        interestlst.append(json.loads(substring))
+
+    return interestlst

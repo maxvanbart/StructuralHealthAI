@@ -283,12 +283,11 @@ class Panel:
 
         sub_figures = figure.subfigures(1, 1)
         sub_figures.suptitle(f'Panel {self.name}')
-        # LUNA left foot.
-
 
         # Open PZT states of interest
-        # extract_scores(self.results_directory, self.name)
+        interest_states = extract_scores(self.results_directory, self.name)
 
+        # LUNA left foot.
         axs0 = sub_figures.subplots(3, 1, sharex=True, gridspec_kw={'height_ratios': [1, 1, 2]})
 
         if len(self.luna_database_visualize[0]) > 0:
@@ -323,9 +322,20 @@ class Panel:
         axs0[2].set_xlabel("Time [s]")
         axs0[2].set_ylabel("Peak energy of emission [$10^{-14}$ J]")
         axs0[2].set_title('AE energy plot')
-        axs0[2].vlines(np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0],
-                       ymin=min(self.ae_clustered_database['energy']), ymax=max(self.ae_clustered_database['energy']),
-                       colors='tab:orange', label='PZT measurements')
+
+        # PZT lines
+        pzt_times = np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0]
+        pzt_high, pzt_med, pzt_low = pzt_times[interest_states[0]], pzt_times[interest_states[1]], \
+                                     pzt_times[interest_states[2]]
+        axs0[2].vlines(pzt_high, ymin=min(self.ae_clustered_database['energy']),
+                       ymax=max(self.ae_clustered_database['energy']), colors='tab:red',
+                       label='High-interest PZT measurements')
+        axs0[2].vlines(pzt_med, ymin=min(self.ae_clustered_database['energy']),
+                       ymax=max(self.ae_clustered_database['energy']), colors='tab:orange',
+                       label='Medium-interest PZT measurements')
+        axs0[2].vlines(pzt_low, ymin=min(self.ae_clustered_database['energy']),
+                       ymax=max(self.ae_clustered_database['energy']), colors='tab:green',
+                       label='Low-interest PZT measurements')
         axs0[2].legend()
 
         plt.savefig(f'{self.results_directory}/combined_LUNA-PZT-AE energy_{self.name}.png',  dpi=200)
@@ -341,9 +351,16 @@ class Panel:
                     self.ae_clustered_database['frequency'][self.ae_clustered_database['frequency_outlier'] == 0],
                     s=3, c='tab:blue', label='AE non-outliers')
 
-        plt.vlines(np.array(self.pzt_start_times) + self.pzt_dt - self.pzt_start_times[0],
-                   ymin=min(self.ae_clustered_database['frequency']), ymax=max(self.ae_clustered_database['frequency']),
-                   colors='tab:orange', label='PZT measurements')
+        # PZT Lines
+        axs0[2].vlines(pzt_high, ymin=min(self.ae_clustered_database['energy']),
+                       ymax=max(self.ae_clustered_database['energy']), colors='tab:red',
+                       label='High-interest PZT measurements')
+        axs0[2].vlines(pzt_med, ymin=min(self.ae_clustered_database['energy']),
+                       ymax=max(self.ae_clustered_database['energy']), colors='tab:orange',
+                       label='Medium-interest PZT measurements')
+        axs0[2].vlines(pzt_low, ymin=min(self.ae_clustered_database['energy']),
+                       ymax=max(self.ae_clustered_database['energy']), colors='tab:green',
+                       label='Low-interest PZT measurements')
         plt.xlabel("Time [s]")
         plt.ylabel("Average frequency of emission [kHz]")
         plt.legend()
